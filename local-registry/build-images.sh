@@ -19,6 +19,14 @@ declare -a CHANGED_FILES=()
 declare -a GLOBAL_TRIGGER_PATHS=(
 	"local-registry/images.manifest"
 	"local-registry/build-images.sh"
+	"installs/base/install-foundation.sh"
+	"installs/base/install-shell.sh"
+	"installs/base/install-tools.sh"
+	"installs/toolchains/install-dotnet.sh"
+	"installs/toolchains/install-golang.sh"
+	"installs/toolchains/install-nodejs.sh"
+	"installs/toolchains/install-python.sh"
+	"installs/toolchains/install-typescript.sh"
 )
 
 declare -a IMAGE_ORDER=()
@@ -296,11 +304,13 @@ select_all_images_for_change() {
 image_matches_changed_file() {
 	local image_name="$1"
 	local relative_path="$2"
-	local context_prefix devcontainer_path containerfile_path
+	local context_prefix devcontainer_path containerfile_path image_dir
 
-	context_prefix="${IMAGE_CONTEXT[$image_name]}/"
+	context_prefix="${IMAGE_CONTEXT[$image_name]}"
+	[[ "$context_prefix" == "." ]] && context_prefix="" || context_prefix="${context_prefix%/}/"
 	devcontainer_path="${IMAGE_DEVCONTAINER[$image_name]}"
-	containerfile_path="${IMAGE_CONTEXT[$image_name]}/${IMAGE_CONTAINERFILE[$image_name]}"
+	containerfile_path="${context_prefix}${IMAGE_CONTAINERFILE[$image_name]}"
+	image_dir="${containerfile_path%/Containerfile}"
 
 	if [[ "$relative_path" == "$containerfile_path" ]]; then
 		return 0
@@ -310,7 +320,7 @@ image_matches_changed_file() {
 		return 0
 	fi
 
-	if [[ "$relative_path" == "$context_prefix"* ]]; then
+	if [[ "$relative_path" == "$image_dir/"* ]]; then
 		return 0
 	fi
 

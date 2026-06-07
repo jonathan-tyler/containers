@@ -10,7 +10,7 @@ FROM base AS python-dev
 
 USER root
 
-COPY scripts/toolchains/install-python.sh /tmp/install-python.sh
+COPY installs/toolchains/install-python.sh /tmp/install-python.sh
 
 RUN chmod +x /tmp/install-python.sh \
     && /tmp/install-python.sh \

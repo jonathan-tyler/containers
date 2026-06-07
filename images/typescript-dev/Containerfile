@@ -10,7 +10,7 @@ FROM base AS typescript-dev
 
 USER root
 
-COPY scripts/toolchains/install-typescript.sh /tmp/install-typescript.sh
+COPY installs/toolchains/install-typescript.sh /tmp/install-typescript.sh
 
 RUN chmod +x /tmp/install-typescript.sh \
     && /tmp/install-typescript.sh \

@@ -18,7 +18,7 @@ ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 ENV NUGET_CLI_TELEMETRY_OPTOUT=1
 ENV POWERSHELL_TELEMETRY_OPTOUT=1
 
-COPY scripts/toolchains/install-dotnet.sh /tmp/install-dotnet.sh
+COPY installs/toolchains/install-dotnet.sh /tmp/install-dotnet.sh
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \

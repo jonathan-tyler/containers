@@ -1,16 +1,16 @@
-# Dev Containers
+# Containers
 
-Reusable Podman-based development container assets and one host-run SQL Server asset.
+Container images, automation, templates, and samples
 
 ## Resources
 - 📦 [local-registry](./local-registry): local registry install and systemd bootstrap.
-- 🧱 [dev-base](./containers/images/dev-base): base image and local registry bootstrap.
-- 🛠️ [monolith-dev](./containers/images/monolith-dev): polyglot devcontainer image for mixed workspace development.
-- 🐹 [golang-dev](./containers/images/golang-dev): Go devcontainer image.
-- 🟢 [javascript-dev](./containers/images/javascript-dev): JavaScript devcontainer image.
-- 🐍 [python-dev](./containers/images/python-dev): Python devcontainer image.
-- 🔷 [typescript-dev](./containers/images/typescript-dev): TypeScript devcontainer image layered on the JavaScript dev image.
-- 🔷 [dotnet-dev](./containers/images/dotnet-dev): .NET devcontainer image.
+- 🧱 [dev-base](./images/dev-base): base image and local registry bootstrap.
+- 🛠️ [monolith-dev](./images/monolith-dev): polyglot devcontainer image for mixed workspace development.
+- 🐹 [golang-dev](./images/golang-dev): Go devcontainer image.
+- 🟢 [javascript-dev](./images/javascript-dev): JavaScript devcontainer image.
+- 🐍 [python-dev](./images/python-dev): Python devcontainer image.
+- 🔷 [typescript-dev](./images/typescript-dev): TypeScript devcontainer image layered on the JavaScript dev image.
+- 🔷 [dotnet-dev](./images/dotnet-dev): .NET devcontainer image.
 - 🗄️ [sidecars/mssql-dev](./sidecars/mssql-dev): host-managed SQL Server container.
 - 📨 [sidecars/smtp4dev](./sidecars/smtp4dev): host-managed smtp4dev container.
 
