@@ -1,0 +1,28 @@
+{
+  "id": "opencode-tui",
+  "version": "0.1.0",
+  "name": "OpenCode TUI",
+  "documentationURL": "https://opencode.ai/docs/tui/",
+  "description": "Install the OpenCode terminal UI without applying user config.",
+  "options": {
+    "VERSION": {
+      "type": "string",
+      "default": "latest",
+      "description": "OpenCode version to install. Use 'latest' for the current release."
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes the OpenCode CLI and TUI. Run `opencode` in a terminal to start the interactive interface in the current workspace."
+          }
+        ]
+      }
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}
