@@ -1,0 +1,42 @@
+{
+  "id": "podman-in-podman",
+  "version": "0.1.0",
+  "name": "Podman (Podman-in-Podman)",
+  "documentationURL": "https://www.redhat.com/en/blog/podman-inside-container",
+  "description": "Run Podman inside the dev container with isolated storage volumes and container-friendly Podman defaults.",
+  "entrypoint": "/usr/local/share/podman-in-podman-init.sh",
+  "privileged": true,
+  "containerEnv": {
+    "_CONTAINERS_USERNS_CONFIGURED": "",
+    "BUILDAH_ISOLATION": "chroot"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-containers"
+      ],
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes Podman pre-installed and configured for running nested containers inside the dev container with isolated storage volumes."
+          }
+        ]
+      }
+    }
+  },
+  "mounts": [
+    {
+      "source": "pinp-var-lib-containers-${devcontainerId}",
+      "target": "/var/lib/containers",
+      "type": "volume"
+    },
+    {
+      "source": "pinp-podman-home-${devcontainerId}",
+      "target": "/home/podman/.local/share/containers",
+      "type": "volume"
+    }
+  ],
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}

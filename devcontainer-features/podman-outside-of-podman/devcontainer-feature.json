@@ -1,0 +1,42 @@
+{
+  "id": "podman-outside-of-podman",
+  "version": "0.1.0",
+  "name": "Podman (Podman-outside-of-Podman)",
+  "documentationURL": "https://www.redhat.com/en/blog/podman-inside-container",
+  "description": "Reuse the host Podman socket from a dev container by installing the Podman CLI and exporting the mounted socket as CONTAINER_HOST.",
+  "options": {
+    "socketPath": {
+      "type": "string",
+      "default": "/run/user-host/podman/podman.sock",
+      "description": "Path where the host Podman socket is mounted inside the container. Override the mount in devcontainer.json if your host socket lives elsewhere."
+    }
+  },
+  "entrypoint": "/usr/local/share/podman-outside-of-podman-init.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-containers"
+      ],
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes the Podman CLI pre-installed and points it at a Podman socket mounted from the host machine."
+          }
+        ]
+      }
+    }
+  },
+  "mounts": [
+    {
+      "source": "${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock",
+      "target": "/run/user-host/podman/podman.sock",
+      "type": "bind"
+    }
+  ],
+  "securityOpt": [
+    "label=disable"
+  ],
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}
