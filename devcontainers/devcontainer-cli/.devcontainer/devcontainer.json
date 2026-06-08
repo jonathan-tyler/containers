@@ -1,0 +1,12 @@
+{
+  "name": "devcontainer-cli",
+  "image": "registry.access.redhat.com/hi/nodejs:latest",
+  "containerUser": "65532",
+  "remoteUser": "65532",
+  "updateRemoteUserUID": false,
+  "features": {
+    "../../../devcontainer-features/podman-outside-of-podman": {},
+    "../../../devcontainer-features/devcontainer-cli": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}

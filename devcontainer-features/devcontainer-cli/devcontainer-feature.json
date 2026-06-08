@@ -1,0 +1,31 @@
+{
+  "id": "devcontainer-cli",
+  "version": "0.1.0",
+  "name": "Dev Container CLI",
+  "documentationURL": "https://code.visualstudio.com/docs/devcontainers/devcontainer-cli",
+  "description": "Install the Dev Container CLI for Podman-backed devcontainer workflows.",
+  "options": {
+    "VERSION": {
+      "type": "string",
+      "default": "latest",
+      "description": "Dev Container CLI version to install. Use 'latest' for the current npm release."
+    }
+  },
+  "dependsOn": {
+    "./devcontainer-features/podman-outside-of-podman": {}
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes the Dev Container CLI and is intended to use Podman through the podman-outside-of-podman feature. Prefer `devcontainer --docker-path podman` when scripting container lifecycle commands."
+          }
+        ]
+      }
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}
