@@ -29,3 +29,7 @@ Leaking the host Podman socket into a dev container gives processes inside that 
 ## OS Support
 
 This feature currently targets Fedora and RHEL-family images with `dnf`.
+
+## Reference
+
+- https://www.redhat.com/en/blog/podman-inside-container
