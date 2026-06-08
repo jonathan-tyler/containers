@@ -1,0 +1,110 @@
+{
+  "id": "human-utils",
+  "version": "0.1.0",
+  "name": "Human Utilities",
+  "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
+  "description": "Install interactive shell and terminal utilities without applying user config.",
+  "options": {
+    "INSTALL_ZSH": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install zsh?"
+    },
+    "SET_ZSH_AS_DEFAULT_SHELL": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set zsh as the default shell for the configured user?"
+    },
+    "INSTALL_ZSH_AUTOSUGGESTIONS": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install the zsh-autosuggestions plugin archive into the target user's data directory?"
+    },
+    "INSTALL_ZSH_VI_MODE": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install the zsh-vi-mode plugin archive into the target user's data directory?"
+    },
+    "INSTALL_STARSHIP": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install starship?"
+    },
+    "INSTALL_TMUX": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install tmux?"
+    },
+    "INSTALL_NEOVIM": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install Neovim?"
+    },
+    "INSTALL_EZA": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install eza?"
+    },
+    "INSTALL_YAZI": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install yazi and ya?"
+    },
+    "INSTALL_ZOXIDE": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install zoxide?"
+    },
+    "INSTALL_SESH": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install sesh?"
+    },
+    "INSTALL_FZF": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install fzf?"
+    },
+    "INSTALL_DELTA": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install delta?"
+    },
+    "INSTALL_DIFFTASTIC": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install difftastic?"
+    },
+    "INSTALL_LAZYGIT": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install lazygit?"
+    },
+    "USERNAME": {
+      "type": "string",
+      "proposals": [
+        "automatic",
+        "vscode",
+        "node",
+        "codespace",
+        "root"
+      ],
+      "default": "automatic",
+      "description": "User whose home directory should receive plugin infrastructure."
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes human-oriented shell and terminal utilities such as zsh, Neovim, tmux, yazi, lazygit, and related helpers, but it does not install personal configuration files."
+          }
+        ]
+      }
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}
