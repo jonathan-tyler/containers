@@ -8,6 +8,11 @@ INSTALL_ZSH_AUTOSUGGESTIONS="${INSTALL_ZSH_AUTOSUGGESTIONS:-${INSTALLZSHAUTOSUGG
 INSTALL_ZSH_VI_MODE="${INSTALL_ZSH_VI_MODE:-${INSTALLZSHVIMODE:-true}}"
 INSTALL_STARSHIP="${INSTALL_STARSHIP:-${INSTALLSTARSHIP:-true}}"
 INSTALL_TMUX="${INSTALL_TMUX:-${INSTALLTMUX:-true}}"
+INSTALL_TREE="${INSTALL_TREE:-${INSTALLTREE:-false}}"
+INSTALL_MAN_DB="${INSTALL_MAN_DB:-${INSTALLMANDB:-false}}"
+INSTALL_MAN_PAGES="${INSTALL_MAN_PAGES:-${INSTALLMANPAGES:-false}}"
+INSTALL_BAT="${INSTALL_BAT:-${INSTALLBAT:-false}}"
+INSTALL_BTOP="${INSTALL_BTOP:-${INSTALLBTOP:-false}}"
 INSTALL_NEOVIM="${INSTALL_NEOVIM:-${INSTALLNEOVIM:-true}}"
 INSTALL_EZA="${INSTALL_EZA:-${INSTALLEZA:-true}}"
 INSTALL_YAZI="${INSTALL_YAZI:-${INSTALLYAZI:-true}}"
@@ -223,7 +228,7 @@ if ! command -v dnf >/dev/null 2>&1; then
 fi
 
 dnf -y update
-install_packages ca-certificates curl gzip shadow-utils tar unzip
+install_packages curl shadow-utils
 
 resolved_user="$(resolve_username)"
 resolved_home="$(user_home "${resolved_user}")"
@@ -241,6 +246,32 @@ fi
 
 if is_true "${INSTALL_TMUX}"; then
     install_packages tmux
+fi
+
+human_package_list=()
+
+if is_true "${INSTALL_TREE}"; then
+    human_package_list+=(tree)
+fi
+
+if is_true "${INSTALL_MAN_DB}"; then
+    human_package_list+=(man-db)
+fi
+
+if is_true "${INSTALL_MAN_PAGES}"; then
+    human_package_list+=(man-pages)
+fi
+
+if is_true "${INSTALL_BAT}"; then
+    human_package_list+=(bat)
+fi
+
+if is_true "${INSTALL_BTOP}"; then
+    human_package_list+=(btop)
+fi
+
+if [ "${#human_package_list[@]}" -gt 0 ]; then
+    install_packages "${human_package_list[@]}"
 fi
 
 if is_true "${SET_ZSH_AS_DEFAULT_SHELL}"; then

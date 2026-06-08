@@ -1,0 +1,24 @@
+{
+  "id": "agent-utils",
+  "version": "0.1.0",
+  "name": "Agent Utilities",
+  "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
+  "description": "Install local analysis and formatting utilities for AI-agent workflows.",
+  "dependsOn": {
+    "./devcontainer-features/core-utils": {}
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes local analysis and formatting tools for agent workflows, such as yq, shellcheck, shfmt, yamllint, patchutils, and diffstat."
+          }
+        ]
+      }
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}

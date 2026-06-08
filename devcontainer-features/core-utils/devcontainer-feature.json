@@ -1,0 +1,21 @@
+{
+  "id": "core-utils",
+  "version": "0.1.0",
+  "name": "Core Utilities",
+  "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
+  "description": "Install shared local workspace utilities for both human and agent workflows.",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes a small shared baseline of local workspace utilities for both human and agent workflows, such as git, jq, ripgrep, archive tools, and standard text processing commands."
+          }
+        ]
+      }
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}

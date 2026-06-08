@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "name": "Human Utilities",
   "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
-  "description": "Install interactive shell and terminal utilities without applying user config.",
+  "description": "Install interactive shell and terminal utilities on top of the shared core-utils baseline without applying user config.",
+  "dependsOn": {
+    "./devcontainer-features/core-utils": {}
+  },
   "options": {
     "INSTALL_ZSH": {
       "type": "boolean",
@@ -34,6 +37,31 @@
       "type": "boolean",
       "default": true,
       "description": "Install tmux?"
+    },
+    "INSTALL_TREE": {
+      "type": "boolean",
+      "default": false,
+      "description": "Install tree?"
+    },
+    "INSTALL_MAN_DB": {
+      "type": "boolean",
+      "default": false,
+      "description": "Install man-db?"
+    },
+    "INSTALL_MAN_PAGES": {
+      "type": "boolean",
+      "default": false,
+      "description": "Install man-pages?"
+    },
+    "INSTALL_BAT": {
+      "type": "boolean",
+      "default": false,
+      "description": "Install bat?"
+    },
+    "INSTALL_BTOP": {
+      "type": "boolean",
+      "default": false,
+      "description": "Install btop?"
     },
     "INSTALL_NEOVIM": {
       "type": "boolean",
@@ -98,7 +126,7 @@
       "settings": {
         "github.copilot.chat.codeGeneration.instructions": [
           {
-            "text": "This dev container includes human-oriented shell and terminal utilities such as zsh, Neovim, tmux, yazi, lazygit, and related helpers, but it does not install personal configuration files."
+            "text": "This dev container includes human-oriented shell and terminal utilities such as zsh, Neovim, tmux, yazi, lazygit, tree, bat, and related helpers, but it does not install personal configuration files."
           }
         ]
       }
