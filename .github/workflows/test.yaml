@@ -48,4 +48,4 @@ jobs:
         run: npm install -g @devcontainers/cli
 
       - name: Test ${{ matrix.feature }}
-        run: devcontainer features test --skip-scenarios --skip-duplicated --base-image fedora:42 --remote-user root -f ${{ matrix.feature }} .
+        run: devcontainer features test --project-folder . --skip-scenarios --skip-duplicated --base-image fedora:42 --remote-user root -f ${{ matrix.feature }}
