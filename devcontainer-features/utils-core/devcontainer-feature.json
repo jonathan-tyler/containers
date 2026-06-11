@@ -1,5 +1,5 @@
 {
-  "id": "core-utils",
+  "id": "utils-core",
   "version": "0.1.0",
   "name": "Core Utilities",
   "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",

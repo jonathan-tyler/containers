@@ -1,11 +1,11 @@
 {
-  "id": "agent-utils",
+  "id": "utils-agent",
   "version": "0.1.0",
   "name": "Agent Utilities",
   "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
   "description": "Install local analysis and formatting utilities for AI-agent workflows.",
   "dependsOn": {
-    "./devcontainer-features/core-utils": {}
+    "./devcontainer-features/utils-core": {}
   },
   "customizations": {
     "vscode": {

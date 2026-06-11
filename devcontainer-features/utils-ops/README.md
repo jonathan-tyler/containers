@@ -1,4 +1,4 @@
-# Ops Utilities (`ops-utils`)
+# Ops Utilities (`utils-ops`)
 
 Install network, remote access, and low-level diagnostic utilities for operational workflows.
 
@@ -6,8 +6,8 @@ Install network, remote access, and low-level diagnostic utilities for operation
 
 ```json
 "features": {
-  "./devcontainer-features/human-utils": {},
-  "./devcontainer-features/ops-utils": {}
+  "./devcontainer-features/utils-human": {},
+  "./devcontainer-features/utils-ops": {}
 }
 ```
 
@@ -28,8 +28,8 @@ Install network, remote access, and low-level diagnostic utilities for operation
 
 ## Notes
 
-- This feature depends on `core-utils` for the shared local workspace baseline.
-- The package set is intentionally more operational and higher trust than `human-utils` or `agent-utils`.
+- This feature depends on `utils-core` for the shared local workspace baseline.
+- The package set is intentionally more operational and higher trust than `utils-human` or `utils-agent`.
 
 ## OS Support
 

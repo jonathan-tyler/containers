@@ -1,12 +1,12 @@
-# Human Utilities (`human-utils`)
+# Human Utilities (`utils-human`)
 
-Install interactive shell and terminal utilities on top of the shared `core-utils` baseline without applying user config.
+Install interactive shell and terminal utilities on top of the shared `utils-core` baseline without applying user config.
 
 ## Example Usage
 
 ```json
 "features": {
-  "./devcontainer-features/human-utils": {}
+  "./devcontainer-features/utils-human": {}
 }
 ```
 
@@ -38,7 +38,7 @@ Install interactive shell and terminal utilities on top of the shared `core-util
 
 ## Notes
 
-- This feature depends on `core-utils` for the shared local workspace baseline.
+- This feature depends on `utils-core` for the shared local workspace baseline.
 - This feature follows the tool list and plugin paths from `/home/him/setup/install-apps`, but leaves shell, editor, and tool configuration out of scope.
 - The zsh plugins are installed into `${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins` for the configured user so later dotfiles can source them without re-downloading.
 - `zsh-autosuggestions` and `zsh-vi-mode` are installed as plugin infrastructure only. No `.zshrc`, tmux config, Neovim config, yazi config, or lazygit config is installed.

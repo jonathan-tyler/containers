@@ -1,4 +1,4 @@
-# Core Utilities (`core-utils`)
+# Core Utilities (`utils-core`)
 
 Install shared local workspace utilities for both human and agent workflows.
 
@@ -6,7 +6,7 @@ Install shared local workspace utilities for both human and agent workflows.
 
 ```json
 "features": {
-  "./devcontainer-features/core-utils": {}
+  "./devcontainer-features/utils-core": {}
 }
 ```
 
@@ -25,7 +25,7 @@ Install shared local workspace utilities for both human and agent workflows.
 
 ## Notes
 
-- This feature is the shared prerequisite for `human-utils`, `agent-utils`, and `ops-utils`.
+- This feature is the shared prerequisite for `utils-human`, `utils-agent`, and `utils-ops`.
 - The package set stays focused on local workspace inspection and basic file manipulation rather than network or admin tooling.
 
 ## OS Support

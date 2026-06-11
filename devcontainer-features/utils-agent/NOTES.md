@@ -1,7 +1,7 @@
 ## Notes
 
 - This feature is intended for local code analysis and rewrite workflows.
-- It avoids remote-access and host-diagnostic tools, which are reserved for `ops-utils`.
+- It avoids remote-access and host-diagnostic tools, which are reserved for `utils-ops`.
 
 ## Limitations
 

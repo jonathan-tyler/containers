@@ -1,4 +1,4 @@
-# Agent Utilities (`agent-utils`)
+# Agent Utilities (`utils-agent`)
 
 Install local analysis and formatting utilities for AI-agent workflows.
 
@@ -6,8 +6,8 @@ Install local analysis and formatting utilities for AI-agent workflows.
 
 ```json
 "features": {
-  "./devcontainer-features/human-utils": {},
-  "./devcontainer-features/agent-utils": {}
+  "./devcontainer-features/utils-human": {},
+  "./devcontainer-features/utils-agent": {}
 }
 ```
 
@@ -22,7 +22,7 @@ Install local analysis and formatting utilities for AI-agent workflows.
 
 ## Notes
 
-- This feature depends on `core-utils` for the shared local workspace baseline.
+- This feature depends on `utils-core` for the shared local workspace baseline.
 - The package set is aimed at local analysis, linting, and formatting rather than shell comfort or network operations.
 
 ## OS Support

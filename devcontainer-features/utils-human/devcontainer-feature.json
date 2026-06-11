@@ -1,11 +1,11 @@
 {
-  "id": "human-utils",
+  "id": "utils-human",
   "version": "0.1.0",
   "name": "Human Utilities",
   "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
-  "description": "Install interactive shell and terminal utilities on top of the shared core-utils baseline without applying user config.",
+  "description": "Install interactive shell and terminal utilities on top of the shared utils-core baseline without applying user config.",
   "dependsOn": {
-    "./devcontainer-features/core-utils": {}
+    "./devcontainer-features/utils-core": {}
   },
   "options": {
     "INSTALL_ZSH": {
