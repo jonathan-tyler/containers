@@ -35,8 +35,5 @@
       "target": "/home/podman/.local/share/containers",
       "type": "volume"
     }
-  ],
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
   ]
 }

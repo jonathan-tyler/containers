@@ -53,4 +53,3 @@ This feature currently targets Fedora and RHEL-family images with `dnf`.
 
 - `/home/him/setup/install-apps`
 - `/home/him/.local/share/chezmoi/.chezmoiexternal.toml.tmpl`
-- `https://github.com/devcontainers/features/tree/main/src/common-utils`

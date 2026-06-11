@@ -2,7 +2,6 @@
   "id": "utils-core",
   "version": "0.1.0",
   "name": "Core Utilities",
-  "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
   "description": "Install shared local workspace utilities for both human and agent workflows.",
   "customizations": {
     "vscode": {
@@ -14,8 +13,5 @@
         ]
       }
     }
-  },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  }
 }

@@ -2,7 +2,6 @@
   "id": "utils-ops",
   "version": "0.1.0",
   "name": "Ops Utilities",
-  "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
   "description": "Install network, remote access, and low-level diagnostic utilities for operational workflows.",
   "dependsOn": {
     "ghcr.io/jonathan-tyler/containers/utils-core:0": {}
@@ -17,8 +16,5 @@
         ]
       }
     }
-  },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  }
 }

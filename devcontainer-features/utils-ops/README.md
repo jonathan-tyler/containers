@@ -36,5 +36,3 @@ Install network, remote access, and low-level diagnostic utilities for operation
 This feature currently targets Fedora and RHEL-family images with `dnf`.
 
 ## Reference
-
-- https://github.com/devcontainers/features/tree/main/src/common-utils

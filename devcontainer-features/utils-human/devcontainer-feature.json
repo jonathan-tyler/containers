@@ -2,7 +2,6 @@
   "id": "utils-human",
   "version": "0.1.0",
   "name": "Human Utilities",
-  "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
   "description": "Install interactive shell and terminal utilities on top of the shared utils-core baseline without applying user config.",
   "dependsOn": {
     "ghcr.io/jonathan-tyler/containers/utils-core:0": {}
@@ -131,8 +130,5 @@
         ]
       }
     }
-  },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils"
-  ]
+  }
 }

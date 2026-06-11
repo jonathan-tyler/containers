@@ -30,5 +30,3 @@ Install local analysis and formatting utilities for AI-agent workflows.
 This feature currently targets Fedora and RHEL-family images with `dnf`.
 
 ## Reference
-
-- https://github.com/devcontainers/features/tree/main/src/common-utils

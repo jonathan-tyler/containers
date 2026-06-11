@@ -33,5 +33,3 @@ Install shared local workspace utilities for both human and agent workflows.
 This feature currently targets Fedora and RHEL-family images with `dnf`.
 
 ## Reference
-
-- https://github.com/devcontainers/features/tree/main/src/common-utils
