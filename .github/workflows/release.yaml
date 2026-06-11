@@ -1,0 +1,31 @@
+name: Release devcontainer features
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - devcontainer-features/**
+      - .github/workflows/release.yaml
+
+jobs:
+  publish:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish Features
+        uses: devcontainers/action@v1
+        with:
+          publish-features: "true"
+          base-path-to-features: "./devcontainer-features"
+          features-namespace: "jonathan-tyler/containers"
+          generate-docs: "false"
+          oci-registry: ghcr.io
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

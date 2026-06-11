@@ -5,7 +5,7 @@
   "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
   "description": "Install interactive shell and terminal utilities on top of the shared utils-core baseline without applying user config.",
   "dependsOn": {
-    "./devcontainer-features/utils-core": {}
+    "ghcr.io/jonathan-tyler/containers/utils-core:0": {}
   },
   "options": {
     "INSTALL_ZSH": {

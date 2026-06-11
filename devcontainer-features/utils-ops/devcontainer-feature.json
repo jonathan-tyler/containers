@@ -5,7 +5,7 @@
   "documentationURL": "https://github.com/devcontainers/features/tree/main/src/common-utils",
   "description": "Install network, remote access, and low-level diagnostic utilities for operational workflows.",
   "dependsOn": {
-    "./devcontainer-features/utils-core": {}
+    "ghcr.io/jonathan-tyler/containers/utils-core:0": {}
   },
   "customizations": {
     "vscode": {

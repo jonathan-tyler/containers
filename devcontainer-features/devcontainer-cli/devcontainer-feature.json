@@ -12,7 +12,7 @@
     }
   },
   "dependsOn": {
-    "./devcontainer-features/podman-outside-of-podman": {}
+    "ghcr.io/jonathan-tyler/containers/podman-outside-of-podman:0": {}
   },
   "customizations": {
     "vscode": {
