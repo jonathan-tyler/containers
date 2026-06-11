@@ -32,9 +32,10 @@ jobs:
           - opencode-server
           - opencode-tui
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       XDG_RUNTIME_DIR: /tmp/xdg
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Prepare feature test layout
         run: |
