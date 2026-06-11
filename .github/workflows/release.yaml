@@ -1,28 +1,25 @@
-name: Release devcontainer features
+name: "Release dev container features"
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-    paths:
-      - devcontainer-features/**
-      - .github/workflows/release.yaml
 
 jobs:
-  publish:
+  deploy:
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     permissions:
-      contents: write
       packages: write
+      contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - name: Install latest devcontainer CLI
-        run: npm install -g @devcontainers/cli
-
-      - name: Publish Features
-        run: devcontainer features publish ./devcontainer-features --namespace jonathan-tyler/containers --registry ghcr.io
+      - name: "Publish"
+        uses: devcontainers/action@v1
+        with:
+          publish-features: "true"
+          base-path-to-features: "./devcontainer-features"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
