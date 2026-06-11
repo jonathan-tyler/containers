@@ -32,7 +32,7 @@ jobs:
           - opencode-server
           - opencode-tui
     env:
-      XDG_RUNTIME_DIR: ${{ runner.temp }}/xdg
+      XDG_RUNTIME_DIR: /tmp/xdg
     steps:
       - uses: actions/checkout@v4
 
