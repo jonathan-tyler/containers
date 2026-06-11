@@ -13,21 +13,16 @@ jobs:
   publish:
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     permissions:
       contents: write
       packages: write
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install latest devcontainer CLI
+        run: npm install -g @devcontainers/cli
+
       - name: Publish Features
-        uses: devcontainers/action@v1
-        with:
-          publish-features: "true"
-          base-path-to-features: "./devcontainer-features"
-          features-namespace: "jonathan-tyler/containers"
-          generate-docs: "false"
-          oci-registry: ghcr.io
+        run: devcontainer features publish ./devcontainer-features --namespace jonathan-tyler/containers --registry ghcr.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
