@@ -1,37 +1,18 @@
 {
     "name": "${localWorkspaceFolderBasename}-dev",
-    "build": {
-        "dockerfile": "base/Containerfile",
-        "context": "."
-    },
+    "image": "registry.access.redhat.com/hi/core-runtime:latest-builder",
     "remoteUser": "developer",
     "containerUser": "developer",
     "updateRemoteUserUID": true,
     "runArgs": [
         "--name=${localWorkspaceFolderBasename}-dev",
         "--userns=keep-id",
+        "--device=/dev/fuse",
         "--security-opt=no-new-privileges"
     ],
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
-    "containerEnv": {
-        "CONTAINER_HOST": "unix:///run/user-host/podman/podman.sock",
-        "DOCKER_HOST": "unix:///run/user-host/podman/podman.sock"
+    "features": {
+        "../devcontainer-features/podman-in-podman": {}
     },
-    "mounts": [
-        // ~/my/kb
-        "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb",
-        // podman
-        "type=bind,source=${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock,target=/run/user-host/podman/podman.sock"
-    ],
-    "customizations": {
-        "vscode": {
-            "settings": {
-                "markdownlint.run": "onSave"
-            },
-            "extensions": [
-                "davidanson.vscode-markdownlint"
-            ]
-        }
-    }
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached"
 }
