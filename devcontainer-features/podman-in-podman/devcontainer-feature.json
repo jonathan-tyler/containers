@@ -11,7 +11,7 @@
   },
   "securityOpt": [
     "label=disable"
-  },
+  ],
   "mounts": [
     {
       "source": "pinp-var-lib-containers-${devcontainerId}",
