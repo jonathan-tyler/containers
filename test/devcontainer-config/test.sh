@@ -5,7 +5,7 @@ set -euo pipefail
 config=".devcontainer/devcontainer.json"
 
 jq -e '.image == "registry.access.redhat.com/hi/core-runtime:latest-builder"' "${config}" >/dev/null
-jq -e '.remoteUser == "developer" and .containerUser == "developer" and .updateRemoteUserUID == true' "${config}" >/dev/null
+jq -e '.remoteUser == "65532" and .containerUser == "65532" and .updateRemoteUserUID == false' "${config}" >/dev/null
 jq -e '.features == {"../devcontainer-features/podman-in-podman": {}}' "${config}" >/dev/null
 jq -e 'has("build") | not' "${config}" >/dev/null
 jq -e 'has("containerEnv") | not' "${config}" >/dev/null

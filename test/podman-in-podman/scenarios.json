@@ -1,0 +1,10 @@
+{
+  "uid-65532": {
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "podman-in-podman": {}
+    }
+  }
+}

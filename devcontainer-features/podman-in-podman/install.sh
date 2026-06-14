@@ -3,6 +3,7 @@
 set -e
 
 USERNAME="${USERNAME:-${_REMOTE_USER:-automatic}}"
+PREFERRED_UID="65532"
 PODMAN_USER="podman"
 PODMAN_SUBID_START="100000"
 REMOTE_USER_SUBID_START="165536"
@@ -12,11 +13,43 @@ err() {
     echo "(!) $*" >&2
 }
 
+get_username_for_uid() {
+    local uid="$1"
+
+    getent passwd "${uid}" | cut -d: -f1
+}
+
 resolve_username() {
     local candidate="${USERNAME}"
 
-    if [ "${candidate}" = "auto" ] || [ "${candidate}" = "automatic" ]; then
-        for current_user in vscode node codespace "$(awk -F: '$3 == 1000 { print $1 }' /etc/passwd)"; do
+    if [ "${candidate}" = "none" ]; then
+        echo root
+        return
+    fi
+
+    if [ "${candidate}" = "${PREFERRED_UID}" ]; then
+        preferred_user="$(get_username_for_uid "${PREFERRED_UID}")"
+        if [ -n "${preferred_user}" ]; then
+            echo "${preferred_user}"
+            return
+        fi
+    fi
+
+    if [ "${candidate}" = "auto" ] || [ "${candidate}" = "automatic" ] || [ "${candidate}" = "root" ]; then
+        local preferred_user
+
+        preferred_user="$(get_username_for_uid "${PREFERRED_UID}")"
+        if [ -n "${preferred_user}" ]; then
+            echo "${preferred_user}"
+            return
+        fi
+
+        if [ -n "${_REMOTE_USER:-}" ] && [ "${_REMOTE_USER}" != "root" ] && id -u "${_REMOTE_USER}" >/dev/null 2>&1; then
+            echo "${_REMOTE_USER}"
+            return
+        fi
+
+        for current_user in devcontainer vscode node codespace "$(awk -F: '$3 == 1000 { print $1 }' /etc/passwd)"; do
             if [ -n "${current_user}" ] && id -u "${current_user}" >/dev/null 2>&1; then
                 echo "${current_user}"
                 return
@@ -28,6 +61,12 @@ resolve_username() {
     fi
 
     if [ "${candidate}" = "none" ] || ! id -u "${candidate}" >/dev/null 2>&1; then
+        preferred_user="$(get_username_for_uid "${candidate}")"
+        if [ -n "${preferred_user}" ]; then
+            echo "${preferred_user}"
+            return
+        fi
+
         echo root
         return
     fi

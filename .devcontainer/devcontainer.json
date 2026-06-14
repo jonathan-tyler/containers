@@ -1,9 +1,9 @@
 {
     "name": "${localWorkspaceFolderBasename}-dev",
     "image": "registry.access.redhat.com/hi/core-runtime:latest-builder",
-    "remoteUser": "developer",
-    "containerUser": "developer",
-    "updateRemoteUserUID": true,
+    "remoteUser": "65532",
+    "containerUser": "65532",
+    "updateRemoteUserUID": false,
     "runArgs": [
         "--name=${localWorkspaceFolderBasename}-dev",
         "--userns=keep-id",
