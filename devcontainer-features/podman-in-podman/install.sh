@@ -5,9 +5,7 @@ set -e
 USERNAME="${USERNAME:-${_REMOTE_USER:-automatic}}"
 PREFERRED_UID="65532"
 PODMAN_USER="podman"
-PODMAN_SUBID_START="100000"
-REMOTE_USER_SUBID_START="165536"
-SUBID_COUNT="65536"
+SUBID_RANGE_MAX="65536"
 FEDORA_RELEASE="42"
 FEDORA_REPO_PRIORITY="99"
 
@@ -26,10 +24,6 @@ is_numeric_uid() {
         ''|*[!0-9]*) return 1 ;;
         *) return 0 ;;
     esac
-}
-
-can_use_userns_mapping() {
-    [ -u /usr/sbin/newuidmap ] && [ -u /usr/sbin/newgidmap ]
 }
 
 resolve_username() {
@@ -102,6 +96,37 @@ ensure_subids() {
     if ! grep -qE "^${user_name}:" "${file_path}"; then
         printf '%s:%s:%s\n' "${user_name}" "${start}" "${count}" >>"${file_path}"
     fi
+}
+
+replace_rootless_subids() {
+    local user_name="$1"
+    local file_path="$2"
+    local user_id
+    local tmp_file
+
+    if id -u "${user_name}" >/dev/null 2>&1; then
+        user_id="$(id -u "${user_name}")"
+    elif is_numeric_uid "${user_name}"; then
+        user_id="${user_name}"
+    else
+        err "Unable to determine UID for ${user_name}"
+        exit 1
+    fi
+
+    tmp_file="$(mktemp)"
+
+    touch "${file_path}"
+    grep -vE "^${user_name}:" "${file_path}" >"${tmp_file}" || true
+
+    if [ "${user_id}" -le 1 ] || [ "${user_id}" -gt "${SUBID_RANGE_MAX}" ]; then
+        printf '%s:%s:%s\n' "${user_name}" 1 "${SUBID_RANGE_MAX}" >>"${tmp_file}"
+    else
+        printf '%s:%s:%s\n' "${user_name}" 1 "$((user_id - 1))" >>"${tmp_file}"
+        printf '%s:%s:%s\n' "${user_name}" "$((user_id + 1))" "$((SUBID_RANGE_MAX - user_id))" >>"${tmp_file}"
+    fi
+
+    cat "${tmp_file}" >"${file_path}"
+    rm -f "${tmp_file}"
 }
 
 write_fedora_repos() {
@@ -209,12 +234,12 @@ EOF
 
 chmod +x /usr/local/share/podman-in-podman-init.sh
 
-ensure_subids "${PODMAN_USER}" "${PODMAN_SUBID_START}" "${SUBID_COUNT}" /etc/subuid
-ensure_subids "${PODMAN_USER}" "${PODMAN_SUBID_START}" "${SUBID_COUNT}" /etc/subgid
+replace_rootless_subids "${PODMAN_USER}" /etc/subuid
+replace_rootless_subids "${PODMAN_USER}" /etc/subgid
 
 if [ "${resolved_user}" != "root" ] && [ "${resolved_user}" != "${PODMAN_USER}" ]; then
-    ensure_subids "${resolved_user}" "${REMOTE_USER_SUBID_START}" "${SUBID_COUNT}" /etc/subuid
-    ensure_subids "${resolved_user}" "${REMOTE_USER_SUBID_START}" "${SUBID_COUNT}" /etc/subgid
+    replace_rootless_subids "${resolved_user}" /etc/subuid
+    replace_rootless_subids "${resolved_user}" /etc/subgid
 fi
 
 chown -R "${PODMAN_USER}:${PODMAN_USER}" "/home/${PODMAN_USER}"
