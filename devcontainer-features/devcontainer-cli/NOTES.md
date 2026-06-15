@@ -1,6 +1,6 @@
 ## Notes
 
-- This feature installs only the `devcontainer` CLI and leaves Podman socket wiring to `podman-outside-of-podman`.
+- This feature installs only the `devcontainer` CLI and leaves nested Podman setup to `podman-in-podman`.
 - The dependency is modeled in feature metadata, but the example configuration also lists both features explicitly to keep local path usage unambiguous.
 
 ## Limitations

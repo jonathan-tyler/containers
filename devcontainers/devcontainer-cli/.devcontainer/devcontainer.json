@@ -5,7 +5,7 @@
   "remoteUser": "65532",
   "updateRemoteUserUID": false,
   "features": {
-    "ghcr.io/jonathan-tyler/containers/podman-outside-of-podman:0": {},
+    "ghcr.io/jonathan-tyler/containers/podman-in-podman:0": {},
     "ghcr.io/jonathan-tyler/containers/devcontainer-cli:0": {}
   },
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"

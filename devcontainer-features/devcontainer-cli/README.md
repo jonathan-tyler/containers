@@ -6,7 +6,7 @@ Install the Dev Container CLI for Podman-backed devcontainer workflows.
 
 ```json
 "features": {
-  "ghcr.io/jonathan-tyler/containers/podman-outside-of-podman:0": {},
+  "ghcr.io/jonathan-tyler/containers/podman-in-podman:0": {},
   "ghcr.io/jonathan-tyler/containers/devcontainer-cli:0": {}
 }
 ```
@@ -19,7 +19,7 @@ Install the Dev Container CLI for Podman-backed devcontainer workflows.
 
 ## Notes
 
-- This feature is intended to be used with `podman-outside-of-podman` so `devcontainer` commands can talk to the mounted host Podman socket.
+- This feature is intended to be used with `podman-in-podman` so `devcontainer` commands can run against the nested Podman engine inside the dev container.
 - The installer uses the npm package `@devcontainers/cli`.
 - In Podman-based workflows, use `devcontainer --docker-path podman` unless your environment already aliases Docker-compatible tooling appropriately.
 
