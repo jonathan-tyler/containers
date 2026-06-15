@@ -8,6 +8,7 @@
 
 ## Limitations
 
+- This feature currently supports rootless-Podman-in-rootless-Podman.
 - This feature currently targets Fedora and RHEL-family images with `dnf`.
 - If your consuming `devcontainer.json` does not pass `/dev/fuse` and `/dev/net/tun`, nested Podman may not be able to launch rootless containers with the recommended storage and network paths.
 

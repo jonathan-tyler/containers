@@ -23,6 +23,10 @@ Run Podman inside the dev container with isolated storage volumes and container-
 
 This feature currently targets Fedora and RHEL-family images with `dnf`.
 
+## Current Support
+
+This feature currently supports rootless-Podman-in-rootless-Podman.
+
 ## Reference
 
 - https://www.redhat.com/en/blog/podman-inside-container
