@@ -4,14 +4,17 @@
     "remoteUser": "65532",
     "containerUser": "65532",
     "updateRemoteUserUID": false,
+    "containerEnv": {
+        "CONTAINER_HOST": "unix:///run/user-host/podman/podman.sock",
+        "DOCKER_HOST": "unix:///run/user-host/podman/podman.sock"
+    },
     "runArgs": [
         "--name=${localWorkspaceFolderBasename}-dev",
-        "--userns=keep-id",
-        "--device=/dev/fuse",
+        "--userns=keep-id:uid=65532,gid=0",
         "--security-opt=no-new-privileges"
     ],
     "features": {
-        "../devcontainer-features/podman-in-podman": {}
+        "../devcontainer-features/podman-outside-of-podman": {}
     },
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached"
