@@ -9,6 +9,7 @@ PODMAN_SUBID_START="100000"
 REMOTE_USER_SUBID_START="165536"
 SUBID_COUNT="65536"
 FEDORA_RELEASE="42"
+FEDORA_REPO_PRIORITY="99"
 
 err() {
     echo "(!) $*" >&2
@@ -87,8 +88,10 @@ ensure_subids() {
     fi
 }
 
-add_fedora_repos() {
+write_fedora_repos() {
     local fedora_repo_dir="/etc/yum.repos.d"
+    local gpgcheck="$1"
+    local repo_gpgcheck="$2"
 
     mkdir -p "${fedora_repo_dir}"
 
@@ -99,8 +102,10 @@ metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-${FEDORA_RELEASE
 enabled=1
 metadata_expire=7d
 type=rpm-md
-repo_gpgcheck=0
-gpgcheck=0
+priority=${FEDORA_REPO_PRIORITY}
+repo_gpgcheck=${repo_gpgcheck}
+gpgcheck=${gpgcheck}
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${FEDORA_RELEASE}-\$basearch
 
 [updates]
 name=Fedora ${FEDORA_RELEASE} - \$basearch - Updates
@@ -108,9 +113,17 @@ metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-f${FED
 enabled=1
 metadata_expire=6h
 type=rpm-md
-repo_gpgcheck=0
-gpgcheck=0
+priority=${FEDORA_REPO_PRIORITY}
+repo_gpgcheck=${repo_gpgcheck}
+gpgcheck=${gpgcheck}
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${FEDORA_RELEASE}-\$basearch
 EOF
+}
+
+bootstrap_fedora_keys() {
+    write_fedora_repos 0 0
+    dnf -y --setopt=install_weak_deps=False install fedora-gpg-keys
+    write_fedora_repos 1 0
 }
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -123,8 +136,8 @@ if ! command -v dnf >/dev/null 2>&1; then
     exit 1
 fi
 
-add_fedora_repos
-dnf -y --disablerepo='*' --enablerepo=fedora,updates install --setopt=install_weak_deps=False \
+bootstrap_fedora_keys
+dnf -y install --setopt=install_weak_deps=False \
     ca-certificates \
     containernetworking-plugins \
     fuse-overlayfs \
