@@ -11,7 +11,7 @@
         "--security-opt=seccomp=unconfined"
     ],
     "features": {
-        "../devcontainer-features/podman-in-podman": {}
+        "ghcr.io/jonathan-tyler/containers/podman-in-podman:0": {}
     },
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached"

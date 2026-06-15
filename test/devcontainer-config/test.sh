@@ -6,7 +6,7 @@ config=".devcontainer/devcontainer.json"
 
 jq -e '.image == "registry.access.redhat.com/hi/core-runtime:latest-builder"' "${config}" >/dev/null
 jq -e '.remoteUser == "podman" and .containerUser == "podman" and .updateRemoteUserUID == false' "${config}" >/dev/null
-jq -e '.features == {"../devcontainer-features/podman-in-podman": {}}' "${config}" >/dev/null
+jq -e '.features == {"ghcr.io/jonathan-tyler/containers/podman-in-podman:0": {}}' "${config}" >/dev/null
 jq -e 'has("build") | not' "${config}" >/dev/null
 jq -e 'has("containerEnv") | not' "${config}" >/dev/null
 jq -e 'has("customizations") | not' "${config}" >/dev/null
