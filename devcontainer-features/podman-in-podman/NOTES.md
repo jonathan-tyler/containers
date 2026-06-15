@@ -10,3 +10,13 @@
 
 - This feature currently targets Fedora and RHEL-family images with `dnf`.
 - If your consuming `devcontainer.json` does not pass `/dev/fuse` and `/dev/net/tun`, nested Podman may not be able to launch rootless containers with the recommended storage and network paths.
+
+Use these `runArgs` in the consuming `devcontainer.json`:
+
+```json
+"runArgs": [
+  "--device=/dev/fuse",
+  "--device=/dev/net/tun",
+  "--security-opt=seccomp=unconfined"
+]
+```

@@ -1,4 +1,4 @@
-# Podman (Podman-in-Podman) (`podman-in-podman`)
+# Podman-in-Podman (`podman-in-podman`)
 
 Run Podman inside the dev container with isolated storage volumes and container-friendly Podman defaults.
 
