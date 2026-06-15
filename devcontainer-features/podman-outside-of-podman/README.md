@@ -19,6 +19,7 @@ Reuse the host Podman socket from a dev container by installing the Podman CLI a
 ## Notes
 
 - This mirrors the host-socket pattern from `docker-outside-of-docker`, but points the Podman CLI at a mounted host Podman socket instead of starting a nested engine.
+- On Red Hat hardened images, the installer adds Fedora package repositories so the Podman CLI stack can be installed there.
 - The default mount assumes a rootless host Podman socket at `${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock`.
 - The feature exports both `CONTAINER_HOST` and `DOCKER_HOST` so Podman-aware tooling and Docker-API-compatible tooling can use the mounted host socket.
 
