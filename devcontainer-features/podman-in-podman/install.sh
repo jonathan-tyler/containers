@@ -21,6 +21,17 @@ get_username_for_uid() {
     getent passwd "${uid}" | cut -d: -f1
 }
 
+is_numeric_uid() {
+    case "$1" in
+        ''|*[!0-9]*) return 1 ;;
+        *) return 0 ;;
+    esac
+}
+
+can_use_userns_mapping() {
+    [ -u /usr/sbin/newuidmap ] && [ -u /usr/sbin/newgidmap ]
+}
+
 resolve_username() {
     local candidate="${USERNAME}"
 
@@ -46,7 +57,7 @@ resolve_username() {
             return
         fi
 
-        if [ -n "${_REMOTE_USER:-}" ] && [ "${_REMOTE_USER}" != "root" ] && id -u "${_REMOTE_USER}" >/dev/null 2>&1; then
+        if [ -n "${_REMOTE_USER:-}" ] && [ "${_REMOTE_USER}" != "root" ] && { id -u "${_REMOTE_USER}" >/dev/null 2>&1 || is_numeric_uid "${_REMOTE_USER}"; }; then
             echo "${_REMOTE_USER}"
             return
         fi
@@ -66,6 +77,11 @@ resolve_username() {
         preferred_user="$(get_username_for_uid "${candidate}")"
         if [ -n "${preferred_user}" ]; then
             echo "${preferred_user}"
+            return
+        fi
+
+        if is_numeric_uid "${candidate}"; then
+            echo "${candidate}"
             return
         fi
 
@@ -196,7 +212,7 @@ chmod +x /usr/local/share/podman-in-podman-init.sh
 ensure_subids "${PODMAN_USER}" "${PODMAN_SUBID_START}" "${SUBID_COUNT}" /etc/subuid
 ensure_subids "${PODMAN_USER}" "${PODMAN_SUBID_START}" "${SUBID_COUNT}" /etc/subgid
 
-if [ "${resolved_user}" != "root" ] && [ "${resolved_user}" != "${PODMAN_USER}" ]; then
+if can_use_userns_mapping && [ "${resolved_user}" != "root" ] && [ "${resolved_user}" != "${PODMAN_USER}" ]; then
     ensure_subids "${resolved_user}" "${REMOTE_USER_SUBID_START}" "${SUBID_COUNT}" /etc/subuid
     ensure_subids "${resolved_user}" "${REMOTE_USER_SUBID_START}" "${SUBID_COUNT}" /etc/subgid
 fi
