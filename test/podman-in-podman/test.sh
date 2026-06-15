@@ -6,6 +6,7 @@ source dev-container-features-test-lib
 
 check "podman" podman --version
 check "podman user exists" getent passwd podman
+check "fedora repo file" test -f /etc/yum.repos.d/fedora.repo
 check "subuid entry" grep -q '^podman:' /etc/subuid
 check "subgid entry" grep -q '^podman:' /etc/subgid
 check "containers config" test -f /etc/containers/containers.conf

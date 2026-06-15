@@ -8,6 +8,7 @@ PODMAN_USER="podman"
 PODMAN_SUBID_START="100000"
 REMOTE_USER_SUBID_START="165536"
 SUBID_COUNT="65536"
+FEDORA_RELEASE="42"
 
 err() {
     echo "(!) $*" >&2
@@ -86,6 +87,32 @@ ensure_subids() {
     fi
 }
 
+add_fedora_repos() {
+    local fedora_repo_dir="/etc/yum.repos.d"
+
+    mkdir -p "${fedora_repo_dir}"
+
+    cat >"${fedora_repo_dir}/fedora.repo" <<EOF
+[fedora]
+name=Fedora ${FEDORA_RELEASE} - \$basearch
+metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-${FEDORA_RELEASE}&arch=\$basearch
+enabled=1
+metadata_expire=7d
+type=rpm-md
+repo_gpgcheck=0
+gpgcheck=0
+
+[updates]
+name=Fedora ${FEDORA_RELEASE} - \$basearch - Updates
+metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-f${FEDORA_RELEASE}&arch=\$basearch
+enabled=1
+metadata_expire=6h
+type=rpm-md
+repo_gpgcheck=0
+gpgcheck=0
+EOF
+}
+
 if [ "$(id -u)" -ne 0 ]; then
     err "Script must be run as root. Use sudo, su, or add 'USER root' to your Dockerfile before running this script."
     exit 1
@@ -96,14 +123,12 @@ if ! command -v dnf >/dev/null 2>&1; then
     exit 1
 fi
 
-dnf -y update
-dnf -y reinstall shadow-utils
-dnf -y install --setopt=install_weak_deps=False \
+add_fedora_repos
+dnf -y --disablerepo='*' --enablerepo=fedora,updates install --setopt=install_weak_deps=False \
     ca-certificates \
     containernetworking-plugins \
     fuse-overlayfs \
     podman \
-    shadow-utils \
     slirp4netns
 
 resolved_user="$(resolve_username)"

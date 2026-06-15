@@ -1,6 +1,6 @@
 {
   "id": "podman-in-podman",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "name": "Podman (Podman-in-Podman)",
   "documentationURL": "https://www.redhat.com/en/blog/podman-inside-container",
   "description": "Run Podman inside the dev container with isolated storage volumes and container-friendly Podman defaults.",
