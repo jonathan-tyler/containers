@@ -212,7 +212,7 @@ chmod +x /usr/local/share/podman-in-podman-init.sh
 ensure_subids "${PODMAN_USER}" "${PODMAN_SUBID_START}" "${SUBID_COUNT}" /etc/subuid
 ensure_subids "${PODMAN_USER}" "${PODMAN_SUBID_START}" "${SUBID_COUNT}" /etc/subgid
 
-if can_use_userns_mapping && [ "${resolved_user}" != "root" ] && [ "${resolved_user}" != "${PODMAN_USER}" ]; then
+if [ "${resolved_user}" != "root" ] && [ "${resolved_user}" != "${PODMAN_USER}" ]; then
     ensure_subids "${resolved_user}" "${REMOTE_USER_SUBID_START}" "${SUBID_COUNT}" /etc/subuid
     ensure_subids "${resolved_user}" "${REMOTE_USER_SUBID_START}" "${SUBID_COUNT}" /etc/subgid
 fi
