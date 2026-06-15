@@ -1,6 +1,6 @@
 {
   "id": "podman-outside-of-podman",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "name": "Podman (Podman-outside-of-Podman)",
   "documentationURL": "https://www.redhat.com/en/blog/podman-inside-container",
   "description": "Reuse the host Podman socket from a dev container by installing the Podman CLI and exporting the mounted socket as CONTAINER_HOST.",
