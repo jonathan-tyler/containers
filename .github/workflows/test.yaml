@@ -21,7 +21,8 @@ jobs:
   test-devcontainer-config:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      # actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
 
       - name: Validate root devcontainer configuration
         run: bash test/devcontainer-config/test.sh
@@ -45,7 +46,8 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       XDG_RUNTIME_DIR: /tmp/xdg
     steps:
-      - uses: actions/checkout@v5
+      # actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
 
       - name: Prepare feature test layout
         run: |
@@ -66,7 +68,8 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       XDG_RUNTIME_DIR: /tmp/xdg
     steps:
-      - uses: actions/checkout@v5
+      # actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
 
       - name: Prepare feature test layout
         run: |
