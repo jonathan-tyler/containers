@@ -6,7 +6,7 @@ Install shared local workspace utilities for both human and agent workflows.
 
 ```json
 "features": {
-  "./devcontainer-features/utils-core": {}
+  "ghcr.io/jonathan-tyler/containers/utils-core:0": {}
 }
 ```
 

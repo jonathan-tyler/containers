@@ -6,8 +6,8 @@ Install network, remote access, and low-level diagnostic utilities for operation
 
 ```json
 "features": {
-  "./devcontainer-features/utils-human": {},
-  "./devcontainer-features/utils-ops": {}
+  "ghcr.io/jonathan-tyler/containers/utils-human:0": {},
+  "ghcr.io/jonathan-tyler/containers/utils-ops:0": {}
 }
 ```
 

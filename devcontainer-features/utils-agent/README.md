@@ -6,8 +6,8 @@ Install local analysis and formatting utilities for AI-agent workflows.
 
 ```json
 "features": {
-  "./devcontainer-features/utils-human": {},
-  "./devcontainer-features/utils-agent": {}
+  "ghcr.io/jonathan-tyler/containers/utils-human:0": {},
+  "ghcr.io/jonathan-tyler/containers/utils-agent:0": {}
 }
 ```
 

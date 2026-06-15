@@ -6,7 +6,7 @@ Install interactive shell and terminal utilities on top of the shared `utils-cor
 
 ```json
 "features": {
-  "./devcontainer-features/utils-human": {}
+  "ghcr.io/jonathan-tyler/containers/utils-human:0": {}
 }
 ```
 

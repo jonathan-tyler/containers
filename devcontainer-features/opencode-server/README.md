@@ -6,7 +6,7 @@ Install OpenCode for headless HTTP server usage with `opencode serve`.
 
 ```json
 "features": {
-  "./devcontainer-features/opencode-server": {}
+  "ghcr.io/jonathan-tyler/containers/opencode-server:0": {}
 }
 ```
 

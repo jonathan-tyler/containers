@@ -6,7 +6,7 @@ Run Podman inside the dev container with isolated storage volumes and container-
 
 ```json
 "features": {
-  "./devcontainer-features/podman-in-podman": {}
+  "ghcr.io/jonathan-tyler/containers/podman-in-podman:0": {}
 }
 ```
 

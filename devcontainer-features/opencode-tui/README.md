@@ -6,7 +6,7 @@ Install the OpenCode terminal UI without applying user config.
 
 ```json
 "features": {
-  "./devcontainer-features/opencode-tui": {}
+  "ghcr.io/jonathan-tyler/containers/opencode-tui:0": {}
 }
 ```
 

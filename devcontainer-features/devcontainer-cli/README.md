@@ -6,8 +6,8 @@ Install the Dev Container CLI for Podman-backed devcontainer workflows.
 
 ```json
 "features": {
-  "./devcontainer-features/podman-outside-of-podman": {},
-  "./devcontainer-features/devcontainer-cli": {}
+  "ghcr.io/jonathan-tyler/containers/podman-outside-of-podman:0": {},
+  "ghcr.io/jonathan-tyler/containers/devcontainer-cli:0": {}
 }
 ```
 

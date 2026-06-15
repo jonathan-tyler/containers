@@ -6,7 +6,7 @@ Reuse the host Podman socket from a dev container by installing the Podman CLI a
 
 ```json
 "features": {
-  "./devcontainer-features/podman-outside-of-podman": {}
+  "ghcr.io/jonathan-tyler/containers/podman-outside-of-podman:0": {}
 }
 ```
 
