@@ -52,7 +52,6 @@ jobs:
       - name: Prepare feature test layout
         run: |
           ln -sfn devcontainer-features src
-          perl -0pi -e 's#"ghcr.io/jonathan-tyler/containers/utils-core:0"#"./devcontainer-features/utils-core"#g; s#"ghcr.io/jonathan-tyler/containers/podman-in-podman:0"#"./devcontainer-features/podman-in-podman"#g' devcontainer-features/*/devcontainer-feature.json
           mkdir -p "$XDG_RUNTIME_DIR/podman"
           : > "$XDG_RUNTIME_DIR/podman/podman.sock"
 
@@ -74,7 +73,6 @@ jobs:
       - name: Prepare feature test layout
         run: |
           ln -sfn devcontainer-features src
-          perl -0pi -e 's#"ghcr.io/jonathan-tyler/containers/utils-core:0"#"./devcontainer-features/utils-core"#g; s#"ghcr.io/jonathan-tyler/containers/podman-in-podman:0"#"./devcontainer-features/podman-in-podman"#g' devcontainer-features/*/devcontainer-feature.json
           mkdir -p "$XDG_RUNTIME_DIR/podman"
           : > "$XDG_RUNTIME_DIR/podman/podman.sock"
 
