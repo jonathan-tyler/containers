@@ -16,7 +16,7 @@ jq -e '.workspaceMount == "source=${localWorkspaceFolder},target=/workspaces/${l
 jq -e '.runArgs | index("--device=/dev/fuse")' "${config}" >/dev/null
 jq -e '.runArgs | index("--device=/dev/net/tun")' "${config}" >/dev/null
 jq -e '.runArgs | index("--security-opt=seccomp=unconfined")' "${config}" >/dev/null
-jq -e '.runArgs | index("--userns=keep-id") | not' "${config}" >/dev/null
+jq -e '.runArgs | index("--userns=keep-id:uid=1000,gid=1000")' "${config}" >/dev/null
 jq -e '.runArgs | index("--security-opt=no-new-privileges") | not' "${config}" >/dev/null
 
 echo "devcontainer config is aligned"

@@ -6,6 +6,7 @@
     "updateRemoteUserUID": false,
     "runArgs": [
         "--name=${localWorkspaceFolderBasename}-dev",
+        "--userns=keep-id:uid=1000,gid=1000",
         "--device=/dev/fuse",
         "--device=/dev/net/tun",
         "--security-opt=seccomp=unconfined"

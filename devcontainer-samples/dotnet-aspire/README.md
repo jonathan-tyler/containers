@@ -17,3 +17,8 @@ Devcontainer sample for Aspire on the Red Hat .NET SDK image.
 ```bash
 dotnet run
 ```
+
+## Note
+
+- The devcontainer now runs nested rootless Podman successfully with the hardened Red Hat image user.
+- On this host, Aspire's native `AddContainer(...)` path still creates a rootless Podman container with `bridge` networking, which leaves the inner container in `Created` with `netavark: set sysctl net/ipv4/ip_forward: IO error: Read-only file system`.
