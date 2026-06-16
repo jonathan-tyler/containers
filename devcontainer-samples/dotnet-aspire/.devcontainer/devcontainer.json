@@ -1,11 +1,14 @@
 {
     "name": "dotnet-aspire",
     "image": "registry.access.redhat.com/hi/dotnet-sdk:latest-builder",
-    "containerUser": "podman",
-    "remoteUser": "podman",
+    "containerUser": "65532",
+    "remoteUser": "65532",
     "updateRemoteUserUID": false,
+    "initializeCommand": "chmod -R g+rwX ${localWorkspaceFolder} 2>/dev/null || true; find ${localWorkspaceFolder} -type d -exec chmod g+s {} + 2>/dev/null || true",
     "runArgs": [
         "--name=${localWorkspaceFolderBasename}-dev",
+        "--userns=keep-id:uid=65532,gid=0",
+        "--group-add=keep-groups",
         "--device=/dev/fuse",
         "--device=/dev/net/tun",
         "--security-opt=seccomp=unconfined"
