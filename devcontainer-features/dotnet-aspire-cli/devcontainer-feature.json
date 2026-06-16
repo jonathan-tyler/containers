@@ -1,0 +1,14 @@
+{
+  "id": "dotnet-aspire-cli",
+  "version": "0.1.0",
+  "name": "dotnet Aspire CLI",
+  "documentationURL": "https://github.com/jonathan-tyler/containers/tree/main/devcontainer-features/dotnet-aspire-cli",
+  "description": "Install the Aspire CLI using the official installer.",
+  "options": {
+    "INSTALLCLI": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to install the Aspire CLI."
+    }
+  }
+}
