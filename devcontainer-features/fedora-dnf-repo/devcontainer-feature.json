@@ -1,0 +1,6 @@
+{
+  "id": "fedora-dnf-repo",
+  "version": "0.1.0",
+  "name": "Fedora DNF Repo",
+  "description": "Write a Fedora DNF/YUM repo file for Hummingbird-only environments."
+}
