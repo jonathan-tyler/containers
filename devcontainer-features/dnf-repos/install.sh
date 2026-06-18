@@ -26,175 +26,114 @@ if [ "$(printf '%s\n' "${enabled_repo_ids}" | awk 'NF { count++ } END { print co
     exit 0
 fi
 
-if ! command -v python3 >/dev/null 2>&1; then
-    dnf -y --setopt=install_weak_deps=False install python3
+if ! command -v jq >/dev/null 2>&1; then
+    dnf -y --setopt=install_weak_deps=False install jq
 fi
 
-python3 - "${REPOS_JSON:-[]}" <<'PY'
-import json
-import pathlib
-import re
-import subprocess
-import sys
+rendered_repos="$(printf '%s' "${REPOS_JSON:-[]}" | jq -r '
+    def fail($msg): error($msg);
 
-RAW_REPOS = sys.argv[1]
-REPO_DIR = pathlib.Path("/etc/yum.repos.d")
-PRIMARY_REPO_ID = "hummingbird"
-ALLOWED_FIELDS = {
-    "baseurl",
-    "cost",
-    "enabled",
-    "excludepkgs",
-    "gpgcheck",
-    "gpgkey",
-    "id",
-    "includepkgs",
-    "metadata_expire",
-    "metalink",
-    "mirrorlist",
-    "module_hotfixes",
-    "name",
-    "priority",
-    "repo_gpgcheck",
-    "skip_if_unavailable",
-    "type",
-}
+    def as_int($field):
+        if type == "boolean" then if . then 1 else 0 end
+        elif type == "number" and floor == . then .
+        elif type == "string" and test("^[0-9]+$") then tonumber
+        else fail("Repo field \($field) must be an integer or boolean value.")
+        end;
 
+    def as_text($field):
+        if type == "string" and length > 0 then .
+        else fail("Repo field \($field) must be a non-empty string.")
+        end;
 
-def fail(message: str) -> None:
-    print(f"(!) {message}", file=sys.stderr)
-    raise SystemExit(1)
+    def as_list_or_text($field):
+        if type == "string" and length > 0 then .
+        elif type == "array" and length > 0 and all(.[]; type == "string" and length > 0) then join(",")
+        else fail("Repo field \($field) must be a non-empty string or a non-empty list of strings.")
+        end;
 
+    def normalize:
+        if type != "object" then fail("Each repo definition must be a JSON object.") else . end
+        | .id as $id
+        | if ($id | type != "string" or length == 0) then fail("Repo field 'id' must be a non-empty string.") else . end
+        | if ($id | test("[/\\\\]")) then fail("Repo id must not contain path separators.") else . end
+        | (keys - ["baseurl", "cost", "enabled", "excludepkgs", "gpgcheck", "gpgkey", "id", "includepkgs", "metadata_expire", "metalink", "mirrorlist", "module_hotfixes", "name", "priority", "repo_gpgcheck", "skip_if_unavailable", "type"]) as $unknown
+        | if ($unknown | length) > 0 then fail("Repo \($id) contains unsupported field(s): \($unknown | join(", "))") else . end
+        | ([has("baseurl"), has("metalink"), has("mirrorlist")] | map(select(.)) | length) as $source_count
+        | if $source_count != 1 then fail("Repo \($id) must define exactly one of baseurl, metalink, or mirrorlist.") else . end
+        | {
+            id: $id,
+            name: ((.name // $id) | as_text("name")),
+            source_field: (if has("baseurl") and .baseurl != null and .baseurl != "" then "baseurl" elif has("metalink") and .metalink != null and .metalink != "" then "metalink" else "mirrorlist" end),
+            source_value: (if has("baseurl") and .baseurl != null and .baseurl != "" then (.baseurl | as_text("baseurl")) elif has("metalink") and .metalink != null and .metalink != "" then (.metalink | as_text("metalink")) else (.mirrorlist | as_text("mirrorlist")) end),
+            enabled: ((.enabled // 1) | as_int("enabled") | tostring),
+            gpgcheck: ((.gpgcheck // 1) | as_int("gpgcheck") | tostring),
+            repo_gpgcheck: ((.repo_gpgcheck // 0) | as_int("repo_gpgcheck") | tostring),
+            priority: (if has("priority") and .priority != null then (.priority | as_int("priority") | tostring) else "" end),
+            gpgkey: (if has("gpgkey") and .gpgkey != null then (.gpgkey | as_text("gpgkey")) else "" end),
+            skip_if_unavailable: (if has("skip_if_unavailable") and .skip_if_unavailable != null then (.skip_if_unavailable | as_int("skip_if_unavailable") | tostring) else "" end),
+            cost: (if has("cost") and .cost != null then (.cost | as_int("cost") | tostring) else "" end),
+            module_hotfixes: (if has("module_hotfixes") and .module_hotfixes != null then (.module_hotfixes | as_int("module_hotfixes") | tostring) else "" end),
+            metadata_expire: (if has("metadata_expire") and .metadata_expire != null then (.metadata_expire | as_text("metadata_expire")) else "" end),
+            type: (if has("type") and .type != null then (.type | as_text("type")) else "" end),
+            includepkgs: (if has("includepkgs") and .includepkgs != null then (.includepkgs | as_list_or_text("includepkgs")) else "" end),
+            excludepkgs: (if has("excludepkgs") and .excludepkgs != null then (.excludepkgs | as_list_or_text("excludepkgs")) else "" end)
+          };
 
-def as_int(value, field: str) -> int:
-    if isinstance(value, bool):
-        return int(value)
-    if isinstance(value, int):
-        return value
-    if isinstance(value, str) and value.strip().isdigit():
-        return int(value)
-    fail(f"Repo field '{field}' must be an integer or boolean value.")
+    if type != "array" then fail("REPOS_JSON must decode to a JSON array.") else . end
+    | map(normalize) as $repos
+    | if ($repos | map(.id) | length) != ($repos | map(.id) | unique | length) then fail("REPOS_JSON contains duplicate repo ids.") else $repos end
+    | if length == 0 then empty else .[] end
+    | [
+        .id,
+        .name,
+        .source_field,
+        .source_value,
+        .enabled,
+        .gpgcheck,
+        .repo_gpgcheck,
+        .priority,
+        .gpgkey,
+        .skip_if_unavailable,
+        .cost,
+        .module_hotfixes,
+        .metadata_expire,
+        .type,
+        .includepkgs,
+        .excludepkgs
+      ] | @tsv
+')"
 
+if [ -z "${rendered_repos}" ]; then
+    echo "No repo definitions provided; nothing to write."
+    exit 0
+fi
 
-def as_text(value, field: str) -> str:
-    if isinstance(value, str) and value.strip():
-        return value
-    fail(f"Repo field '{field}' must be a non-empty string.")
+mkdir -p /etc/yum.repos.d
 
+while IFS=$'\t' read -r repo_id repo_name source_field source_value enabled gpgcheck repo_gpgcheck priority gpgkey skip_if_unavailable cost module_hotfixes metadata_expire repo_type includepkgs excludepkgs; do
+    repo_path="/etc/yum.repos.d/${repo_id}.repo"
 
-def as_list_or_text(value, field: str) -> str:
-    if isinstance(value, str) and value.strip():
-        return value
-    if isinstance(value, list) and value and all(isinstance(item, str) and item.strip() for item in value):
-        return ",".join(item.strip() for item in value)
-    fail(f"Repo field '{field}' must be a non-empty string or a non-empty list of strings.")
+    {
+        printf '[%s]\n' "${repo_id}"
+        printf 'name=%s\n' "${repo_name}"
+        printf '%s=%s\n' "${source_field}" "${source_value}"
+        printf 'enabled=%s\n' "${enabled}"
+        printf 'gpgcheck=%s\n' "${gpgcheck}"
+        printf 'repo_gpgcheck=%s\n' "${repo_gpgcheck}"
 
+        if [ -n "${priority}" ]; then printf 'priority=%s\n' "${priority}"; fi
+        if [ -n "${gpgkey}" ]; then printf 'gpgkey=%s\n' "${gpgkey}"; fi
+        if [ -n "${skip_if_unavailable}" ]; then printf 'skip_if_unavailable=%s\n' "${skip_if_unavailable}"; fi
+        if [ -n "${cost}" ]; then printf 'cost=%s\n' "${cost}"; fi
+        if [ -n "${module_hotfixes}" ]; then printf 'module_hotfixes=%s\n' "${module_hotfixes}"; fi
+        if [ -n "${metadata_expire}" ]; then printf 'metadata_expire=%s\n' "${metadata_expire}"; fi
+        if [ -n "${repo_type}" ]; then printf 'type=%s\n' "${repo_type}"; fi
+        if [ -n "${includepkgs}" ]; then printf 'includepkgs=%s\n' "${includepkgs}"; fi
+        if [ -n "${excludepkgs}" ]; then printf 'excludepkgs=%s\n' "${excludepkgs}"; fi
+    } >"${repo_path}"
+done <<< "${rendered_repos}"
 
-def enabled_repo_ids() -> list[str]:
-    try:
-        result = subprocess.run(
-            ["dnf", "-q", "repolist", "--enabled"],
-            check=True,
-            text=True,
-            capture_output=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        output = (exc.stderr or exc.stdout or "").strip()
-        if output:
-            fail(f"Unable to read enabled repos: {output}")
-        fail("Unable to read enabled repos.")
+dnf clean all
 
-    repo_ids: list[str] = []
-    header_seen = False
-    for line in result.stdout.splitlines():
-        if re.match(r"^repo\s+id\s+repo\s+name$", line.strip()):
-            header_seen = True
-            continue
-        if header_seen:
-            match = re.match(r"^([A-Za-z0-9_.+-]+)\s+", line)
-            if match:
-                repo_ids.append(match.group(1))
-    return repo_ids
-
-
-def normalize_repo(repo: dict) -> dict:
-    if not isinstance(repo, dict):
-        fail("Each repo definition must be a JSON object.")
-
-    repo_id = as_text(repo.get("id"), "id")
-    if any(ch in repo_id for ch in "/\\"):
-        fail("Repo id must not contain path separators.")
-
-    unknown_fields = sorted(set(repo) - ALLOWED_FIELDS)
-    if unknown_fields:
-        fail(f"Repo '{repo_id}' contains unsupported field(s): {', '.join(unknown_fields)}")
-
-    sources = [field for field in ("baseurl", "metalink", "mirrorlist") if field in repo and repo[field] not in (None, "")]
-    if len(sources) != 1:
-        fail(f"Repo '{repo_id}' must define exactly one of baseurl, metalink, or mirrorlist.")
-
-    normalized = {
-        "id": repo_id,
-        "name": as_text(repo.get("name", repo_id), "name"),
-        "source_field": sources[0],
-        "source_value": as_text(repo[sources[0]], sources[0]),
-        "enabled": as_int(repo.get("enabled", 1), "enabled"),
-        "gpgcheck": as_int(repo.get("gpgcheck", 1), "gpgcheck"),
-        "repo_gpgcheck": as_int(repo.get("repo_gpgcheck", 0), "repo_gpgcheck"),
-    }
-
-    for field in ("priority", "cost", "module_hotfixes", "skip_if_unavailable"):
-        if field in repo and repo[field] is not None:
-            normalized[field] = as_int(repo[field], field)
-
-    for field in ("gpgkey", "metadata_expire", "type"):
-        if field in repo and repo[field] is not None:
-            normalized[field] = as_text(repo[field], field)
-
-    for field in ("includepkgs", "excludepkgs"):
-        if field in repo and repo[field] is not None:
-            normalized[field] = as_list_or_text(repo[field], field)
-
-    return normalized
-
-
-try:
-    parsed = json.loads(RAW_REPOS)
-except json.JSONDecodeError as exc:
-    fail(f"REPOS_JSON is not valid JSON: {exc.msg} (line {exc.lineno}, column {exc.colno})")
-
-if not isinstance(parsed, list):
-    fail("REPOS_JSON must decode to a JSON array.")
-
-repos = [normalize_repo(repo) for repo in parsed]
-repo_ids = [repo["id"] for repo in repos]
-if len(repo_ids) != len(set(repo_ids)):
-    fail("REPOS_JSON contains duplicate repo ids.")
-
-if not repos:
-    print("No repo definitions provided; nothing to write.")
-    raise SystemExit(0)
-
-REPO_DIR.mkdir(parents=True, exist_ok=True)
-
-for repo in repos:
-    repo_path = REPO_DIR / f"{repo['id']}.repo"
-    lines = [
-        f"[{repo['id']}]",
-        f"name={repo['name']}",
-        f"{repo['source_field']}={repo['source_value']}",
-        f"enabled={repo['enabled']}",
-        f"gpgcheck={repo['gpgcheck']}",
-        f"repo_gpgcheck={repo['repo_gpgcheck']}",
-    ]
-
-    for field in ("priority", "gpgkey", "skip_if_unavailable", "cost", "module_hotfixes", "metadata_expire", "type", "includepkgs", "excludepkgs"):
-        if field in repo:
-            lines.append(f"{field}={repo[field]}")
-
-    repo_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-print(f"Wrote {len(repos)} repo file(s) to {REPO_DIR}.")
-PY
-
+echo "Wrote repo file(s) to /etc/yum.repos.d."
 echo "Done!"
