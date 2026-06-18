@@ -16,9 +16,18 @@ if ! command -v dnf >/dev/null 2>&1; then
     exit 1
 fi
 
+enabled_repo_ids="$(dnf -q repolist --enabled | awk '
+    /^repo[[:space:]]+id[[:space:]]+repo[[:space:]]+name/ { header_seen=1; next }
+    header_seen && $1 ~ /^[[:alnum:]_.+-]+$/ { print $1 }
+')"
+
+if [ "$(printf '%s\n' "${enabled_repo_ids}" | awk 'NF { count++ } END { print count + 0 }')" -ne 1 ] || ! printf '%s\n' "${enabled_repo_ids}" | grep -qx "hummingbird"; then
+    echo "DNF repo fallback not needed; leaving existing repos unchanged."
+    exit 0
+fi
+
 if ! command -v python3 >/dev/null 2>&1; then
-    err "This feature requires python3 to parse REPOS_JSON."
-    exit 1
+    dnf -y --setopt=install_weak_deps=False install python3
 fi
 
 python3 - "${REPOS_JSON:-[]}" <<'PY'
@@ -161,11 +170,6 @@ repos = [normalize_repo(repo) for repo in parsed]
 repo_ids = [repo["id"] for repo in repos]
 if len(repo_ids) != len(set(repo_ids)):
     fail("REPOS_JSON contains duplicate repo ids.")
-
-enabled_ids = enabled_repo_ids()
-if len(enabled_ids) != 1 or enabled_ids[0] != PRIMARY_REPO_ID:
-    print("DNF repo fallback not needed; leaving existing repos unchanged.")
-    raise SystemExit(0)
 
 if not repos:
     print("No repo definitions provided; nothing to write.")

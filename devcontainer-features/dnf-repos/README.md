@@ -7,7 +7,7 @@ Write one or more DNF/YUM repo files from declarative JSON definitions.
 ```json
 "features": {
   "ghcr.io/jonathan-tyler/containers/dnf-repos:0": {
-    "REPOS_JSON": "[{\"id\":\"fedora\",\"name\":\"Fedora 42 - $basearch\",\"metalink\":\"https://mirrors.fedoraproject.org/metalink?repo=fedora-42&arch=$basearch\",\"enabled\":1,\"priority\":99,\"gpgcheck\":1,\"repo_gpgcheck\":0,\"gpgkey\":\"file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-42-$basearch\"}]"
+    "REPOS_JSON": "'[{\"id\":\"fedora\",\"name\":\"Fedora 42 - $basearch\",\"metalink\":\"https://mirrors.fedoraproject.org/metalink?repo=fedora-42&arch=$basearch\",\"enabled\":1,\"priority\":99,\"gpgcheck\":1,\"repo_gpgcheck\":0,\"gpgkey\":\"file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-42-$basearch\"}]'"
   }
 }
 ```
