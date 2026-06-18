@@ -22,6 +22,7 @@ Install shared local workspace utilities for both human and agent workflows.
 - `less`
 - `procps-ng`
 - `fd` when a suitable package is available for the base image
+- Fedora is added as a lower-priority fallback repo only when Hummingbird is the sole enabled repo.
 
 ## Notes
 

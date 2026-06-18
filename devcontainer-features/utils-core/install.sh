@@ -21,6 +21,7 @@ if ! command -v dnf >/dev/null 2>&1; then
 fi
 
 dnf -y update
+
 install_packages \
     ca-certificates \
     diffutils \
