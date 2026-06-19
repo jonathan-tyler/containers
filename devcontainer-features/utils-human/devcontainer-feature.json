@@ -1,9 +1,10 @@
 {
   "id": "utils-human",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Human Utilities",
   "description": "Install interactive shell and terminal utilities on top of the shared utils-core baseline without applying user config.",
   "dependsOn": {
+    "ghcr.io/jonathan-tyler/containers/fedora-dnf-repo:0": {},
     "ghcr.io/jonathan-tyler/containers/utils-core:0": {}
   },
   "options": {
