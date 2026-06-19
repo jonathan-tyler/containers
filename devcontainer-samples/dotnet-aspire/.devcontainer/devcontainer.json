@@ -14,7 +14,8 @@
         "--security-opt=seccomp=unconfined"
     ],
     "features": {
-        "ghcr.io/jonathan-tyler/containers/podman-in-podman:0": {}
+        "ghcr.io/jonathan-tyler/containers/podman-in-podman:0": {},
+        "ghcr.io/jonathan-tyler/containers/dotnet-aspire-cli:0": {}
     },
     "remoteEnv": {
         "ASPIRE_CONTAINER_RUNTIME": "podman"

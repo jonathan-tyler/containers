@@ -6,6 +6,7 @@ Devcontainer sample for Aspire on the Red Hat .NET SDK image.
 
 - Uses `registry.access.redhat.com/hi/dotnet-sdk:latest-builder`.
 - Enables the `podman-in-podman` feature so AppHost can orchestrate containers.
+- Enables the `ghcr.io/jonathan-tyler/containers/dotnet-aspire-cli:0` feature.
 - Sets `ASPIRE_CONTAINER_RUNTIME=podman` in the devcontainer environment.
 - Uses `--userns=keep-id:uid=65532,gid=0` so nested rootless Podman is healthy with the hardened image user.
 - Uses a host `initializeCommand` to make the sample workspace group-writable for the hardened image user.
