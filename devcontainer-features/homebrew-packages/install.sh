@@ -26,6 +26,10 @@ ensureHomebrewPrerequisites() {
         missing_packages+=(file)
     fi
 
+    if ! commandExists awk; then
+        missing_packages+=(gawk)
+    fi
+
     if ! commandExists ps; then
         missing_packages+=(procps-ng)
     fi
