@@ -20,6 +20,18 @@ Container images, automation, templates, and samples
 - To set up the local registry, run `./local-registry/install.sh`. It creates or starts the registry container and enables a lingering systemd user service so it comes back automatically.
 - To build and publish images, run `./local-registry/build-images.sh --version X.Y.Z`.
 
+## Local Feature Validation
+
+- Use `.devcontainer/feature-ci/devcontainer.json` when you want a workspace that can run the feature test and pre-publish checks before pushing.
+- Start it with `dev up --overlay none --config .devcontainer/feature-ci/devcontainer.json`, or open that config directly in VS Code.
+- Inside that container, run `bash scripts/feature-ci/run.sh prepare` once if you want to refresh the scratch workspace manually.
+- Run `bash scripts/feature-ci/run.sh ci` to mirror the current `.github/workflows/test.yaml` jobs locally.
+- Run `bash scripts/feature-ci/run.sh job test-utils-core` to replay a single workflow job.
+- Run `bash scripts/feature-ci/run.sh feature homebrew-packages` to test one edited feature locally, including its scenarios. This is useful for features that are not yet part of the current workflow matrix.
+- Run `bash scripts/feature-ci/run.sh publish-check` to package `devcontainer-features/` locally without publishing anything. This is the local equivalent of the release workflow's packaging step.
+- Run `bash scripts/feature-ci/run.sh all` to execute both the local CI pass and the publish packaging check.
+- The runner writes its temporary `src` and `test` layout, Docker-to-Podman shim, and package output under `.scratch/feature-ci/`, which is already ignored by git.
+
 ## Shared Toolchains
 
 - Focused images and `monolith-dev` both consume these scripts so version pins and install behavior stay aligned.
