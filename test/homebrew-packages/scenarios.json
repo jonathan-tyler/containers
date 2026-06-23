@@ -1,0 +1,22 @@
+{
+  "uid-65532": {
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "homebrew-packages": {
+        "PACKAGES": "hello"
+      }
+    }
+  },
+  "multiple-packages": {
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "homebrew-packages": {
+        "PACKAGES": "hello jq"
+      }
+    }
+  }
+}
