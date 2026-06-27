@@ -12,8 +12,8 @@ Container images, automation, templates, and samples
 - 🔷 [typescript-dev](./images/typescript-dev): TypeScript devcontainer image layered on the JavaScript dev image.
 - 🔷 [dotnet-dev](./images/dotnet-dev): .NET devcontainer image.
 - ✨ [devcontainer-samples/dotnet-aspire](./devcontainer-samples/dotnet-aspire): Aspire sample that launches a hello-world container through AppHost.
-- 🗄️ [sidecars/mssql-dev](./sidecars/mssql-dev): host-managed SQL Server container.
-- 📨 [sidecars/smtp4dev](./sidecars/smtp4dev): host-managed smtp4dev container.
+- 🗄️ [devcontainer-samples/mssql-dev](./devcontainer-samples/mssql-dev): compose-backed SQL Server devcontainer sample.
+- 📨 [devcontainer-samples/smtp4dev](./devcontainer-samples/smtp4dev): compose-backed smtp4dev devcontainer sample.
 
 ## Usage
 
@@ -38,7 +38,7 @@ Container images, automation, templates, and samples
 - Keep image-specific policy in the image `Containerfile`; keep toolchain installation details in the shared scripts.
 - Keep shared images generic: install tools and shell capability there, but apply personal dotfiles and prompt config at devcontainer runtime instead of baking host-specific files into image builds.
 
-`mssql-dev` and `smtp4dev` are separate from the devcontainer flow. See [sidecars/mssql-dev/README.md](./sidecars/mssql-dev/README.md) and [sidecars/smtp4dev/README.md](./sidecars/smtp4dev/README.md).
+`mssql-dev` and `smtp4dev` are compose-backed devcontainer samples. See [devcontainer-samples/mssql-dev/README.md](./devcontainer-samples/mssql-dev/README.md) and [devcontainer-samples/smtp4dev/README.md](./devcontainer-samples/smtp4dev/README.md).
 
 ## Notes
 

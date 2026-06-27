@@ -1,0 +1,23 @@
+services:
+  workspace:
+    image: registry.access.redhat.com/hi/core-runtime:latest
+    command: sleep infinity
+    depends_on:
+      - mssql-dev
+    environment:
+      MSSQL_HOST: mssql-dev
+      MSSQL_PORT: "1433"
+
+  mssql-dev:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ReplaceMeWithAStrongPassword!
+    ports:
+      - "14333:1433"
+    volumes:
+      - mssql-dev-data:/var/opt/mssql:Z
+
+volumes:
+  mssql-dev-data:

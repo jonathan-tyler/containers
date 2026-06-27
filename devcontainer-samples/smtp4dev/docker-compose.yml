@@ -1,0 +1,21 @@
+services:
+  workspace:
+    image: registry.access.redhat.com/hi/core-runtime:latest
+    command: sleep infinity
+    depends_on:
+      - smtp4dev
+    environment:
+      SMTP_HOST: smtp4dev
+      SMTP_PORT: "25"
+      SMTP_WEB_URL: http://smtp4dev:80
+
+  smtp4dev:
+    image: rnwood/smtp4dev:latest
+    ports:
+      - "1025:25"
+      - "8025:80"
+    volumes:
+      - smtp4dev-data:/smtp4dev:Z
+
+volumes:
+  smtp4dev-data:
