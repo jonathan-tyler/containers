@@ -1,34 +1,14 @@
 {
   "features": {
-    "ghcr.io/jonathan-tyler/containers/fedora-dnf-repo:0": {
-      "version": "0.1.1",
-      "resolved": "ghcr.io/jonathan-tyler/containers/fedora-dnf-repo@sha256:127c60c23835391afacac969511c1e7c4a3958826dc1320fd1235d9c5dcc2cb1",
-      "integrity": "sha256:127c60c23835391afacac969511c1e7c4a3958826dc1320fd1235d9c5dcc2cb1"
-    },
-    "ghcr.io/jonathan-tyler/containers/utils-agent:0": {
+    "ghcr.io/jonathan-tyler/containers/homebrew-packages:latest": {
       "version": "0.1.0",
-      "resolved": "ghcr.io/jonathan-tyler/containers/utils-agent@sha256:430176f718f917096966f84c5f5d18b400f7891c2b6ec113e6c36d608db944bf",
-      "integrity": "sha256:430176f718f917096966f84c5f5d18b400f7891c2b6ec113e6c36d608db944bf",
-      "dependsOn": [
-        "ghcr.io/jonathan-tyler/containers/utils-core:0"
-      ]
+      "resolved": "ghcr.io/jonathan-tyler/containers/homebrew-packages@sha256:8df40afdaf944f898deceae728512d3144e5e6c1316cbe2e29b8ed365ce8d56e",
+      "integrity": "sha256:8df40afdaf944f898deceae728512d3144e5e6c1316cbe2e29b8ed365ce8d56e"
     },
-    "ghcr.io/jonathan-tyler/containers/utils-core:0": {
-      "version": "0.1.3",
-      "resolved": "ghcr.io/jonathan-tyler/containers/utils-core@sha256:5e1ff9e93fb5a9bfe7cb9124575667117025ef22f92c2e6661ed94056880719e",
-      "integrity": "sha256:5e1ff9e93fb5a9bfe7cb9124575667117025ef22f92c2e6661ed94056880719e",
-      "dependsOn": [
-        "ghcr.io/jonathan-tyler/containers/fedora-dnf-repo:0"
-      ]
-    },
-    "ghcr.io/jonathan-tyler/containers/utils-human:0": {
-      "version": "0.1.1",
-      "resolved": "ghcr.io/jonathan-tyler/containers/utils-human@sha256:8454e6b2321ef166f49e565d18499f252a40b12206f61e15fa67e21e03c7dc82",
-      "integrity": "sha256:8454e6b2321ef166f49e565d18499f252a40b12206f61e15fa67e21e03c7dc82",
-      "dependsOn": [
-        "ghcr.io/jonathan-tyler/containers/fedora-dnf-repo:0",
-        "ghcr.io/jonathan-tyler/containers/utils-core:0"
-      ]
+    "ghcr.io/jonathan-tyler/containers/podman-in-podman:0": {
+      "version": "0.1.5",
+      "resolved": "ghcr.io/jonathan-tyler/containers/podman-in-podman@sha256:0076e76dbf9bc403c35a1fca651b7e59af0aa8358cf6741b05b02c897869930c",
+      "integrity": "sha256:0076e76dbf9bc403c35a1fca651b7e59af0aa8358cf6741b05b02c897869930c"
     }
   }
 }
