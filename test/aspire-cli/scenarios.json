@@ -1,0 +1,26 @@
+{
+  "npm-install": {
+    "build": {
+      "dockerfile": "aspire-cli/test/npm-install.Dockerfile"
+    },
+    "features": {
+      "aspire-cli": {}
+    }
+  },
+  "nuget-priority": {
+    "build": {
+      "dockerfile": "aspire-cli/test/nuget-priority.Dockerfile"
+    },
+    "features": {
+      "aspire-cli": {}
+    }
+  },
+  "mise-priority": {
+    "build": {
+      "dockerfile": "aspire-cli/test/mise-priority.Dockerfile"
+    },
+    "features": {
+      "aspire-cli": {}
+    }
+  }
+}

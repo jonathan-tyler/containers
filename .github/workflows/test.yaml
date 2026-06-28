@@ -25,6 +25,7 @@ jobs:
     strategy:
       matrix:
         features:
+          - aspire-cli
           - homebrew-packages
     steps:
       # actions/checkout@v5
