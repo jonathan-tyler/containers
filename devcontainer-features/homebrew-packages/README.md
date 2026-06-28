@@ -7,7 +7,7 @@ Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the H
 ```json
 "features": {
   "ghcr.io/jonathan-tyler/containers/homebrew-packages:0": {
-    "PACKAGES": "hello ripgrep"
+    "packages": "hello ripgrep"
   }
 }
 ```
@@ -16,8 +16,8 @@ Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the H
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| PACKAGES | Space-delimited Homebrew formula names to install. | string |  |
-| USERNAME | User that should own the temporary Homebrew tree while formulae are installed. | string | automatic |
+| packages | Space-delimited Homebrew formula names to install. | string |  |
+| username | User that should own the temporary Homebrew tree while formulae are installed. | string | automatic |
 
 ## Notes
 

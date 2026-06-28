@@ -5,12 +5,12 @@
   "documentationURL": "https://brew.sh/",
   "description": "Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the Homebrew manager files to keep the image smaller.",
   "options": {
-    "PACKAGES": {
+    "packages": {
       "type": "string",
       "default": "",
       "description": "Space-delimited Homebrew formula names to install."
     },
-    "USERNAME": {
+    "username": {
       "type": "string",
       "proposals": [
         "automatic",

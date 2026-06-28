@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-PACKAGES="${PACKAGES:-}"
-USERNAME="${USERNAME:-automatic}"
+packages="${packages:-}"
+username="${username:-automatic}"
 BREW_PREFIX="${BREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
 HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 FEATURE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -171,15 +171,15 @@ cleanupHomebrewManager() {
 
 requireRoot
 
-if [ -z "${PACKAGES//[[:space:]]/}" ]; then
+if [ -z "${packages//[[:space:]]/}" ]; then
     echo "No Homebrew packages requested. Skipping."
     exit 0
 fi
 
 ensureHomebrewPrerequisites
 
-read -r -a requested_packages <<< "${PACKAGES}"
-target_user="$(identifyNonRootUser "${USERNAME}")"
+read -r -a requested_packages <<< "${packages}"
+target_user="$(identifyNonRootUser "${username}")"
 if [ "${target_user}" = "root" ]; then
     target_user=1000
     echo "No non-root container user detected; installing Homebrew formulae as synthetic UID ${target_user}."
