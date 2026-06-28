@@ -24,6 +24,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       XDG_RUNTIME_DIR: /tmp/xdg
     steps:
+      # actions/checkout@v5
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
 
       - name: Prepare feature test layout
@@ -46,6 +47,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       XDG_RUNTIME_DIR: /tmp/xdg
     steps:
+      # actions/checkout@v5
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
 
       - name: Prepare feature test layout
