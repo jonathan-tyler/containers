@@ -11,7 +11,6 @@ Container images, automation, templates, and samples
 - 🐍 [python-dev](./images/python-dev): Python devcontainer image.
 - 🔷 [typescript-dev](./images/typescript-dev): TypeScript devcontainer image layered on the JavaScript dev image.
 - 🔷 [dotnet-dev](./images/dotnet-dev): .NET devcontainer image.
-- ✨ [devcontainer-samples/dotnet-aspire](./devcontainer-samples/dotnet-aspire): Aspire sample that launches a hello-world container through AppHost.
 - 🗄️ [devcontainer-samples/mssql-dev](./devcontainer-samples/mssql-dev): compose-backed SQL Server devcontainer sample.
 - 📨 [devcontainer-samples/smtp4dev](./devcontainer-samples/smtp4dev): compose-backed smtp4dev devcontainer sample.
 

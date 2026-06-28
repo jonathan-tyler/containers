@@ -35,7 +35,6 @@ jobs:
         feature:
           - podman-outside-of-podman
           - podman-in-podman
-          - dotnet-aspire-cli
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       XDG_RUNTIME_DIR: /tmp/xdg
