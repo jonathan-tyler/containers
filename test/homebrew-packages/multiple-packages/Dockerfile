@@ -1,1 +1,1 @@
-FROM fedora:42
+FROM docker.io/library/fedora:42

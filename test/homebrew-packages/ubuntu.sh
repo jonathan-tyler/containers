@@ -5,9 +5,8 @@ set -e
 source dev-container-features-test-lib
 
 check "hello" hello --version
-check "jq" jq --version
-check "linuxbrew user exists" bash -lc 'id -u linuxbrew >/dev/null 2>&1'
-check "linuxbrew home directory recorded" bash -lc 'test "$(awk -F: '\''$1 == "linuxbrew" { print $6; exit }'\'' /etc/passwd)" = "/home/linuxbrew"'
+check "ubuntu user exists" bash -lc 'id -u ubuntu >/dev/null 2>&1'
+check "homebrew parent owned by ubuntu" bash -lc 'test "$(stat -c %U /home/linuxbrew)" = "ubuntu"'
 check "brew removed" bash -lc '! command -v brew >/dev/null 2>&1'
 check "homebrew checkout removed" bash -lc '! test -e /home/linuxbrew/.linuxbrew/Homebrew'
 

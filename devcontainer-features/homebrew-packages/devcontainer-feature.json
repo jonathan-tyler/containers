@@ -1,6 +1,6 @@
 {
   "id": "homebrew-packages",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Homebrew Packages",
   "documentationURL": "https://brew.sh/",
   "description": "Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the Homebrew manager files to keep the image smaller.",

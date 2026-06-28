@@ -1,202 +1,38 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-set -euo pipefail
+set -eu
 
 packages="${PACKAGES:-}"
-username="${USERNAME:-automatic}"
-BREW_PREFIX="${BREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
-HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
-FEATURE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FEATURE_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 
-# shellcheck source=./lib.sh
-source "${FEATURE_DIR}/lib.sh"
-
-ensureHomebrewPrerequisites() {
-    local missing_packages=()
-
-    if ! commandExists curl; then
-        missing_packages+=(curl)
-    fi
-
-    if ! commandExists git; then
-        missing_packages+=(git)
-    fi
-
-    if ! commandExists file; then
-        missing_packages+=(file)
-    fi
-
-    if ! commandExists awk; then
-        missing_packages+=(gawk)
-    fi
-
-    if ! commandExists ps; then
-        missing_packages+=(procps-ng)
-    fi
-
-    if ! commandExists tar; then
-        missing_packages+=(tar)
-    fi
-
-    if ! commandExists gzip; then
-        missing_packages+=(gzip)
-    fi
-
-    if ! commandExists xz; then
-        missing_packages+=(xz)
-    fi
-
-    if [ "${#missing_packages[@]}" -gt 0 ]; then
-        if ! commandExists dnf; then
-            err "Missing Homebrew prerequisites (${missing_packages[*]}) and no dnf package manager is available to install them."
-            exit 1
-        fi
-
-        dnf -y install --setopt=install_weak_deps=False ca-certificates "${missing_packages[@]}"
-        dnf clean all
-    fi
-
-    if ! commandExists curl || ! commandExists git || ! commandExists file || ! commandExists tar || ! commandExists gzip; then
-        err "curl, git, file, tar, and gzip are required to bootstrap Homebrew."
-        exit 1
-    fi
-}
-
-ensureUserSwitchTool() {
-    if commandExists runuser || commandExists su || commandExists setpriv; then
-        return
-    fi
-
-    if ! commandExists dnf; then
-        err "Installing formulae as a non-root user requires runuser, su, or setpriv. None were found."
-        exit 1
-    fi
-
-    dnf -y install --setopt=install_weak_deps=False util-linux
-    dnf clean all
-
-    if ! commandExists runuser && ! commandExists su && ! commandExists setpriv; then
-        err "Installing formulae as a non-root user requires runuser, su, or setpriv."
-        exit 1
-    fi
-}
-
-prepareHomebrewPrefix() {
-    local username="$1"
-    local group="$2"
-    local prefix_parent
-
-    prefix_parent="$(dirname "${BREW_PREFIX}")"
-    install -d "${prefix_parent}" "${BREW_PREFIX}" /tmp/homebrew-cache
-    chown -R "${username}:${group}" "${prefix_parent}" /tmp/homebrew-cache
-}
-
-installHomebrew() {
-    local username="$1"
-
-    if [ -x "${BREW_PREFIX}/bin/brew" ]; then
-        return
-    fi
-
-    runAsUser "${username}" env HOMEBREW_NO_ASK=1 NONINTERACTIVE=1 CI=1 /bin/bash -c "$(curl -fsSL "${HOMEBREW_INSTALL_URL}")"
-}
-
-installFormulae() {
-    local username="$1"
-    shift
-
-    if [ "$#" -eq 0 ]; then
-        return
-    fi
-
-    runAsUser "${username}" env \
-        HOMEBREW_NO_ASK=1 \
-        NONINTERACTIVE=1 \
-        HOMEBREW_NO_ANALYTICS=1 \
-        HOMEBREW_NO_AUTO_UPDATE=1 \
-        HOMEBREW_NO_ENV_HINTS=1 \
-        HOMEBREW_NO_INSTALL_CLEANUP=1 \
-        HOMEBREW_CACHE=/tmp/homebrew-cache \
-        "${BREW_PREFIX}/bin/brew" install --formula "$@"
-
-    runAsUser "${username}" env \
-        HOMEBREW_NO_ANALYTICS=1 \
-        HOMEBREW_NO_AUTO_UPDATE=1 \
-        HOMEBREW_NO_ENV_HINTS=1 \
-        HOMEBREW_CACHE=/tmp/homebrew-cache \
-        "${BREW_PREFIX}/bin/brew" cleanup --prune=all --scrub
-}
-
-linkExecutables() {
-    local source_dir="$1"
-    local target_dir="$2"
-    local candidate
-    local name
-
-    [ -d "${source_dir}" ] || return
-
-    install -d "${target_dir}"
-
-    for candidate in "${source_dir}"/*; do
-        [ -e "${candidate}" ] || continue
-
-        name="${candidate##*/}"
-        if [ "${name}" = "brew" ]; then
-            continue
-        fi
-
-        ln -sf "${candidate}" "${target_dir}/${name}"
-    done
-}
-
-cleanupHomebrewManager() {
-    local target_home="$1"
-
-    rm -f "${BREW_PREFIX}/bin/brew"
-    rm -rf \
-        "${BREW_PREFIX}/Homebrew" \
-        "${BREW_PREFIX}/Caskroom" \
-        "${BREW_PREFIX}/var/homebrew" \
-        "${BREW_PREFIX}/etc/bash_completion.d/brew" \
-        "${BREW_PREFIX}/share/doc/homebrew" \
-        "${BREW_PREFIX}/share/fish/vendor_completions.d/brew.fish" \
-        "${BREW_PREFIX}/share/man/man1/brew.1" \
-        "${BREW_PREFIX}/share/zsh/site-functions/_brew" \
-        "/root/.cache/Homebrew" \
-        "${target_home}/.cache/Homebrew" \
-        /tmp/homebrew-cache
-
-    find "${BREW_PREFIX}" -type d -empty -delete 2>/dev/null || true
-}
-
-requireRoot
-
-if [ -z "${packages//[[:space:]]/}" ]; then
+if [ -z "$(printf '%s' "${packages}" | tr -d '[:space:]')" ]; then
     echo "No Homebrew packages requested. Skipping."
     exit 0
 fi
 
-ensureHomebrewPrerequisites
+if ! command -v bash >/dev/null 2>&1; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
 
-read -r -a requested_packages <<< "${packages}"
-target_user="$(identifyNonRootUser "${username}")"
-if [ "${target_user}" = "root" ]; then
-    target_user=1000
-    echo "No non-root container user detected; installing Homebrew formulae as synthetic UID ${target_user}."
+    case " ${ID:-} ${ID_LIKE:-} " in
+        *" alpine "*)
+            apk add --no-cache bash
+            ;;
+        *" ubuntu "*|*" debian "*)
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update
+            apt-get install -y --no-install-recommends bash
+            rm -rf /var/lib/apt/lists/*
+            ;;
+        *" fedora "*|*" rhel "*|*" centos "*|*" rocky "*|*" almalinux "*)
+            dnf -y install --setopt=install_weak_deps=False bash
+            dnf clean all
+            ;;
+        *)
+            echo "(!) Unsupported Linux base image: ${ID:-unknown} ${ID_LIKE:-}" >&2
+            exit 1
+            ;;
+    esac
 fi
 
-target_group="$(userGid "${target_user}")"
-target_home="$(userHome "${target_user}")"
-
-ensureUserSwitchTool
-
-prepareHomebrewPrefix "${target_user}" "${target_group}"
-installHomebrew "${target_user}"
-chown -R "${target_user}:${target_group}" "${BREW_PREFIX}"
-installFormulae "${target_user}" "${requested_packages[@]}"
-linkExecutables "${BREW_PREFIX}/bin" /usr/local/bin
-linkExecutables "${BREW_PREFIX}/sbin" /usr/local/sbin
-cleanupHomebrewManager "${target_home}"
-chown -R root:root "${BREW_PREFIX}"
-
-echo "Done!"
+exec bash "${FEATURE_DIR}/install-main.sh"

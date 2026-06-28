@@ -4,6 +4,34 @@ err() {
     echo "(!) $*" >&2
 }
 
+imageSupportFamily() {
+    local id=""
+    local id_like=""
+
+    if [ -r /etc/os-release ]; then
+        # shellcheck disable=SC1091
+        source /etc/os-release
+        id="${ID:-}"
+        id_like="${ID_LIKE:-}"
+    fi
+
+    case " ${id} ${id_like} " in
+        *" alpine "*)
+            echo "alpine"
+            ;;
+        *" ubuntu "*|*" debian "*)
+            echo "ubuntu"
+            ;;
+        *" fedora "*|*" rhel "*|*" centos "*|*" rocky "*|*" almalinux "*)
+            echo "fedora-rhel"
+            ;;
+        *)
+            err "Unsupported Linux base image: ${id:-unknown} ${id_like}"
+            exit 1
+            ;;
+    esac
+}
+
 requireRoot() {
     if [ "$(id -u)" -ne 0 ]; then
         err "Script must be run as root. Use sudo, su, or add 'USER root' to your Dockerfile before running this script."
@@ -13,6 +41,25 @@ requireRoot() {
 
 commandExists() {
     command -v "$1" >/dev/null 2>&1
+}
+
+homebrewBootstrapUser() {
+    echo "linuxbrew"
+}
+
+homebrewBootstrapUserHome() {
+    echo "/home/$(homebrewBootstrapUser)"
+}
+
+requireHomebrewPrerequisiteCommands() {
+    local required_command
+
+    for required_command in bash curl git file awk ps tar gzip xz; do
+        if ! commandExists "${required_command}"; then
+            err "${required_command} is required to bootstrap Homebrew."
+            exit 1
+        fi
+    done
 }
 
 isNumericId() {

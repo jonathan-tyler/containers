@@ -18,5 +18,15 @@
         "packages": "hello jq"
       }
     }
+  },
+  "ubuntu": {
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "homebrew-packages": {
+        "packages": "hello"
+      }
+    }
   }
 }
