@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-packages="${packages:-}"
-username="${username:-automatic}"
+packages="${PACKAGES:-}"
+username="${USERNAME:-automatic}"
 BREW_PREFIX="${BREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
 HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 FEATURE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

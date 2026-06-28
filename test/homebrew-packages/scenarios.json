@@ -5,7 +5,7 @@
     },
     "features": {
       "homebrew-packages": {
-        "PACKAGES": "hello"
+        "packages": "hello"
       }
     }
   },
@@ -15,7 +15,7 @@
     },
     "features": {
       "homebrew-packages": {
-        "PACKAGES": "hello jq"
+        "packages": "hello jq"
       }
     }
   }
