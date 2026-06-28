@@ -1,5 +1,5 @@
 {
-  "uid-65532": {
+  "red-hat-hardened-images": {
     "build": {
       "dockerfile": "Containerfile"
     },
