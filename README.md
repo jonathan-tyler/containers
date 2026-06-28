@@ -24,13 +24,20 @@ Container images, automation, templates, and samples
 
 - Use `.devcontainer/feature-ci/devcontainer.json` when you want a workspace that can run the feature test and pre-publish checks before pushing.
 - Start it with `dev up --overlay none --config .devcontainer/feature-ci/devcontainer.json`, or open that config directly in VS Code.
-- Inside that container, run `bash scripts/feature-ci/run.sh prepare` once if you want to refresh the scratch workspace manually.
-- Run `bash scripts/feature-ci/run.sh ci` to mirror the current `.github/workflows/test.yaml` jobs locally.
-- Run `bash scripts/feature-ci/run.sh job test-utils-core` to replay a single workflow job.
-- Run `bash scripts/feature-ci/run.sh feature homebrew-packages` to test one edited feature locally, including its scenarios. This is useful for features that are not yet part of the current workflow matrix.
-- Run `bash scripts/feature-ci/run.sh publish-check` to package `devcontainer-features/` locally without publishing anything. This is the local equivalent of the release workflow's packaging step.
-- Run `bash scripts/feature-ci/run.sh all` to execute both the local CI pass and the publish packaging check.
-- The runner writes its temporary `src` and `test` layout, Docker-to-Podman shim, and package output under `.scratch/feature-ci/`, which is already ignored by git.
+- Install `just`, `act`, `podman`, `devcontainer`, and `jq` in that environment before running the local commands.
+- Run `just prepare` once if you want to refresh the scratch workspace manually.
+- Run `just ci` to execute `.github/workflows/test.yaml` locally through `act`.
+- Run `just job test-utils-core` to replay one workflow job through `act`.
+- Run `just feature homebrew-packages` to test one edited feature locally, including its scenarios. This is the direct feature-validation path for work that is not covered by the current workflow matrix.
+- Run `just publish-check` to package `devcontainer-features/` locally without publishing anything. This is the local equivalent of the release workflow's packaging step.
+- Run `just all` to execute both the local workflow simulation and the publish packaging check.
+- `just ci` and `just job ...` keep `.github/workflows/test.yaml` as the source of truth. They point `act` at that workflow file directly instead of wrapping the workflow logic in another shell runner.
+- `just feature ...` and `just publish-check` are local-only developer conveniences. They keep the existing `devcontainer features test` and `devcontainer features package` behavior without changing the GitHub workflow.
+- The local commands write their temporary `src` and `test` layout, Docker-to-Podman shim, package output, and any fallback Podman runtime state under `.scratch/feature-ci/`, which is already ignored by git.
+- `act` defaults to `ghcr.io/catthehacker/ubuntu:act-latest` for the `ubuntu-latest` runner image. Override it with `ACT_RUNNER_IMAGE` if you need a different local image.
+- The local `act` flow expects a Podman-backed Docker API socket at `${XDG_RUNTIME_DIR}/podman/podman.sock`. If that socket is missing, `just` starts `podman system service` there and reuses the same path for repeated runs.
+- The local `devcontainer` flow uses a Docker compatibility shim under `.scratch/feature-ci/bin/docker` so `devcontainer features test` can keep talking to Podman without changing the workflow commands.
+- Inside the `feature-ci` devcontainer you are still doing nested container work through the mounted host Podman stack, with the repo's existing `--userns=keep-id`, FUSE, and TUN settings. That is convenient for local validation, but it keeps the same reduced isolation trade-off as before.
 
 ## Shared Toolchains
 

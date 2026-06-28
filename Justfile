@@ -1,0 +1,100 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+project_root := justfile_directory()
+scratch_root := project_root + "/.scratch/feature-ci"
+feature_project_root := scratch_root + "/project"
+package_output_root := scratch_root + "/package"
+shim_dir := scratch_root + "/bin"
+workflow_file := project_root + "/.github/workflows/test.yaml"
+workflow_base_image := env_var_or_default("BASE_IMAGE", "fedora:42")
+workflow_remote_user := env_var_or_default("REMOTE_USER", "root")
+xdg_runtime_dir := env_var_or_default("XDG_RUNTIME_DIR", scratch_root + "/xdg")
+podman_socket_path := xdg_runtime_dir + "/podman/podman.sock"
+podman_service_log_file := scratch_root + "/podman-system-service.log"
+act_runner_image := env_var_or_default("ACT_RUNNER_IMAGE", "ghcr.io/catthehacker/ubuntu:act-latest")
+
+default:
+    @just --list
+
+prepare: check-feature-tools prepare-feature-project prepare-runtime
+    @printf 'feature-ci scratch workspace ready at %s\n' "{{scratch_root}}"
+
+ci: check-act-tools prepare-runtime
+    @podman_service_pid=''; \
+    if [ ! -S "{{podman_socket_path}}" ] || ! podman --url "unix://{{podman_socket_path}}" info >/dev/null 2>&1; then \
+        rm -f "{{podman_socket_path}}"; \
+        nohup podman system service --time=0 "unix://{{podman_socket_path}}" >"{{podman_service_log_file}}" 2>&1 & \
+        podman_service_pid=$!; \
+        trap 'if [ -n "$podman_service_pid" ]; then kill "$podman_service_pid" 2>/dev/null || true; fi' EXIT; \
+        for _ in 1 2 3 4 5 6 7 8 9 10; do \
+            if podman --url "unix://{{podman_socket_path}}" info >/dev/null 2>&1; then \
+                break; \
+            fi; \
+            sleep 1; \
+        done; \
+        if ! podman --url "unix://{{podman_socket_path}}" info >/dev/null 2>&1; then \
+            printf 'feature-ci: podman service did not become ready, see %s\n' "{{podman_service_log_file}}" >&2; \
+            exit 1; \
+        fi; \
+    fi; \
+    DOCKER_HOST="unix://{{podman_socket_path}}" PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" act workflow_dispatch --workflows "{{workflow_file}}" -P ubuntu-latest="{{act_runner_image}}"
+
+job job_name: check-act-tools prepare-runtime
+    @podman_service_pid=''; \
+    if [ ! -S "{{podman_socket_path}}" ] || ! podman --url "unix://{{podman_socket_path}}" info >/dev/null 2>&1; then \
+        rm -f "{{podman_socket_path}}"; \
+        nohup podman system service --time=0 "unix://{{podman_socket_path}}" >"{{podman_service_log_file}}" 2>&1 & \
+        podman_service_pid=$!; \
+        trap 'if [ -n "$podman_service_pid" ]; then kill "$podman_service_pid" 2>/dev/null || true; fi' EXIT; \
+        for _ in 1 2 3 4 5 6 7 8 9 10; do \
+            if podman --url "unix://{{podman_socket_path}}" info >/dev/null 2>&1; then \
+                break; \
+            fi; \
+            sleep 1; \
+        done; \
+        if ! podman --url "unix://{{podman_socket_path}}" info >/dev/null 2>&1; then \
+            printf 'feature-ci: podman service did not become ready, see %s\n' "{{podman_service_log_file}}" >&2; \
+            exit 1; \
+        fi; \
+    fi; \
+    DOCKER_HOST="unix://{{podman_socket_path}}" PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" act workflow_dispatch --workflows "{{workflow_file}}" --job "{{job_name}}" -P ubuntu-latest="{{act_runner_image}}"
+
+feature +features: prepare
+    PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" devcontainer features test --project-folder "{{feature_project_root}}" --skip-duplicated --base-image "{{workflow_base_image}}" --remote-user "{{workflow_remote_user}}" -f {{features}}
+
+publish-check: prepare
+    @rm -rf "{{package_output_root}}"
+    PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" devcontainer features package "{{project_root}}/devcontainer-features" --output-folder "{{package_output_root}}" --force-clean-output-folder
+    test -f "{{package_output_root}}/devcontainer-collection.json"
+
+all:
+    just ci
+    just publish-check
+
+[private]
+check-feature-tools:
+    @for tool in bash devcontainer jq podman; do \
+        command -v "$tool" >/dev/null 2>&1 || { printf 'feature-ci: missing required tool: %s\n' "$tool" >&2; exit 1; }; \
+    done
+
+[private]
+check-act-tools:
+    @for tool in bash act podman; do \
+        command -v "$tool" >/dev/null 2>&1 || { printf 'feature-ci: missing required tool: %s\n' "$tool" >&2; exit 1; }; \
+    done
+
+[private]
+prepare-feature-project:
+    @mkdir -p "{{feature_project_root}}"
+    @rm -rf "{{feature_project_root}}/src" "{{feature_project_root}}/test"
+    @ln -s "{{project_root}}/devcontainer-features" "{{feature_project_root}}/src"
+    @ln -s "{{project_root}}/test" "{{feature_project_root}}/test"
+
+[private]
+prepare-runtime:
+    @mkdir -p "{{shim_dir}}" "{{xdg_runtime_dir}}/podman"
+    @ln -sf "$(command -v podman)" "{{shim_dir}}/docker"
+    @if [ ! -S "{{podman_socket_path}}" ]; then \
+        rm -f "{{podman_socket_path}}"; \
+        : > "{{podman_socket_path}}"; \
+    fi

@@ -17,5 +17,5 @@
   },
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
-  "postCreateCommand": "bash scripts/feature-ci/run.sh prepare"
+  "postCreateCommand": "just prepare"
 }

@@ -104,6 +104,11 @@ runAsUser() {
         return
     fi
 
+    if commandExists setpriv; then
+        env HOME="${home_dir}" USER="${username}" LOGNAME="${username}" PATH="${PATH}" setpriv --reuid "$(id -u "${username}")" --regid "$(id -g "${username}")" --init-groups "$@"
+        return
+    fi
+
     if commandExists runuser; then
         runuser -u "${username}" -- env HOME="${home_dir}" USER="${username}" LOGNAME="${username}" PATH="${PATH}" "$@"
         return
@@ -118,11 +123,6 @@ runAsUser() {
         done
 
         su -s /bin/bash "${username}" -c "export HOME=$(printf '%q' "${home_dir}") USER=$(printf '%q' "${username}") LOGNAME=$(printf '%q' "${username}") PATH=$(printf '%q' "${PATH}"); exec${escaped_command}"
-        return
-    fi
-
-    if commandExists setpriv; then
-        env HOME="${home_dir}" USER="${username}" LOGNAME="${username}" PATH="${PATH}" setpriv --reuid "$(id -u "${username}")" --regid "$(id -g "${username}")" --init-groups "$@"
         return
     fi
 

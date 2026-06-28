@@ -1,4 +1,4 @@
 FROM registry.access.redhat.com/hi/core-runtime:latest-builder
 
-RUN groupadd --gid 65532 devcontainer \
-    && useradd --uid 65532 --gid 65532 --create-home --shell /bin/bash devcontainer
+# Red Hat Hardened Images under registry.access.redhat.com/hi/ already provide
+# the UID 65532 non-root runtime user with HOME=/tmp and no /home/<user> directory.
