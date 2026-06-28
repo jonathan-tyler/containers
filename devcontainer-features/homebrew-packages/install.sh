@@ -81,12 +81,24 @@ ensureUserSwitchTool() {
     fi
 }
 
+prepareHomebrewPrefix() {
+    local username="$1"
+    local group="$2"
+    local prefix_parent
+
+    prefix_parent="$(dirname "${BREW_PREFIX}")"
+    install -d "${prefix_parent}" "${BREW_PREFIX}" /tmp/homebrew-cache
+    chown -R "${username}:${group}" "${prefix_parent}" /tmp/homebrew-cache
+}
+
 installHomebrew() {
+    local username="$1"
+
     if [ -x "${BREW_PREFIX}/bin/brew" ]; then
         return
     fi
 
-    HOMEBREW_NO_ASK=1 NONINTERACTIVE=1 CI=1 /bin/bash -c "$(curl -fsSL "${HOMEBREW_INSTALL_URL}")"
+    runAsUser "${username}" env HOMEBREW_NO_ASK=1 NONINTERACTIVE=1 CI=1 /bin/bash -c "$(curl -fsSL "${HOMEBREW_INSTALL_URL}")"
 }
 
 installFormulae() {
@@ -168,16 +180,18 @@ ensureHomebrewPrerequisites
 
 read -r -a requested_packages <<< "${PACKAGES}"
 target_user="$(identifyNonRootUser "${USERNAME}")"
-target_group="$(id -gn "${target_user}")"
-target_home="$(userHome "${target_user}")"
-
 if [ "${target_user}" = "root" ]; then
-    echo "No non-root container user detected; installing Homebrew formulae as root."
-else
-    ensureUserSwitchTool
+    target_user=1000
+    echo "No non-root container user detected; installing Homebrew formulae as synthetic UID ${target_user}."
 fi
 
-installHomebrew
+target_group="$(userGid "${target_user}")"
+target_home="$(userHome "${target_user}")"
+
+ensureUserSwitchTool
+
+prepareHomebrewPrefix "${target_user}" "${target_group}"
+installHomebrew "${target_user}"
 chown -R "${target_user}:${target_group}" "${BREW_PREFIX}"
 installFormulae "${target_user}" "${requested_packages[@]}"
 linkExecutables "${BREW_PREFIX}/bin" /usr/local/bin

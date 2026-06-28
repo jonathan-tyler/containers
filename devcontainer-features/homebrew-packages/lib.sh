@@ -15,6 +15,17 @@ commandExists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+isNumericId() {
+    case "${1:-}" in
+        ''|*[!0-9]*)
+            return 1
+            ;;
+        *)
+            return 0
+            ;;
+    esac
+}
+
 firstUserForUid() {
     local uid="$1"
 
@@ -31,12 +42,12 @@ identifyNonRootUser() {
             return
         fi
 
-        if ! id -u "${requested_user}" >/dev/null 2>&1; then
+        if ! id -u "${requested_user}" >/dev/null 2>&1 && ! isNumericId "${requested_user}"; then
             err "Requested user '${requested_user}' does not exist."
             exit 1
         fi
 
-        if [ "$(id -u "${requested_user}")" -eq 0 ]; then
+        if [ "$(userUid "${requested_user}")" -eq 0 ]; then
             echo "root"
             return
         fi
@@ -46,6 +57,8 @@ identifyNonRootUser() {
     fi
 
     for candidate in \
+        "${_REMOTE_USER:-}" \
+        "${_CONTAINER_USER:-}" \
         "$(firstUserForUid 65532)" \
         "vscode" \
         "node" \
@@ -58,7 +71,7 @@ identifyNonRootUser() {
         "app" \
         "user" \
         "$(firstUserForUid 1000)"; do
-        if [ -n "${candidate}" ] && id -u "${candidate}" >/dev/null 2>&1 && [ "$(id -u "${candidate}")" -ne 0 ]; then
+        if [ -n "${candidate}" ] && { id -u "${candidate}" >/dev/null 2>&1 || isNumericId "${candidate}"; } && [ "$(userUid "${candidate}")" -ne 0 ]; then
             echo "${candidate}"
             return
         fi
@@ -73,6 +86,47 @@ identifyNonRootUser() {
     echo "root"
 }
 
+userUid() {
+    local username="$1"
+
+    if id -u "${username}" >/dev/null 2>&1; then
+        id -u "${username}"
+        return
+    fi
+
+    if isNumericId "${username}"; then
+        echo "${username}"
+        return
+    fi
+
+    err "Unable to determine UID for '${username}'."
+    exit 1
+}
+
+userGid() {
+    local username="$1"
+    local group_id
+
+    if id -u "${username}" >/dev/null 2>&1; then
+        id -g "${username}"
+        return
+    fi
+
+    group_id="$(awk -F: -v target_user="${username}" '$1 == target_user { print $4; exit }' /etc/passwd)"
+    if [ -n "${group_id}" ]; then
+        echo "${group_id}"
+        return
+    fi
+
+    if isNumericId "${username}"; then
+        echo 0
+        return
+    fi
+
+    err "Unable to determine group for '${username}'."
+    exit 1
+}
+
 userHome() {
     local username="$1"
     local home_dir
@@ -83,8 +137,23 @@ userHome() {
         return
     fi
 
+    if [ "${_REMOTE_USER:-}" = "${username}" ] && [ -n "${_REMOTE_USER_HOME:-}" ]; then
+        echo "${_REMOTE_USER_HOME}"
+        return
+    fi
+
+    if [ "${_CONTAINER_USER:-}" = "${username}" ] && [ -n "${_CONTAINER_USER_HOME:-}" ]; then
+        echo "${_CONTAINER_USER_HOME}"
+        return
+    fi
+
     if [ "${username}" = "root" ]; then
         echo "/root"
+        return
+    fi
+
+    if isNumericId "${username}"; then
+        echo "/tmp"
         return
     fi
 
@@ -95,9 +164,13 @@ userHome() {
 runAsUser() {
     local username="$1"
     local home_dir
+    local uid
+    local gid
     shift
 
     home_dir="$(userHome "${username}")"
+    uid="$(userUid "${username}")"
+    gid="$(userGid "${username}")"
 
     if [ "${username}" = "root" ]; then
         env HOME="${home_dir}" USER="${username}" LOGNAME="${username}" PATH="${PATH}" "$@"
@@ -105,7 +178,11 @@ runAsUser() {
     fi
 
     if commandExists setpriv; then
-        env HOME="${home_dir}" USER="${username}" LOGNAME="${username}" PATH="${PATH}" setpriv --reuid "$(id -u "${username}")" --regid "$(id -g "${username}")" --init-groups "$@"
+        if id -u "${username}" >/dev/null 2>&1; then
+            env HOME="${home_dir}" USER="${username}" LOGNAME="${username}" PATH="${PATH}" setpriv --reuid "${uid}" --regid "${gid}" --init-groups "$@"
+        else
+            env HOME="${home_dir}" USER="${username}" LOGNAME="${username}" PATH="${PATH}" setpriv --reuid "${uid}" --regid "${gid}" --clear-groups "$@"
+        fi
         return
     fi
 

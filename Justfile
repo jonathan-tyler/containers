@@ -12,6 +12,7 @@ xdg_runtime_dir := env_var_or_default("XDG_RUNTIME_DIR", scratch_root + "/xdg")
 podman_socket_path := xdg_runtime_dir + "/podman/podman.sock"
 podman_service_log_file := scratch_root + "/podman-system-service.log"
 act_runner_image := env_var_or_default("ACT_RUNNER_IMAGE", "ghcr.io/catthehacker/ubuntu:act-latest")
+act_tmp_dir := scratch_root + "/tmp"
 
 default:
     @just --list
@@ -37,7 +38,7 @@ ci: check-act-tools prepare-runtime
             exit 1; \
         fi; \
     fi; \
-    DOCKER_HOST="unix://{{podman_socket_path}}" PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" act workflow_dispatch --workflows "{{workflow_file}}" -P ubuntu-latest="{{act_runner_image}}"
+    DOCKER_HOST="unix://{{podman_socket_path}}" PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" TMPDIR="{{act_tmp_dir}}" TMP="{{act_tmp_dir}}" TEMP="{{act_tmp_dir}}" act workflow_dispatch --bind --env TMPDIR="{{act_tmp_dir}}" --env TMP="{{act_tmp_dir}}" --env TEMP="{{act_tmp_dir}}" --workflows "{{workflow_file}}" -P ubuntu-latest="{{act_runner_image}}"
 
 job job_name: check-act-tools prepare-runtime
     @podman_service_pid=''; \
@@ -57,7 +58,7 @@ job job_name: check-act-tools prepare-runtime
             exit 1; \
         fi; \
     fi; \
-    DOCKER_HOST="unix://{{podman_socket_path}}" PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" act workflow_dispatch --workflows "{{workflow_file}}" --job "{{job_name}}" -P ubuntu-latest="{{act_runner_image}}"
+    DOCKER_HOST="unix://{{podman_socket_path}}" PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" TMPDIR="{{act_tmp_dir}}" TMP="{{act_tmp_dir}}" TEMP="{{act_tmp_dir}}" act workflow_dispatch --bind --env TMPDIR="{{act_tmp_dir}}" --env TMP="{{act_tmp_dir}}" --env TEMP="{{act_tmp_dir}}" --workflows "{{workflow_file}}" --job "{{job_name}}" -P ubuntu-latest="{{act_runner_image}}"
 
 feature +features: prepare
     PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" devcontainer features test --project-folder "{{feature_project_root}}" --skip-duplicated --base-image "{{workflow_base_image}}" --remote-user "{{workflow_remote_user}}" -f {{features}}
@@ -87,12 +88,12 @@ check-act-tools:
 prepare-feature-project:
     @mkdir -p "{{feature_project_root}}"
     @rm -rf "{{feature_project_root}}/src" "{{feature_project_root}}/test"
-    @ln -s "{{project_root}}/devcontainer-features" "{{feature_project_root}}/src"
-    @ln -s "{{project_root}}/test" "{{feature_project_root}}/test"
+    @cp -a "{{project_root}}/devcontainer-features" "{{feature_project_root}}/src"
+    @cp -a "{{project_root}}/test" "{{feature_project_root}}/test"
 
 [private]
 prepare-runtime:
-    @mkdir -p "{{shim_dir}}" "{{xdg_runtime_dir}}/podman"
+    @mkdir -p "{{shim_dir}}" "{{xdg_runtime_dir}}/podman" "{{act_tmp_dir}}"
     @ln -sf "$(command -v podman)" "{{shim_dir}}/docker"
     @if [ ! -S "{{podman_socket_path}}" ]; then \
         rm -f "{{podman_socket_path}}"; \
