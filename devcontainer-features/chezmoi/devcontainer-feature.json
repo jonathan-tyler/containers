@@ -1,7 +1,0 @@
-{
-  "id": "chezmoi",
-  "version": "0.1.0",
-  "name": "Chezmoi",
-  "documentationURL": "https://www.chezmoi.io/",
-  "description": "Install chezmoi for managing dotfiles in dev containers."
-}

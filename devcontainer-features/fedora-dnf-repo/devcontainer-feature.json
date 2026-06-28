@@ -1,6 +1,0 @@
-{
-  "id": "fedora-dnf-repo",
-  "version": "0.1.1",
-  "name": "Fedora DNF Repo",
-  "description": "Write a Fedora DNF/YUM repo file for dnf-based Fedora and RHEL-family images."
-}
