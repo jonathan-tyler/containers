@@ -86,7 +86,7 @@ installHomebrew() {
         return
     fi
 
-    NONINTERACTIVE=1 CI=1 /bin/bash -c "$(curl -fsSL "${HOMEBREW_INSTALL_URL}")"
+    HOMEBREW_NO_ASK=1 NONINTERACTIVE=1 CI=1 /bin/bash -c "$(curl -fsSL "${HOMEBREW_INSTALL_URL}")"
 }
 
 installFormulae() {
@@ -98,6 +98,8 @@ installFormulae() {
     fi
 
     runAsUser "${username}" env \
+        HOMEBREW_NO_ASK=1 \
+        NONINTERACTIVE=1 \
         HOMEBREW_NO_ANALYTICS=1 \
         HOMEBREW_NO_AUTO_UPDATE=1 \
         HOMEBREW_NO_ENV_HINTS=1 \
