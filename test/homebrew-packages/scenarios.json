@@ -44,6 +44,17 @@
       }
     }
   },
+  "devcontainers-config": {
+    "build": {
+      "dockerfile": "Containerfile"
+    },
+    "features": {
+      "homebrew-packages": {
+        "packages": "bat difftastic eza fd fzf git-delta jq lazygit neovim opencode sesh starship tree-sitter-cli tmux yazi zoxide zsh zsh-vi-mode zsh-autosuggestions",
+        "username": "nonroot"
+      }
+    }
+  },
   "ubuntu": {
     "build": {
       "dockerfile": "Containerfile"
