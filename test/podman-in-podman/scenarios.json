@@ -15,6 +15,14 @@
       "podman-in-podman": {}
     }
   },
+  "fedora": {
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "podman-in-podman": {}
+    }
+  },
   "no-socket-mount": {
     "build": {
       "dockerfile": "Dockerfile"

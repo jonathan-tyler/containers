@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+
+USERNAME="${USERNAME:-${_REMOTE_USER:-automatic}}"
+PREFERRED_UID="65532"
+PODMAN_USER="podman"
+SUBID_RANGE_MAX="65536"
+
+err() {
+    echo "(!) $*" >&2
+}
+
+requireRoot() {
+    if [ "$(id -u)" -ne 0 ]; then
+        err "Script must be run as root. Use sudo, su, or add 'USER root' to your Dockerfile before running this script."
+        exit 1
+    fi
+}
+
+commandExists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+firstUserForUid() {
+    local uid="$1"
+
+    grep -m1 "^[^:]*:[^:]*:${uid}:" /etc/passwd 2>/dev/null | cut -d: -f1 || true
+}
+
+isNumericId() {
+    case "${1:-}" in
+        ''|*[!0-9]*)
+            return 1
+            ;;
+        *)
+            return 0
+            ;;
+    esac
+}
+
+resolveRuntimeUser() {
+    local candidate="${USERNAME}"
+    local preferred_user
+    local current_user
+
+    if [ "${candidate}" = "none" ]; then
+        echo root
+        return
+    fi
+
+    if [ "${candidate}" = "${PREFERRED_UID}" ]; then
+        preferred_user="$(firstUserForUid "${PREFERRED_UID}")"
+        if [ -n "${preferred_user}" ]; then
+            echo "${preferred_user}"
+            return
+        fi
+    fi
+
+    if [ "${candidate}" = "auto" ] || [ "${candidate}" = "automatic" ] || [ "${candidate}" = "root" ]; then
+        preferred_user="$(firstUserForUid "${PREFERRED_UID}")"
+        if [ -n "${preferred_user}" ]; then
+            echo "${preferred_user}"
+            return
+        fi
+
+        for current_user in \
+            "${_REMOTE_USER:-}" \
+            "${_CONTAINER_USER:-}" \
+            "${PREFERRED_UID}" \
+            vscode \
+            node \
+            codespace \
+            devcontainer \
+            nonroot \
+            "$(firstUserForUid 1000)"; do
+            if [ -n "${current_user}" ] && { id -u "${current_user}" >/dev/null 2>&1 || isNumericId "${current_user}"; }; then
+                if [ "$(id -u "${current_user}" 2>/dev/null || printf '%s\n' "${current_user}")" != "0" ]; then
+                    echo "${current_user}"
+                    return
+                fi
+            fi
+        done
+
+        echo root
+        return
+    fi
+
+    if id -u "${candidate}" >/dev/null 2>&1; then
+        if [ "$(id -u "${candidate}")" = "0" ]; then
+            echo root
+            return
+        fi
+
+        echo "${candidate}"
+        return
+    fi
+
+    preferred_user="$(firstUserForUid "${candidate}")"
+    if [ -n "${preferred_user}" ]; then
+        echo "${preferred_user}"
+        return
+    fi
+
+    if isNumericId "${candidate}"; then
+        if [ "${candidate}" = "0" ]; then
+            echo root
+            return
+        fi
+
+        echo "${candidate}"
+        return
+    fi
+
+    err "Requested user '${candidate}' does not exist."
+    exit 1
+}
+
+replaceRootlessSubids() {
+    local user_name="$1"
+    local file_path="$2"
+    local user_id
+    local tmp_file
+
+    if id -u "${user_name}" >/dev/null 2>&1; then
+        user_id="$(id -u "${user_name}")"
+    elif isNumericId "${user_name}"; then
+        user_id="${user_name}"
+    else
+        err "Unable to determine UID for ${user_name}"
+        exit 1
+    fi
+
+    tmp_file="$(mktemp)"
+
+    touch "${file_path}"
+    grep -vE "^${user_name}:" "${file_path}" >"${tmp_file}" || true
+
+    if [ "${user_id}" -le 1 ] || [ "${user_id}" -gt "${SUBID_RANGE_MAX}" ]; then
+        printf '%s:%s:%s\n' "${user_name}" 1 "${SUBID_RANGE_MAX}" >>"${tmp_file}"
+    else
+        printf '%s:%s:%s\n' "${user_name}" 1 "$((user_id - 1))" >>"${tmp_file}"
+        printf '%s:%s:%s\n' "${user_name}" "$((user_id + 1))" "$((SUBID_RANGE_MAX - user_id))" >>"${tmp_file}"
+    fi
+
+    cat "${tmp_file}" >"${file_path}"
+    rm -f "${tmp_file}"
+}
+
+ensurePodmanUser() {
+    if id -u "${PODMAN_USER}" >/dev/null 2>&1; then
+        return
+    fi
+
+    if ! commandExists useradd; then
+        installFedoraRhelPackages shadow-utils
+    fi
+
+    useradd --create-home --shell /bin/bash "${PODMAN_USER}"
+}
+
+writePodmanConfigs() {
+    local fuse_overlayfs_path="$1"
+
+    mkdir -p \
+        /etc/containers \
+        "/home/${PODMAN_USER}/.config/containers" \
+        "/home/${PODMAN_USER}/.local/share/containers" \
+        /usr/local/share \
+        /var/lib/containers
+
+    cat >/etc/containers/containers.conf <<'EOF'
+[engine]
+cgroup_manager = "cgroupfs"
+events_logger = "file"
+EOF
+
+    cat >/etc/containers/storage.conf <<EOF
+[storage]
+driver = "overlay"
+
+[storage.options]
+mount_program = "${fuse_overlayfs_path}"
+
+[storage.options.overlay]
+mountopt = "nodev,fsync=0"
+EOF
+}
+
+writeInitScript() {
+    cat >/usr/local/share/podman-in-podman-init.sh <<'EOF'
+#!/usr/bin/env bash
+
+set -e
+
+if [ "$(id -u)" -ne 0 ] && [ -z "${XDG_RUNTIME_DIR:-}" ]; then
+    export XDG_RUNTIME_DIR="/tmp/podman-run-$(id -u)"
+fi
+
+if [ -n "${XDG_RUNTIME_DIR:-}" ]; then
+    mkdir -p "${XDG_RUNTIME_DIR}"
+    chmod 700 "${XDG_RUNTIME_DIR}"
+fi
+
+exec "$@"
+EOF
+
+    chmod +x /usr/local/share/podman-in-podman-init.sh
+}
+
+configureRootlessUsers() {
+    local resolved_user="$1"
+
+    replaceRootlessSubids "${PODMAN_USER}" /etc/subuid
+    replaceRootlessSubids "${PODMAN_USER}" /etc/subgid
+
+    if [ "${resolved_user}" != "root" ] && [ "${resolved_user}" != "${PODMAN_USER}" ]; then
+        replaceRootlessSubids "${resolved_user}" /etc/subuid
+        replaceRootlessSubids "${resolved_user}" /etc/subgid
+    fi
+
+    chown -R "${PODMAN_USER}:${PODMAN_USER}" "/home/${PODMAN_USER}"
+}
