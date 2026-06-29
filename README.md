@@ -28,6 +28,7 @@ Container images, automation, templates, and samples
 - Run `just prepare` once if you want to refresh the scratch workspace manually.
 - Run `just ci` to execute `.github/workflows/test.yaml` locally through `act`.
 - Run `just feature homebrew-packages` to test one edited feature locally, including its scenarios. This is the direct feature-validation path for work that is not covered by the current workflow matrix.
+- Run `just podman-in-podman-smoke` to exercise the host-side `devcontainer up` / `devcontainer exec` smoke path for the `podman-in-podman` feature through the local Docker-to-Podman shim.
 - Run `just publish-check` to package `devcontainer-features/` locally without publishing anything. This is the local equivalent of the release workflow's packaging step.
 - Run `just all` to execute both the local workflow simulation and the publish packaging check.
 - `just ci` and `just job ...` keep `.github/workflows/test.yaml` as the source of truth. They point `act` at that workflow file directly instead of wrapping the workflow logic in another shell runner.

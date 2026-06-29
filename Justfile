@@ -63,6 +63,9 @@ job job_name: check-act-tools prepare-runtime
 feature +features: prepare
     PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" devcontainer features test --project-folder "{{feature_project_root}}" --skip-duplicated --base-image "{{workflow_base_image}}" --remote-user "{{workflow_remote_user}}" -f {{features}}
 
+podman-in-podman-smoke: prepare
+    PATH="{{shim_dir}}:$PATH" XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" test/podman-in-podman/devcontainer-cli-smoke.sh
+
 publish-check: prepare
     @rm -rf "{{package_output_root}}"
     PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" devcontainer features package "{{project_root}}/devcontainer-features" --output-folder "{{package_output_root}}" --force-clean-output-folder
