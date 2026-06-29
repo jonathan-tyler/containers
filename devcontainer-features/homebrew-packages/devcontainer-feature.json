@@ -1,9 +1,9 @@
 {
   "id": "homebrew-packages",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "name": "Homebrew Packages",
   "documentationURL": "https://brew.sh/",
-  "description": "Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the Homebrew manager files to keep the image smaller.",
+  "description": "Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the Homebrew manager files and default cache to keep the image smaller.",
   "options": {
     "packages": {
       "type": "string",
@@ -23,6 +23,11 @@
       ],
       "default": "automatic",
       "description": "User that should own the temporary Homebrew tree while formulae are installed."
+    },
+    "cache_directory": {
+      "type": "string",
+      "default": "/tmp/homebrew-cache",
+      "description": "Directory used for Homebrew bottle downloads during install. Point this at a persistent path if you want to reuse bottles between runs."
     }
   }
 }

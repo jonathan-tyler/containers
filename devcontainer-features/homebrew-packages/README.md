@@ -18,10 +18,12 @@ Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the H
 |-----|-----|-----|-----|
 | packages | Space-delimited Homebrew formula names to install. | string |  |
 | username | User that should own the temporary Homebrew tree while formulae are installed. | string | automatic |
+| cache_directory | Directory used for Homebrew bottle downloads during install. Point this at a persistent path if you want to reuse bottles between runs. | string | /tmp/homebrew-cache |
 
 ## Notes
 
-- The feature bootstraps Homebrew under `/home/linuxbrew/.linuxbrew`, installs the requested formulae, links any linked executables into `/usr/local/bin` and `/usr/local/sbin`, then removes the Homebrew manager checkout and caches.
+- The feature bootstraps Homebrew under `/home/linuxbrew/.linuxbrew`, installs the requested formulae, links any linked executables into `/usr/local/bin` and `/usr/local/sbin`, then removes the Homebrew manager checkout and the default temporary cache.
+- Set `cache_directory` to a stable path if you want to keep bottle downloads around for later runs; that path is left in place during cleanup.
 - If Homebrew is already present in the image, the feature reuses that installation instead of bootstrapping a second copy.
 - Formula payloads remain under `/home/linuxbrew/.linuxbrew` because that is where Homebrew installs Cellar and `opt` content on Linux.
 - Automatic user detection prefers existing non-root users such as `vscode`, `node`, `codespace`, `devcontainer`, `nonroot`, and UID `65532` accounts before falling back to a temporary `linuxbrew` bootstrap user when the image only has `root`.

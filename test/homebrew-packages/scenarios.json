@@ -29,6 +29,17 @@
       }
     }
   },
+  "custom-cache-directory": {
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "homebrew-packages": {
+        "packages": "hello",
+        "cache_directory": "/var/cache/homebrew"
+      }
+    }
+  },
   "ubuntu": {
     "build": {
       "dockerfile": "Dockerfile"

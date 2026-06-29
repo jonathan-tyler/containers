@@ -5,6 +5,7 @@ set -euo pipefail
 packages="${PACKAGES:-}"
 username="${USERNAME:-automatic}"
 BREW_PREFIX="${BREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
+homebrew_cache_directory="${CACHE_DIRECTORY:-${HOMEBREW_CACHE_DIR:-/tmp/homebrew-cache}}"
 HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 FEATURE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -20,11 +21,12 @@ fi
 prepareHomebrewPrefix() {
     local username="$1"
     local group="$2"
+    local cache_directory="$3"
     local prefix_parent
 
     prefix_parent="$(dirname "${BREW_PREFIX}")"
-    install -d "${prefix_parent}" "${BREW_PREFIX}" /tmp/homebrew-cache
-    chown -R "${username}:${group}" "${prefix_parent}" /tmp/homebrew-cache
+    install -d "${prefix_parent}" "${BREW_PREFIX}" "${cache_directory}"
+    chown -R "${username}:${group}" "${prefix_parent}" "${cache_directory}"
 }
 
 installHomebrew() {
@@ -39,6 +41,8 @@ installHomebrew() {
 
 installFormulae() {
     local username="$1"
+    local cache_directory="$2"
+    shift
     shift
 
     if [ "$#" -eq 0 ]; then
@@ -52,14 +56,14 @@ installFormulae() {
         HOMEBREW_NO_AUTO_UPDATE=1 \
         HOMEBREW_NO_ENV_HINTS=1 \
         HOMEBREW_NO_INSTALL_CLEANUP=1 \
-        HOMEBREW_CACHE=/tmp/homebrew-cache \
+        HOMEBREW_CACHE="${cache_directory}" \
         "${BREW_PREFIX}/bin/brew" install --formula "$@"
 
     runAsUser "${username}" env \
         HOMEBREW_NO_ANALYTICS=1 \
         HOMEBREW_NO_AUTO_UPDATE=1 \
         HOMEBREW_NO_ENV_HINTS=1 \
-        HOMEBREW_CACHE=/tmp/homebrew-cache \
+        HOMEBREW_CACHE="${cache_directory}" \
         "${BREW_PREFIX}/bin/brew" cleanup --prune=all --scrub
 }
 
@@ -85,10 +89,35 @@ linkExecutables() {
     done
 }
 
+pathContains() {
+    case "$2" in
+        "$1"|"$1"/*)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 cleanupHomebrewManager() {
     local target_home="$1"
+    local cache_directory="$2"
+    local cache_path
 
     rm -f "${BREW_PREFIX}/bin/brew"
+    for cache_path in \
+        "/root/.cache/Homebrew" \
+        "${target_home}/.cache/Homebrew"; do
+        if ! pathContains "${cache_path}" "${cache_directory}"; then
+            rm -rf "${cache_path}"
+        fi
+    done
+
+    if [ "${cache_directory}" = "/tmp/homebrew-cache" ]; then
+        rm -rf "${cache_directory}"
+    fi
+
     rm -rf \
         "${BREW_PREFIX}/Homebrew" \
         "${BREW_PREFIX}/Caskroom" \
@@ -97,10 +126,7 @@ cleanupHomebrewManager() {
         "${BREW_PREFIX}/share/doc/homebrew" \
         "${BREW_PREFIX}/share/fish/vendor_completions.d/brew.fish" \
         "${BREW_PREFIX}/share/man/man1/brew.1" \
-        "${BREW_PREFIX}/share/zsh/site-functions/_brew" \
-        "/root/.cache/Homebrew" \
-        "${target_home}/.cache/Homebrew" \
-        /tmp/homebrew-cache
+        "${BREW_PREFIX}/share/zsh/site-functions/_brew"
 
     find "${BREW_PREFIX}" -type d -empty -delete 2>/dev/null || true
 }
@@ -126,13 +152,13 @@ target_home="$(userHome "${target_user}")"
 
 ensureUserSwitchTool
 
-prepareHomebrewPrefix "${target_user}" "${target_group}"
+prepareHomebrewPrefix "${target_user}" "${target_group}" "${homebrew_cache_directory}"
 installHomebrew "${target_user}"
 chown -R "${target_user}:${target_group}" "${BREW_PREFIX}"
-installFormulae "${target_user}" "${requested_packages[@]}"
+installFormulae "${target_user}" "${homebrew_cache_directory}" "${requested_packages[@]}"
 linkExecutables "${BREW_PREFIX}/bin" /usr/local/bin
 linkExecutables "${BREW_PREFIX}/sbin" /usr/local/sbin
-cleanupHomebrewManager "${target_home}"
+cleanupHomebrewManager "${target_home}" "${homebrew_cache_directory}"
 chown -R root:root "${BREW_PREFIX}"
 
 echo "Done!"
