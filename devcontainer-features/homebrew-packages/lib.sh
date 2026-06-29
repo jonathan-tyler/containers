@@ -77,7 +77,7 @@ identifyNonRootUser() {
 
     if [ "${requested_user}" != "" ] && [ "${requested_user}" != "auto" ] && [ "${requested_user}" != "automatic" ]; then
         if [ "${requested_user}" = "none" ] || [ "${requested_user}" = "root" ]; then
-            err "Homebrew requires a named non-root passwd user. Create one in your image or add the 'nonroot' feature before using homebrew-packages."
+            err "Homebrew requires a named non-root passwd user. Create one in your image or add the 'nonroot-user' feature before using homebrew-packages."
             exit 1
         fi
 
@@ -126,7 +126,7 @@ identifyNonRootUser() {
         return
     fi
 
-    err "Homebrew requires a named non-root passwd user. Create one in your image or add the 'nonroot' feature before using homebrew-packages."
+    err "Homebrew requires a named non-root passwd user. Create one in your image or add the 'nonroot-user' feature before using homebrew-packages."
     exit 1
 }
 

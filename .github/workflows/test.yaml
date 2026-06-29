@@ -27,7 +27,7 @@ jobs:
         features:
           - aspire-cli
           - homebrew-packages
-          - nonroot
+          - nonroot-user
           - podman-in-podman
     steps:
       # actions/checkout@v5

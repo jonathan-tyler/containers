@@ -1,5 +1,5 @@
 {
-  "id": "nonroot",
+  "id": "nonroot-user",
   "version": "0.1.0",
   "name": "Non-Root User",
   "documentationURL": "https://github.com/devcontainers/spec/blob/main/docs/specs/devcontainer-features.md",

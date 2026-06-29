@@ -1,4 +1,4 @@
-# Non-Root User (`nonroot`)
+# Non-Root User (`nonroot-user`)
 
 Create a named non-root passwd user for images that only provide `root` or a numeric runtime UID.
 
@@ -6,7 +6,7 @@ Create a named non-root passwd user for images that only provide `root` or a num
 
 ```json
 "features": {
-  "ghcr.io/jonathan-tyler/containers/nonroot:0": {
+  "ghcr.io/jonathan-tyler/containers/nonroot-user:0": {
     "username": "nonroot"
   }
 }

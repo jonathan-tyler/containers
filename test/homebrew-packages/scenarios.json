@@ -12,7 +12,7 @@
   },
   "multiple-packages": {
     "build": {
-      "dockerfile": "Dockerfile"
+      "dockerfile": "Containerfile"
     },
     "features": {
       "homebrew-packages": {
@@ -23,7 +23,7 @@
   },
   "existing-brew": {
     "build": {
-      "dockerfile": "Dockerfile"
+      "dockerfile": "Containerfile"
     },
     "features": {
       "homebrew-packages": {
@@ -34,7 +34,7 @@
   },
   "custom-cache-directory": {
     "build": {
-      "dockerfile": "Dockerfile"
+      "dockerfile": "Containerfile"
     },
     "features": {
       "homebrew-packages": {
@@ -46,7 +46,7 @@
   },
   "ubuntu": {
     "build": {
-      "dockerfile": "Dockerfile"
+      "dockerfile": "Containerfile"
     },
     "features": {
       "homebrew-packages": {

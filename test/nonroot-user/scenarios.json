@@ -4,7 +4,7 @@
       "dockerfile": "Containerfile"
     },
     "features": {
-      "nonroot": {
+      "nonroot-user": {
         "username": "nonroot",
         "user_uid": "1000",
         "user_gid": "1000"
