@@ -22,5 +22,13 @@
     "features": {
       "aspire-cli": {}
     }
+  },
+  "already-installed": {
+    "build": {
+      "dockerfile": "aspire-cli/test/already-installed.Dockerfile"
+    },
+    "features": {
+      "aspire-cli": {}
+    }
   }
 }

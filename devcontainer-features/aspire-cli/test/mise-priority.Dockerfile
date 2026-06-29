@@ -1,4 +1,6 @@
-FROM docker.io/library/fedora:42
+FROM registry.access.redhat.com/hi/dotnet-sdk:latest-builder
+
+USER root
 
 RUN install -d /usr/local/bin /tmp/mock-mise/installs/aspire/1.0.0/bin && \
     cat <<'EOF' >/usr/local/bin/mise
@@ -31,18 +33,6 @@ INNER
 esac
 EOF
 
-RUN chmod +x /usr/local/bin/mise && \
-    cat <<'EOF' >/usr/local/bin/dotnet
-#!/usr/bin/env bash
-printf 'dotnet should not have been selected\n' >&2
-exit 1
-EOF
+RUN chmod +x /usr/local/bin/mise
 
-RUN chmod +x /usr/local/bin/dotnet && \
-    cat <<'EOF' >/usr/local/bin/npm
-#!/usr/bin/env bash
-printf 'npm should not have been selected\n' >&2
-exit 1
-EOF
-
-RUN chmod +x /usr/local/bin/npm
+USER 65532

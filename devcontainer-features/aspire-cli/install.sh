@@ -8,6 +8,7 @@ FEATURE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${FEATURE_DIR}/lib.sh"
 
 requireRoot
+exitIfAspireCliInstalled
 
 installer="$(selectInstaller)"
 installAspireCli "${installer}"

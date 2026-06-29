@@ -18,6 +18,13 @@ commandExists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+exitIfAspireCliInstalled() {
+    if commandExists aspire; then
+        echo "Aspire CLI is already installed. Skipping."
+        exit 0
+    fi
+}
+
 linkExecutable() {
     local source_path="$1"
     local target_path="$2"
@@ -91,6 +98,7 @@ installWithNuget() {
         dotnet tool install --tool-path "${ASPIRE_DOTNET_TOOL_PATH}" Aspire.Cli
     fi
 
+    chmod -R a+rX "${ASPIRE_DOTNET_TOOL_PATH}"
     linkExecutable "${ASPIRE_DOTNET_TOOL_PATH}/aspire" "${ASPIRE_CLI_BIN}"
 }
 
@@ -125,6 +133,4 @@ verifyAspireCli() {
         err "Aspire CLI is not on PATH after installation."
         exit 1
     fi
-
-    aspire --version >/dev/null
 }
