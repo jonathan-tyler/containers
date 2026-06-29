@@ -65,6 +65,10 @@ isNumericId() {
     esac
 }
 
+isUnsupportedHomebrewUid() {
+    [ "${1:-}" = "65532" ]
+}
+
 firstUserForUid() {
     local uid="$1"
 
@@ -74,6 +78,7 @@ firstUserForUid() {
 identifyNonRootUser() {
     local requested_user="${1:-automatic}"
     local candidate
+    local candidate_uid
 
     if [ "${requested_user}" != "" ] && [ "${requested_user}" != "auto" ] && [ "${requested_user}" != "automatic" ]; then
         if [ "${requested_user}" = "none" ] || [ "${requested_user}" = "root" ]; then
@@ -91,8 +96,14 @@ identifyNonRootUser() {
             exit 1
         fi
 
-        if [ "$(userUid "${requested_user}")" -eq 0 ]; then
+        candidate_uid="$(userUid "${requested_user}")"
+        if [ "${candidate_uid}" -eq 0 ]; then
             err "Requested user '${requested_user}' is root. Homebrew requires a named non-root passwd user."
+            exit 1
+        fi
+
+        if isUnsupportedHomebrewUid "${candidate_uid}"; then
+            err "Requested user '${requested_user}' resolves to unsupported UID 65532. Create a real named non-root passwd user before using homebrew-packages."
             exit 1
         fi
 
@@ -114,13 +125,18 @@ identifyNonRootUser() {
         "app" \
         "user" \
         "$(firstUserForUid 1000)"; do
-        if [ -n "${candidate}" ] && ! isNumericId "${candidate}" && id -u "${candidate}" >/dev/null 2>&1 && [ "$(userUid "${candidate}")" -ne 0 ]; then
+        if [ -z "${candidate}" ] || isNumericId "${candidate}" || ! id -u "${candidate}" >/dev/null 2>&1; then
+            continue
+        fi
+
+        candidate_uid="$(userUid "${candidate}")"
+        if [ "${candidate_uid}" -ne 0 ] && ! isUnsupportedHomebrewUid "${candidate_uid}"; then
             echo "${candidate}"
             return
         fi
     done
 
-    candidate="$(awk -F: '$3 >= 1000 && $3 < 65534 && $1 != "nobody" { print $1; exit }' /etc/passwd)"
+    candidate="$(awk -F: '$3 >= 1000 && $3 < 65534 && $3 != 65532 && $1 != "nobody" { print $1; exit }' /etc/passwd)"
     if [ -n "${candidate}" ] && id -u "${candidate}" >/dev/null 2>&1 && [ "$(id -u "${candidate}")" -ne 0 ]; then
         echo "${candidate}"
         return
