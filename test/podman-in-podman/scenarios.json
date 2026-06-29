@@ -9,7 +9,7 @@
   },
   "existing-podman": {
     "build": {
-      "dockerfile": "Dockerfile"
+      "dockerfile": "Containerfile"
     },
     "features": {
       "podman-in-podman": {}
@@ -17,7 +17,7 @@
   },
   "fedora": {
     "build": {
-      "dockerfile": "Dockerfile"
+      "dockerfile": "Containerfile"
     },
     "features": {
       "podman-in-podman": {}
@@ -25,7 +25,7 @@
   },
   "no-socket-mount": {
     "build": {
-      "dockerfile": "Dockerfile"
+      "dockerfile": "Containerfile"
     },
     "features": {
       "podman-in-podman": {}
