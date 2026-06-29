@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+prefix="/opt/existing-brew-root"
+bin_dir="${prefix}/bin"
+
+case "${1:-}" in
+    --prefix)
+        printf '%s\n' "${prefix}"
+        ;;
+    install)
+        shift
+
+        if [ "${1:-}" = "--formula" ]; then
+            shift
+        fi
+
+        mkdir -p "${bin_dir}"
+
+        for formula in "$@"; do
+            case "${formula}" in
+                --*)
+                    continue
+                    ;;
+            esac
+
+            cat > "${bin_dir}/${formula}" <<EOF
+#!/usr/bin/env bash
+echo "${formula} 1.0"
+EOF
+            chmod 0755 "${bin_dir}/${formula}"
+        done
+        ;;
+    cleanup)
+        ;;
+    *)
+        echo "unexpected brew invocation: $*" >&2
+        exit 1
+        ;;
+esac

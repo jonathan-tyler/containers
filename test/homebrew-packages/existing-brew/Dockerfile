@@ -1,0 +1,10 @@
+FROM registry.access.redhat.com/hi/core-runtime:latest-builder
+
+RUN mkdir -p /opt/existing-brew-root/bin
+
+COPY brew /opt/existing-brew-root/bin/brew
+COPY curl /usr/local/bin/curl
+
+RUN chmod 0755 /opt/existing-brew-root/bin/brew /usr/local/bin/curl
+
+ENV PATH="/opt/existing-brew-root/bin:${PATH}"

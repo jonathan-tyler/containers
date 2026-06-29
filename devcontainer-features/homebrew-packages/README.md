@@ -22,6 +22,7 @@ Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the H
 ## Notes
 
 - The feature bootstraps Homebrew under `/home/linuxbrew/.linuxbrew`, installs the requested formulae, links any linked executables into `/usr/local/bin` and `/usr/local/sbin`, then removes the Homebrew manager checkout and caches.
+- If Homebrew is already present in the image, the feature reuses that installation instead of bootstrapping a second copy.
 - Formula payloads remain under `/home/linuxbrew/.linuxbrew` because that is where Homebrew installs Cellar and `opt` content on Linux.
 - Automatic user detection prefers existing non-root users such as `vscode`, `node`, `codespace`, `devcontainer`, `nonroot`, and UID `65532` accounts before falling back to a temporary `linuxbrew` bootstrap user when the image only has `root`.
 - On Ubuntu and RHEL-family images, the feature installs only the missing Homebrew prerequisites and, when necessary, creates a `linuxbrew` user so the upstream Homebrew installer can run as a real non-root account.

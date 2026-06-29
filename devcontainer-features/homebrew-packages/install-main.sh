@@ -13,6 +13,10 @@ source "${FEATURE_DIR}/lib.sh"
 # shellcheck source=/dev/null
 source "${FEATURE_DIR}/lib-$(imageSupportFamily).sh"
 
+if commandExists brew; then
+    BREW_PREFIX="$(brew --prefix)"
+fi
+
 prepareHomebrewPrefix() {
     local username="$1"
     local group="$2"

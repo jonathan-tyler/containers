@@ -19,6 +19,16 @@
       }
     }
   },
+  "existing-brew": {
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "homebrew-packages": {
+        "packages": "hello"
+      }
+    }
+  },
   "ubuntu": {
     "build": {
       "dockerfile": "Dockerfile"
