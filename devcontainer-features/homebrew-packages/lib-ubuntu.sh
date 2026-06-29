@@ -71,22 +71,3 @@ ensureUserSwitchTool() {
         exit 1
     fi
 }
-
-ensureFallbackHomebrewUser() {
-    local username
-
-    username="$(homebrewBootstrapUser)"
-    if id -u "${username}" >/dev/null 2>&1; then
-        echo "${username}"
-        return
-    fi
-
-    if commandExists useradd; then
-        useradd --create-home --home-dir "$(homebrewBootstrapUserHome)" --shell /bin/bash "${username}"
-    else
-        installUbuntuPackages adduser
-        adduser --disabled-password --gecos '' --home "$(homebrewBootstrapUserHome)" --shell /bin/bash "${username}"
-    fi
-
-    echo "${username}"
-}

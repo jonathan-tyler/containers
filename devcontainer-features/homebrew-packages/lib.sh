@@ -43,14 +43,6 @@ commandExists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-homebrewBootstrapUser() {
-    echo "linuxbrew"
-}
-
-homebrewBootstrapUserHome() {
-    echo "/home/$(homebrewBootstrapUser)"
-}
-
 requireHomebrewPrerequisiteCommands() {
     local required_command
 
@@ -84,19 +76,24 @@ identifyNonRootUser() {
     local candidate
 
     if [ "${requested_user}" != "" ] && [ "${requested_user}" != "auto" ] && [ "${requested_user}" != "automatic" ]; then
-        if [ "${requested_user}" = "none" ]; then
-            echo "root"
-            return
+        if [ "${requested_user}" = "none" ] || [ "${requested_user}" = "root" ]; then
+            err "Homebrew requires a named non-root passwd user. Create one in your image or add the 'nonroot' feature before using homebrew-packages."
+            exit 1
         fi
 
-        if ! id -u "${requested_user}" >/dev/null 2>&1 && ! isNumericId "${requested_user}"; then
+        if isNumericId "${requested_user}"; then
+            err "Requested user '${requested_user}' is numeric-only. Homebrew requires a named non-root passwd user."
+            exit 1
+        fi
+
+        if ! id -u "${requested_user}" >/dev/null 2>&1; then
             err "Requested user '${requested_user}' does not exist."
             exit 1
         fi
 
         if [ "$(userUid "${requested_user}")" -eq 0 ]; then
-            echo "root"
-            return
+            err "Requested user '${requested_user}' is root. Homebrew requires a named non-root passwd user."
+            exit 1
         fi
 
         echo "${requested_user}"
@@ -106,7 +103,6 @@ identifyNonRootUser() {
     for candidate in \
         "${_REMOTE_USER:-}" \
         "${_CONTAINER_USER:-}" \
-        "$(firstUserForUid 65532)" \
         "vscode" \
         "node" \
         "codespace" \
@@ -118,7 +114,7 @@ identifyNonRootUser() {
         "app" \
         "user" \
         "$(firstUserForUid 1000)"; do
-        if [ -n "${candidate}" ] && { id -u "${candidate}" >/dev/null 2>&1 || isNumericId "${candidate}"; } && [ "$(userUid "${candidate}")" -ne 0 ]; then
+        if [ -n "${candidate}" ] && ! isNumericId "${candidate}" && id -u "${candidate}" >/dev/null 2>&1 && [ "$(userUid "${candidate}")" -ne 0 ]; then
             echo "${candidate}"
             return
         fi
@@ -130,7 +126,8 @@ identifyNonRootUser() {
         return
     fi
 
-    echo "root"
+    err "Homebrew requires a named non-root passwd user. Create one in your image or add the 'nonroot' feature before using homebrew-packages."
+    exit 1
 }
 
 userUid() {

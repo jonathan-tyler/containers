@@ -73,7 +73,7 @@ linkExecutables() {
     local candidate
     local name
 
-    [ -d "${source_dir}" ] || return
+    [ -d "${source_dir}" ] || return 0
 
     install -d "${target_dir}"
 
@@ -142,11 +142,6 @@ ensureHomebrewPrerequisites
 
 read -r -a requested_packages <<< "${packages}"
 target_user="$(identifyNonRootUser "${username}")"
-if [ "${target_user}" = "root" ]; then
-    target_user="$(ensureFallbackHomebrewUser)"
-    echo "No non-root container user detected; using '${target_user}' for Homebrew installation."
-fi
-
 target_group="$(userGid "${target_user}")"
 target_home="$(userHome "${target_user}")"
 

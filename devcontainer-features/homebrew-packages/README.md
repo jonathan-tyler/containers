@@ -26,8 +26,9 @@ Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the H
 - Set `cache_directory` to a stable path if you want to keep bottle downloads around for later runs; that path is left in place during cleanup.
 - If Homebrew is already present in the image, the feature reuses that installation instead of bootstrapping a second copy.
 - Formula payloads remain under `/home/linuxbrew/.linuxbrew` because that is where Homebrew installs Cellar and `opt` content on Linux.
-- Automatic user detection prefers existing non-root users such as `vscode`, `node`, `codespace`, `devcontainer`, `nonroot`, and UID `65532` accounts before falling back to a temporary `linuxbrew` bootstrap user when the image only has `root`.
-- On Ubuntu and RHEL-family images, the feature installs only the missing Homebrew prerequisites and, when necessary, creates a `linuxbrew` user so the upstream Homebrew installer can run as a real non-root account.
+- The feature requires a real named non-root passwd user. Numeric-only runtime users such as `65532` are rejected because upstream Homebrew postinstall behavior depends on a stable passwd-backed account.
+- Automatic user detection prefers existing named non-root users such as `vscode`, `node`, `codespace`, `devcontainer`, `nonroot`, `podman`, and `ubuntu`.
+- If your image does not already define a suitable user, create one in the image itself or add the repo's `nonroot` feature before `homebrew-packages`.
 - Alpine images fail fast with a clear error because upstream Homebrew currently depends on glibc-backed portable Ruby or a system Ruby 4.0, which plain musl Alpine images do not provide.
 - This feature uses the official Homebrew installer and does not depend on external devcontainer features or `ghcr` feature chaining.
 

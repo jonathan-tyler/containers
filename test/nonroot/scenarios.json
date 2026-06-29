@@ -1,0 +1,14 @@
+{
+  "red-hat-hardened-images": {
+    "build": {
+      "dockerfile": "Containerfile"
+    },
+    "features": {
+      "nonroot": {
+        "username": "nonroot",
+        "user_uid": "1000",
+        "user_gid": "1000"
+      }
+    }
+  }
+}

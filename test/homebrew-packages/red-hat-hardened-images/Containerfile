@@ -2,3 +2,8 @@ FROM registry.access.redhat.com/hi/core-runtime:latest-builder
 
 # Red Hat Hardened Images under registry.access.redhat.com/hi/ already provide
 # the UID 65532 non-root runtime user with HOME=/tmp and no /home/<user> directory.
+USER root
+RUN dnf -y install --setopt=install_weak_deps=False shadow-utils \
+    && useradd --create-home --home-dir /home/nonroot --shell /bin/bash nonroot \
+    && dnf clean all
+USER 65532

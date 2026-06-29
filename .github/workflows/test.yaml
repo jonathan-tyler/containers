@@ -27,6 +27,7 @@ jobs:
         features:
           - aspire-cli
           - homebrew-packages
+          - nonroot
           - podman-in-podman
     steps:
       # actions/checkout@v5
@@ -46,3 +47,7 @@ jobs:
       - name: "Smoke test podman-in-podman with devcontainer CLI"
         if: matrix.features == 'podman-in-podman'
         run: test/podman-in-podman/devcontainer-cli-smoke.sh
+
+      - name: "Verify homebrew-packages rejects numeric-only users"
+        if: matrix.features == 'homebrew-packages'
+        run: test/homebrew-packages/requires-named-user.sh

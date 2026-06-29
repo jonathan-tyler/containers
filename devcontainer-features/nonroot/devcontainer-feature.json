@@ -1,0 +1,34 @@
+{
+  "id": "nonroot",
+  "version": "0.1.0",
+  "name": "Non-Root User",
+  "documentationURL": "https://github.com/devcontainers/spec/blob/main/docs/specs/devcontainer-features.md",
+  "description": "Create a named non-root passwd user for images that only provide root or a numeric runtime UID.",
+  "options": {
+    "username": {
+      "type": "string",
+      "default": "nonroot",
+      "description": "Username to create when it does not already exist."
+    },
+    "user_uid": {
+      "type": "string",
+      "default": "automatic",
+      "description": "Optional numeric UID for the created user. Leave as automatic to let the system choose."
+    },
+    "user_gid": {
+      "type": "string",
+      "default": "automatic",
+      "description": "Optional numeric GID for the created user's primary group. Leave as automatic to let the system choose."
+    },
+    "user_home": {
+      "type": "string",
+      "default": "automatic",
+      "description": "Home directory for the created user. Leave as automatic to use /home/<username>."
+    },
+    "user_shell": {
+      "type": "string",
+      "default": "automatic",
+      "description": "Login shell for the created user. Leave as automatic to prefer /bin/bash when present and fall back to /bin/sh."
+    }
+  }
+}

@@ -5,7 +5,8 @@
     },
     "features": {
       "homebrew-packages": {
-        "packages": "hello"
+        "packages": "hello",
+        "username": "nonroot"
       }
     }
   },
@@ -15,7 +16,8 @@
     },
     "features": {
       "homebrew-packages": {
-        "packages": "hello jq"
+        "packages": "hello jq",
+        "username": "nonroot"
       }
     }
   },
@@ -25,7 +27,8 @@
     },
     "features": {
       "homebrew-packages": {
-        "packages": "hello"
+        "packages": "hello",
+        "username": "nonroot"
       }
     }
   },
@@ -36,6 +39,7 @@
     "features": {
       "homebrew-packages": {
         "packages": "hello",
+        "username": "nonroot",
         "cache_directory": "/var/cache/homebrew"
       }
     }
@@ -46,7 +50,8 @@
     },
     "features": {
       "homebrew-packages": {
-        "packages": "hello"
+        "packages": "hello",
+        "username": "nonroot"
       }
     }
   }
