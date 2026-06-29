@@ -1,0 +1,17 @@
+{
+  "name": "podman-in-podman",
+  "image": "registry.access.redhat.com/hi/core-runtime:latest-builder",
+  "remoteUser": "65532",
+  "containerUser": "65532",
+  "updateRemoteUserUID": false,
+  "runArgs": [
+    "--device=/dev/fuse",
+    "--device=/dev/net/tun",
+    "--security-opt=seccomp=unconfined"
+  ],
+  "features": {
+    "ghcr.io/jonathan-tyler/containers/podman-in-podman:0": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached"
+}
