@@ -13,6 +13,8 @@ podman_socket_path := xdg_runtime_dir + "/podman/podman.sock"
 podman_service_log_file := scratch_root + "/podman-system-service.log"
 act_runner_image := env_var_or_default("ACT_RUNNER_IMAGE", "ghcr.io/catthehacker/ubuntu:act-latest")
 act_tmp_dir := scratch_root + "/tmp"
+feature_ci_env := "PATH=\"" + shim_dir + ":$PATH\" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR=\"" + xdg_runtime_dir + "\""
+act_env := "DOCKER_HOST=\"unix://" + podman_socket_path + "\" " + feature_ci_env + " TMPDIR=\"" + act_tmp_dir + "\" TMP=\"" + act_tmp_dir + "\" TEMP=\"" + act_tmp_dir + "\""
 
 default:
     @just --list
@@ -38,7 +40,7 @@ ci: check-act-tools prepare-runtime
             exit 1; \
         fi; \
     fi; \
-    DOCKER_HOST="unix://{{podman_socket_path}}" PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" TMPDIR="{{act_tmp_dir}}" TMP="{{act_tmp_dir}}" TEMP="{{act_tmp_dir}}" act workflow_dispatch --bind --env TMPDIR="{{act_tmp_dir}}" --env TMP="{{act_tmp_dir}}" --env TEMP="{{act_tmp_dir}}" --workflows "{{workflow_file}}" -P ubuntu-latest="{{act_runner_image}}"
+    {{act_env}} act workflow_dispatch --bind --env TMPDIR="{{act_tmp_dir}}" --env TMP="{{act_tmp_dir}}" --env TEMP="{{act_tmp_dir}}" --workflows "{{workflow_file}}" -P ubuntu-latest="{{act_runner_image}}"
 
 job job_name: check-act-tools prepare-runtime
     @podman_service_pid=''; \
@@ -58,17 +60,17 @@ job job_name: check-act-tools prepare-runtime
             exit 1; \
         fi; \
     fi; \
-    DOCKER_HOST="unix://{{podman_socket_path}}" PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" TMPDIR="{{act_tmp_dir}}" TMP="{{act_tmp_dir}}" TEMP="{{act_tmp_dir}}" act workflow_dispatch --bind --env TMPDIR="{{act_tmp_dir}}" --env TMP="{{act_tmp_dir}}" --env TEMP="{{act_tmp_dir}}" --workflows "{{workflow_file}}" --job "{{job_name}}" -P ubuntu-latest="{{act_runner_image}}"
+    {{act_env}} act workflow_dispatch --bind --env TMPDIR="{{act_tmp_dir}}" --env TMP="{{act_tmp_dir}}" --env TEMP="{{act_tmp_dir}}" --workflows "{{workflow_file}}" --job "{{job_name}}" -P ubuntu-latest="{{act_runner_image}}"
 
 feature +features: prepare
-    PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" devcontainer features test --project-folder "{{feature_project_root}}" --skip-duplicated --base-image "{{workflow_base_image}}" --remote-user "{{workflow_remote_user}}" -f {{features}}
+    {{feature_ci_env}} devcontainer features test --project-folder "{{feature_project_root}}" --skip-duplicated --base-image "{{workflow_base_image}}" --remote-user "{{workflow_remote_user}}" -f {{features}}
 
 podman-in-podman-smoke: prepare
-    PATH="{{shim_dir}}:$PATH" XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" test/podman-in-podman/devcontainer-cli-smoke.sh
+    {{feature_ci_env}} test/podman-in-podman/devcontainer-cli-smoke.sh
 
 publish-check: prepare
     @rm -rf "{{package_output_root}}"
-    PATH="{{shim_dir}}:$PATH" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR="{{xdg_runtime_dir}}" devcontainer features package "{{project_root}}/devcontainer-features" --output-folder "{{package_output_root}}" --force-clean-output-folder
+    {{feature_ci_env}} devcontainer features package "{{project_root}}/devcontainer-features" --output-folder "{{package_output_root}}" --force-clean-output-folder
     test -f "{{package_output_root}}/devcontainer-collection.json"
 
 all:
