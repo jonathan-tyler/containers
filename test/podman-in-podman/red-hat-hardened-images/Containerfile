@@ -1,0 +1,4 @@
+FROM registry.access.redhat.com/hi/core-runtime:latest-builder
+
+# Red Hat Hardened Images under registry.access.redhat.com/hi/ already provide
+# the UID 65532 non-root runtime user with HOME=/tmp and no /home/<user> directory.

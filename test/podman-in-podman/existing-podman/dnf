@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+touch /tmp/podman-package-install-attempted
+echo "unexpected dnf invocation: $*" >&2
+exit 1

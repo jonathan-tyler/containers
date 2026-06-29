@@ -1,0 +1,26 @@
+{
+  "red-hat-hardened-images": {
+    "build": {
+      "dockerfile": "Containerfile"
+    },
+    "features": {
+      "podman-in-podman": {}
+    }
+  },
+  "existing-podman": {
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "podman-in-podman": {}
+    }
+  },
+  "no-socket-mount": {
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "features": {
+      "podman-in-podman": {}
+    }
+  }
+}
