@@ -103,11 +103,11 @@ identifyNonRootUser() {
     for candidate in \
         "${_REMOTE_USER:-}" \
         "${_CONTAINER_USER:-}" \
+        "nonroot" \
+        "devcontainer" \
         "vscode" \
         "node" \
         "codespace" \
-        "devcontainer" \
-        "nonroot" \
         "podman" \
         "ubuntu" \
         "coder" \

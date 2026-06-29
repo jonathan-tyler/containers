@@ -1,6 +1,6 @@
 {
   "id": "homebrew-packages",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "name": "Homebrew Packages",
   "documentationURL": "https://brew.sh/",
   "description": "Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the Homebrew manager files and default cache to keep the image smaller.",
@@ -14,11 +14,13 @@
       "type": "string",
       "proposals": [
         "automatic",
+        "nonroot",
+        "devcontainer",
         "vscode",
         "node",
         "codespace",
-        "devcontainer",
-        "nonroot"
+        "podman",
+        "ubuntu"
       ],
       "default": "automatic",
       "description": "Named non-root passwd user that should own the temporary Homebrew tree while formulae are installed."

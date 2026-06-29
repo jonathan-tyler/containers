@@ -28,15 +28,22 @@ cat >"${config_file}" <<'EOF'
 {
   "name": "podman-in-podman-smoke",
   "image": "registry.access.redhat.com/hi/core-runtime:latest-builder",
-  "remoteUser": "65532",
-  "containerUser": "65532",
+  "remoteUser": "nonroot",
+  "containerUser": "nonroot",
   "updateRemoteUserUID": false,
   "runArgs": [
     "--device=/dev/fuse",
     "--device=/dev/net/tun",
     "--security-opt=seccomp=unconfined"
   ],
+  "overrideFeatureInstallOrder": [
+    "./devcontainer-features/nonroot-user",
+    "./devcontainer-features/podman-in-podman"
+  ],
   "features": {
+    "./devcontainer-features/nonroot-user": {
+      "username": "nonroot"
+    },
     "./devcontainer-features/podman-in-podman": {}
   },
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",

@@ -2,7 +2,7 @@
 
 Single-container devcontainer sample for the `podman-in-podman` feature on `registry.access.redhat.com/hi/core-runtime:latest-builder`.
 
-Open this folder in Dev Containers. The sample applies the published `podman-in-podman` feature and includes the extra container runtime arguments needed for nested Podman to work.
+Open this folder in Dev Containers. The sample applies the published `nonroot-user` and `podman-in-podman` features and includes the extra container runtime arguments needed for nested Podman to work.
 
 ## Files
 
@@ -12,7 +12,7 @@ Open this folder in Dev Containers. The sample applies the published `podman-in-
 
 - Base image: `registry.access.redhat.com/hi/core-runtime:latest-builder`
 - Feature: `ghcr.io/jonathan-tyler/containers/podman-in-podman:0`
-- Runtime user: numeric UID `65532`
+- Runtime user: named user `nonroot` created by `ghcr.io/jonathan-tyler/containers/nonroot-user:0`
 - Required run arguments in this sample:
   - `--device=/dev/fuse`
   - `--device=/dev/net/tun`

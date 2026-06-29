@@ -3,6 +3,8 @@ FROM registry.access.redhat.com/hi/nodejs:latest-builder
 USER root
 
 RUN dnf -y install --setopt=install_weak_deps=False libicu && \
+    dnf -y install --setopt=install_weak_deps=False shadow-utils && \
+    useradd --create-home --uid 1000 --home-dir /home/nonroot --shell /bin/bash nonroot && \
     dnf clean all
 
-USER 65532
+USER nonroot

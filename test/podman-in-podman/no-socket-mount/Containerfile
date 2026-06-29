@@ -5,4 +5,8 @@ USER root
 RUN mkdir -p /run/podman \
     && printf 'sentinel\n' >/run/podman/podman.sock
 
-USER 65532
+RUN dnf -y install --setopt=install_weak_deps=False shadow-utils \
+    && useradd --create-home --uid 1000 --home-dir /home/nonroot --shell /bin/bash nonroot \
+    && dnf clean all
+
+USER nonroot

@@ -2,6 +2,10 @@ FROM registry.access.redhat.com/hi/core-runtime:latest-builder
 
 USER root
 
+RUN dnf -y install --setopt=install_weak_deps=False shadow-utils \
+    && useradd --create-home --uid 1000 --home-dir /home/nonroot --shell /bin/bash nonroot \
+    && dnf clean all
+
 RUN mkdir -p /opt/existing-podman-root/bin /usr/local/bin
 
 COPY dnf /usr/local/bin/dnf
@@ -21,4 +25,4 @@ RUN chmod 0755 \
 
 ENV PATH="/opt/existing-podman-root/bin:/usr/local/bin:${PATH}"
 
-USER 65532
+USER nonroot

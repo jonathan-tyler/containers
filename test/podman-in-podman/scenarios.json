@@ -4,7 +4,9 @@
       "dockerfile": "Containerfile"
     },
     "features": {
-      "podman-in-podman": {}
+      "podman-in-podman": {
+        "username": "nonroot"
+      }
     }
   },
   "existing-podman": {
@@ -12,7 +14,9 @@
       "dockerfile": "Containerfile"
     },
     "features": {
-      "podman-in-podman": {}
+      "podman-in-podman": {
+        "username": "nonroot"
+      }
     }
   },
   "fedora": {
@@ -28,7 +32,9 @@
       "dockerfile": "Containerfile"
     },
     "features": {
-      "podman-in-podman": {}
+      "podman-in-podman": {
+        "username": "nonroot"
+      }
     }
   }
 }

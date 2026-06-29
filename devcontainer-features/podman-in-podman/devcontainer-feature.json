@@ -1,6 +1,6 @@
 {
   "id": "podman-in-podman",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Podman (Podman-in-Podman)",
   "documentationURL": "https://www.redhat.com/en/blog/podman-inside-container",
   "description": "Run Podman inside the dev container with isolated storage volumes and container-friendly Podman defaults.",
@@ -9,16 +9,17 @@
       "type": "string",
       "proposals": [
         "automatic",
-        "65532",
+        "nonroot",
+        "devcontainer",
         "vscode",
         "node",
         "codespace",
-        "devcontainer",
-        "nonroot",
+        "podman",
+        "ubuntu",
         "root"
       ],
       "default": "automatic",
-      "description": "User that should receive rootless subuid and subgid ranges when the image already defines a non-root runtime user."
+      "description": "Preferred named non-root passwd user that should receive rootless subuid and subgid ranges when the image already defines one. Falls back to root when no named non-root user is available."
     }
   },
   "entrypoint": "/usr/local/share/podman-in-podman-init.sh",

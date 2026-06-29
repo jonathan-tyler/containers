@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-USERNAME="${USERNAME:-${_REMOTE_USER:-automatic}}"
-PREFERRED_UID="65532"
+USERNAME="${USERNAME:-automatic}"
 PODMAN_USER="podman"
 SUBID_RANGE_MAX="65536"
 
@@ -39,41 +38,30 @@ isNumericId() {
 
 resolveRuntimeUser() {
     local candidate="${USERNAME}"
-    local preferred_user
     local current_user
 
-    if [ "${candidate}" = "none" ]; then
+    if [ "${candidate}" = "none" ] || [ "${candidate}" = "root" ]; then
         echo root
         return
     fi
 
-    if [ "${candidate}" = "${PREFERRED_UID}" ]; then
-        preferred_user="$(firstUserForUid "${PREFERRED_UID}")"
-        if [ -n "${preferred_user}" ]; then
-            echo "${preferred_user}"
-            return
-        fi
-    fi
-
-    if [ "${candidate}" = "auto" ] || [ "${candidate}" = "automatic" ] || [ "${candidate}" = "root" ]; then
-        preferred_user="$(firstUserForUid "${PREFERRED_UID}")"
-        if [ -n "${preferred_user}" ]; then
-            echo "${preferred_user}"
-            return
-        fi
-
+    if [ "${candidate}" = "auto" ] || [ "${candidate}" = "automatic" ]; then
         for current_user in \
             "${_REMOTE_USER:-}" \
             "${_CONTAINER_USER:-}" \
-            "${PREFERRED_UID}" \
+            nonroot \
+            devcontainer \
             vscode \
             node \
             codespace \
-            devcontainer \
-            nonroot \
+            podman \
+            ubuntu \
+            coder \
+            app \
+            user \
             "$(firstUserForUid 1000)"; do
-            if [ -n "${current_user}" ] && { id -u "${current_user}" >/dev/null 2>&1 || isNumericId "${current_user}"; }; then
-                if [ "$(id -u "${current_user}" 2>/dev/null || printf '%s\n' "${current_user}")" != "0" ]; then
+            if [ -n "${current_user}" ] && ! isNumericId "${current_user}" && id -u "${current_user}" >/dev/null 2>&1; then
+                if [ "$(id -u "${current_user}")" != "0" ]; then
                     echo "${current_user}"
                     return
                 fi
@@ -84,24 +72,13 @@ resolveRuntimeUser() {
         return
     fi
 
+    if isNumericId "${candidate}"; then
+        err "Requested user '${candidate}' is numeric-only. Podman-in-Podman supports only named non-root users or root."
+        exit 1
+    fi
+
     if id -u "${candidate}" >/dev/null 2>&1; then
         if [ "$(id -u "${candidate}")" = "0" ]; then
-            echo root
-            return
-        fi
-
-        echo "${candidate}"
-        return
-    fi
-
-    preferred_user="$(firstUserForUid "${candidate}")"
-    if [ -n "${preferred_user}" ]; then
-        echo "${preferred_user}"
-        return
-    fi
-
-    if isNumericId "${candidate}"; then
-        if [ "${candidate}" = "0" ]; then
             echo root
             return
         fi
