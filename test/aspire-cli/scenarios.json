@@ -3,6 +3,7 @@
     "build": {
       "dockerfile": "aspire-cli/test/npm-install.Dockerfile"
     },
+    "updateRemoteUserUID": false,
     "features": {
       "aspire-cli": {}
     }
@@ -11,6 +12,7 @@
     "build": {
       "dockerfile": "aspire-cli/test/nuget-priority.Dockerfile"
     },
+    "updateRemoteUserUID": false,
     "features": {
       "aspire-cli": {}
     }
@@ -19,6 +21,7 @@
     "build": {
       "dockerfile": "aspire-cli/test/mise-priority.Dockerfile"
     },
+    "updateRemoteUserUID": false,
     "features": {
       "aspire-cli": {}
     }
@@ -27,6 +30,7 @@
     "build": {
       "dockerfile": "aspire-cli/test/already-installed.Dockerfile"
     },
+    "updateRemoteUserUID": false,
     "features": {
       "aspire-cli": {}
     }

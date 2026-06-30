@@ -3,6 +3,7 @@
     "build": {
       "dockerfile": "Containerfile"
     },
+    "updateRemoteUserUID": false,
     "features": {
       "podman-in-podman": {
         "username": "nonroot"
@@ -13,6 +14,7 @@
     "build": {
       "dockerfile": "Containerfile"
     },
+    "updateRemoteUserUID": false,
     "features": {
       "podman-in-podman": {
         "username": "nonroot"
@@ -23,6 +25,7 @@
     "build": {
       "dockerfile": "Containerfile"
     },
+    "updateRemoteUserUID": false,
     "features": {
       "podman-in-podman": {}
     }
@@ -31,6 +34,7 @@
     "build": {
       "dockerfile": "Containerfile"
     },
+    "updateRemoteUserUID": false,
     "features": {
       "podman-in-podman": {
         "username": "nonroot"
