@@ -4,5 +4,9 @@
   "name": "Aspire CLI",
   "documentationURL": "https://aspire.dev/get-started/install-cli/",
   "description": "Install the Aspire CLI with the first available supported package manager in this order: mise, dotnet/NuGet, then npm.",
+  "installsAfter": [
+    "nonroot-user",
+    "homebrew-packages"
+  ],
   "options": {}
 }
