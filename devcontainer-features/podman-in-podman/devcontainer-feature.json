@@ -5,8 +5,8 @@
   "documentationURL": "https://www.redhat.com/en/blog/podman-inside-container",
   "description": "Run Podman inside the dev container with isolated storage volumes and container-friendly Podman defaults.",
   "installsAfter": [
-    "nonroot-user",
-    "homebrew-packages"
+    "ghcr.io/jonathan-tyler/containers/nonroot-user",
+    "ghcr.io/jonathan-tyler/containers/homebrew-packages"
   ],
   "options": {
     "username": {

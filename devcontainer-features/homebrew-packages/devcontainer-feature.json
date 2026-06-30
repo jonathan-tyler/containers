@@ -5,7 +5,7 @@
   "documentationURL": "https://brew.sh/",
   "description": "Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the Homebrew manager files and default cache to keep the image smaller.",
   "installsAfter": [
-    "nonroot-user"
+    "ghcr.io/jonathan-tyler/containers/nonroot-user"
   ],
   "options": {
     "packages": {
