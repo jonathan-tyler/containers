@@ -4,10 +4,6 @@
   - Keep a version comment immediately above each pinned action in the form `# owner/repo@vX.Y.Z`.
   - Do not delete those comments unless the corresponding action step is removed.
 - When referencing devcontainer features published by this repo, use their published `ghcr.io/jonathan-tyler/containers/<feature>:0` URL in `features`, `overrideFeatureInstallOrder`, lockfiles, and docs. Do not use local relative paths or bare feature IDs for published features.
-- For feature installers, prefer package repositories that are already enabled in the base image. On Red Hat hardened images, try `public-hummingbird-x86_64-rpms` first when it is present. If that repo cannot satisfy the required dependency graph, prefer the image's existing `dnf` configuration next. Only add temporary repo files as a last resort, and remove them from the final image.
-
-## Red Hat Hardened Images
-
-- Red Hat hardened images commonly run as UID `65532` with `HOME=/tmp` and no `/home/<user>` directory. The image may not ship a stable passwd entry for that UID, and Podman may synthesize one at runtime, so tests and features should assert stable runtime behavior like UID, `HOME`, and missing `/home` state instead of relying on passwd database details.
-- For development, prefer a named passwd user such as `nonroot`; if no suitable named user exists, use `root` instead of `65532`. Many applications do not work correctly with nameless UID users.
 - Prefer `Containerfile` over `Dockerfile` for container build fixtures and image definitions when the calling tool accepts either name and the change does not break existing references. When switching, update explicit `dockerfile` references alongside the rename.
+- For development, prefer a named passwd user such as `nonroot`; if no suitable named user exists, use `root` instead of `65532`. Many applications do not work correctly with nameless UID users.
+- Red Hat hardened images commonly run as UID `65532` with `HOME=/tmp` and no `/home/<user>` directory. The image may not ship a stable passwd entry for that UID, and Podman may synthesize one at runtime, so tests and features should assert stable runtime behavior like UID, `HOME`, and missing `/home` state instead of relying on passwd database details.
