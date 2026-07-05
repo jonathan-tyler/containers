@@ -39,7 +39,7 @@ jobs:
 
       - name: "Build homebrew-packages CI base image"
         if: matrix.features == 'homebrew-packages'
-        run: docker build --file test/homebrew-packages/feature-ci-base/Containerfile --tag "${HOME_BREW_CI_BASE_IMAGE}" .
+        run: docker build --load --file test/homebrew-packages/feature-ci-base/Containerfile --tag "${HOME_BREW_CI_BASE_IMAGE}" .
 
       - name: "Generating tests for '${{ matrix.features }}' scenarios"
         run: |
