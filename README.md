@@ -33,7 +33,7 @@ Container images, automation, templates, and samples
 - Run `just publish-check` to package the scratch copy of `devcontainer-features/` locally without publishing anything. That copy generates `homebrew-packages-additional` from `homebrew-packages` so there is still one source feature to maintain. This is the local equivalent of the release workflow's packaging step.
 - Run `just all` to execute both the local workflow simulation and the publish packaging check.
 - `just ci` and `just job ...` keep `.github/workflows/test.yaml` as the source of truth. They point `act` at that workflow file directly instead of wrapping the workflow logic in another shell runner.
-- `just feature ...` and `just publish-check` are local-only developer conveniences. They keep the existing `devcontainer features test` and `devcontainer features package` behavior without changing the GitHub workflow.
+- `just feature ...` and `just publish-check` are local-only developer conveniences. They keep the existing `devcontainer features test` and `devcontainer features package` behavior; the release workflow uses the same generated scratch layout for publish.
 - The local commands write their temporary `src` and `test` layout, Docker-to-Podman shim, package output, and any fallback Podman runtime state under `.scratch/feature-ci/`, which is already ignored by git.
 - `act` defaults to `ghcr.io/catthehacker/ubuntu:act-latest` for the `ubuntu-latest` runner image. Override it with `ACT_RUNNER_IMAGE` if you need a different local image.
 - The local `act` flow expects a Podman-backed Docker API socket at `${XDG_RUNTIME_DIR}/podman/podman.sock`. If that socket is missing, `just` starts `podman system service` there and reuses the same path for repeated runs.
