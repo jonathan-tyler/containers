@@ -12,19 +12,6 @@
       }
     }
   },
-  "multiple-packages": {
-    "build": {
-      "dockerfile": "Containerfile"
-    },
-    "updateRemoteUserUID": false,
-    "features": {
-      "homebrew-packages": {
-        "packages": "hello jq",
-        "username": "nonroot",
-        "cache_directory": "/var/cache/homebrew-shared"
-      }
-    }
-  },
   "existing-brew": {
     "build": {
       "dockerfile": "Containerfile"
@@ -48,19 +35,6 @@
         "packages": "hello",
         "username": "nonroot",
         "cache_directory": "/var/cache/homebrew"
-      }
-    }
-  },
-  "devcontainers-config": {
-    "build": {
-      "dockerfile": "Containerfile"
-    },
-    "updateRemoteUserUID": false,
-    "features": {
-      "homebrew-packages": {
-        "packages": "bat difftastic eza fd fzf git-delta jq lazygit neovim opencode sesh starship tree-sitter-cli tmux yazi zoxide zsh zsh-vi-mode zsh-autosuggestions",
-        "username": "nonroot",
-        "cache_directory": "/var/cache/homebrew-shared"
       }
     }
   },
