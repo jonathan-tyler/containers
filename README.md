@@ -30,7 +30,7 @@ Container images, automation, templates, and samples
 - Run `just feature homebrew-packages` to test one edited feature locally, including its scenarios. This is the direct feature-validation path for work that is not covered by the current workflow matrix.
 - `homebrew-packages` uses a prewarmed CI base image and a shared bottle cache so the Homebrew bootstrap and bottle fetches happen once, then get reused across scenarios and local reruns.
 - Run `just podman-in-podman-smoke` to exercise the host-side `devcontainer up` / `devcontainer exec` smoke path for the `podman-in-podman` feature through the local Docker-to-Podman shim.
-- Run `just publish-check` to package `devcontainer-features/` locally without publishing anything. This is the local equivalent of the release workflow's packaging step.
+- Run `just publish-check` to package the scratch copy of `devcontainer-features/` locally without publishing anything. That copy generates `homebrew-packages-additional` from `homebrew-packages` so there is still one source feature to maintain. This is the local equivalent of the release workflow's packaging step.
 - Run `just all` to execute both the local workflow simulation and the publish packaging check.
 - `just ci` and `just job ...` keep `.github/workflows/test.yaml` as the source of truth. They point `act` at that workflow file directly instead of wrapping the workflow logic in another shell runner.
 - `just feature ...` and `just publish-check` are local-only developer conveniences. They keep the existing `devcontainer features test` and `devcontainer features package` behavior without changing the GitHub workflow.

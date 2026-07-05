@@ -10,6 +10,9 @@ workflow_base_image := env_var_or_default("BASE_IMAGE", "registry.access.redhat.
 workflow_remote_user := env_var_or_default("REMOTE_USER", "root")
 homebrew_ci_base_image := env_var_or_default("HOME_BREW_CI_BASE_IMAGE", "feature-ci/homebrew-packages-base:latest")
 homebrew_ci_base_containerfile := project_root + "/test/homebrew-packages/feature-ci-base/Containerfile"
+homebrew_additional_source := project_root + "/devcontainer-features/homebrew-packages"
+homebrew_additional_target := feature_project_root + "/src/homebrew-packages-additional"
+homebrew_additional_sync := project_root + "/scripts/sync-homebrew-packages-additional.sh"
 xdg_runtime_dir := env_var_or_default("XDG_RUNTIME_DIR", scratch_root + "/xdg")
 podman_socket_path := xdg_runtime_dir + "/podman/podman.sock"
 podman_service_log_file := scratch_root + "/podman-system-service.log"
@@ -66,7 +69,7 @@ job job_name: check-act-tools prepare-runtime
 
 feature +features: prepare
     @base_image="{{workflow_base_image}}"; \
-    if [[ " {{features}} " == *" homebrew-packages "* ]]; then \
+    if [[ " {{features}} " == *" homebrew-packages "* || " {{features}} " == *" homebrew-packages-additional "* ]]; then \
         {{feature_ci_env}} docker build -f "{{homebrew_ci_base_containerfile}}" -t "{{homebrew_ci_base_image}}" "{{project_root}}"; \
         base_image="{{homebrew_ci_base_image}}"; \
     fi; \
@@ -77,7 +80,7 @@ podman-in-podman-smoke: prepare
 
 publish-check: prepare
     @rm -rf "{{package_output_root}}"
-    {{feature_ci_env}} devcontainer features package "{{project_root}}/devcontainer-features" --output-folder "{{package_output_root}}" --force-clean-output-folder
+    {{feature_ci_env}} devcontainer features package "{{feature_project_root}}/src" --output-folder "{{package_output_root}}" --force-clean-output-folder
     test -f "{{package_output_root}}/devcontainer-collection.json"
 
 all:
@@ -102,6 +105,7 @@ prepare-feature-project:
     @rm -rf "{{feature_project_root}}/src" "{{feature_project_root}}/test"
     @cp -a "{{project_root}}/devcontainer-features" "{{feature_project_root}}/src"
     @cp -a "{{project_root}}/test" "{{feature_project_root}}/test"
+    @"{{homebrew_additional_sync}}" "{{homebrew_additional_source}}" "{{homebrew_additional_target}}"
 
 [private]
 prepare-runtime:
