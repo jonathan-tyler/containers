@@ -1,6 +1,6 @@
 # Homebrew Packages (`homebrew-packages`)
 
-Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the Homebrew manager files so the final image keeps the installed payloads without keeping the full Homebrew checkout around.
+Install user-specific Homebrew formulae as an overlay on top of a shared base image or shared Homebrew feature, then remove the Homebrew manager files so the final image keeps the installed payloads without keeping the full Homebrew checkout around.
 
 ## Example Usage
 
@@ -29,7 +29,7 @@ Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the H
 - The feature requires a real named non-root passwd user. Numeric-only runtime users such as `65532` are rejected because upstream Homebrew postinstall behavior depends on a stable passwd-backed account.
 - Automatic user detection prefers existing named non-root users such as `vscode`, `node`, `codespace`, `devcontainer`, `nonroot`, `podman`, and `ubuntu`.
 - If your image does not already define a suitable user, create one in the image itself or add the repo's `nonroot-user` feature before `homebrew-packages`.
-- The same installer is also published as `ghcr.io/jonathan-tyler/containers/homebrew-packages-additional:0` if you want the alternate package name. It is generated from this feature during packaging; edit this feature only.
+- The same installer is also published as `ghcr.io/jonathan-tyler/containers/homebrew-packages-additional:0` if you want an overlay-friendly package name for user-specific formulae. It is generated from this feature during packaging; edit this feature only.
 - Alpine images fail fast with a clear error because upstream Homebrew currently depends on glibc-backed portable Ruby or a system Ruby 4.0, which plain musl Alpine images do not provide.
 - This feature uses the official Homebrew installer and does not depend on external devcontainer features or `ghcr` feature chaining.
 

@@ -3,7 +3,7 @@
   "version": "0.1.4",
   "name": "Homebrew Packages",
   "documentationURL": "https://brew.sh/",
-  "description": "Install Homebrew formulae with a temporary Homebrew bootstrap, then remove the Homebrew manager files and default cache to keep the image smaller.",
+  "description": "Install user-specific Homebrew formulae as an overlay on top of a shared base feature, then remove the Homebrew manager files and default cache to keep the image smaller.",
   "installsAfter": [
     "ghcr.io/jonathan-tyler/containers/nonroot-user"
   ],
