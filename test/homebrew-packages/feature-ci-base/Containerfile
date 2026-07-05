@@ -1,0 +1,9 @@
+FROM registry.access.redhat.com/hi/core-runtime:latest-builder
+
+USER root
+RUN dnf -y install --setopt=install_weak_deps=False ca-certificates file git gzip shadow-utils tar util-linux xz bash curl gawk procps-ng \
+    && useradd --create-home --home-dir /home/nonroot --shell /bin/bash nonroot \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf
+
+USER nonroot
