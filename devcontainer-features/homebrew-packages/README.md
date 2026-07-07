@@ -35,7 +35,7 @@ Install user-specific Homebrew formulae as an overlay on top of a shared base im
 
 ## OS Support
 
-This feature targets Linux containers. Ubuntu and RHEL-family images are supported. Alpine is detected explicitly and rejected with an upstream-constraint error instead of failing later during Homebrew bootstrap.
+This feature targets Linux containers. Ubuntu and Debian-family images install `build-essential` and `patch` plus missing core prerequisites, Fedora and RHEL-family images install `gcc`, `gcc-c++`, `glibc-devel`, `libstdc++-devel`, `make`, and `patch` plus missing core prerequisites, and all supported Linux images must provide glibc 2.39 or newer. Alpine is detected explicitly and rejected with an upstream-constraint error instead of failing later during Homebrew bootstrap.
 
 ## Reference
 

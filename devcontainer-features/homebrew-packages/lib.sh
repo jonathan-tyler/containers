@@ -46,12 +46,40 @@ commandExists() {
 requireHomebrewPrerequisiteCommands() {
     local required_command
 
-    for required_command in bash curl git file awk ps tar gzip xz; do
+    for required_command in bash curl git file awk ps tar gzip xz gcc g++ make patch; do
         if ! commandExists "${required_command}"; then
             err "${required_command} is required to bootstrap Homebrew."
             exit 1
         fi
     done
+}
+
+requireHomebrewGlibcAtLeast239() {
+    local glibc_version
+    local glibc_major
+    local glibc_minor
+
+    if ! commandExists getconf; then
+        err "getconf is required to verify the system glibc version."
+        exit 1
+    fi
+
+    set -- $(getconf GNU_LIBC_VERSION 2>/dev/null)
+    glibc_version="${2:-}"
+    case "${glibc_version}" in
+        ''|*[!0-9.]*)
+            err "Unable to determine the system glibc version. Homebrew requires glibc >= 2.39."
+            exit 1
+            ;;
+    esac
+
+    IFS=. read -r glibc_major glibc_minor _ <<< "${glibc_version}"
+    glibc_major="${glibc_major:-0}"
+    glibc_minor="${glibc_minor:-0}"
+    if [ "${glibc_major}" -lt 2 ] || { [ "${glibc_major}" -eq 2 ] && [ "${glibc_minor}" -lt 39 ]; }; then
+        err "Homebrew requires system glibc >= 2.39 (found ${glibc_version})."
+        exit 1
+    fi
 }
 
 isNumericId() {

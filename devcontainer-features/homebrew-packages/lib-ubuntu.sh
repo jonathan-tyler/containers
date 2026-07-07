@@ -19,6 +19,9 @@ installUbuntuPackages() {
 ensureHomebrewPrerequisites() {
     local missing_packages=()
 
+    requireHomebrewGlibcAtLeast239
+    installUbuntuPackages build-essential patch
+
     if ! commandExists bash; then
         missing_packages+=(bash)
     fi

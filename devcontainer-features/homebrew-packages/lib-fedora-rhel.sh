@@ -17,6 +17,9 @@ installFedoraRhelPackages() {
 ensureHomebrewPrerequisites() {
     local missing_packages=()
 
+    requireHomebrewGlibcAtLeast239
+    installFedoraRhelPackages gcc gcc-c++ glibc-devel libstdc++-devel make patch
+
     if ! commandExists bash; then
         missing_packages+=(bash)
     fi
