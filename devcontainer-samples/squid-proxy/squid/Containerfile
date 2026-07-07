@@ -1,6 +1,7 @@
-FROM alpine:3.20
+FROM registry.access.redhat.com/hi/core-runtime:latest
 
-RUN apk add --no-cache squid
+RUN dnf -y install --setopt=install_weak_deps=False squid \
+    && dnf clean all
 
 COPY squid.conf /etc/squid/squid.conf
 

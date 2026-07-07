@@ -23,7 +23,7 @@ Open this folder in Dev Containers. The workspace container ships with `curl`, p
 ## Notes
 
 - Workspace image: `registry.access.redhat.com/hi/core-runtime:latest-builder`
-- Proxy image: built from `alpine:3.20`
+- Proxy image: `registry.access.redhat.com/hi/core-runtime:latest`
 - Target image: built from `nginx:alpine`
 - Proxy port published on the host: `3128`
 - Workspace and target services stay on the internal app network.
