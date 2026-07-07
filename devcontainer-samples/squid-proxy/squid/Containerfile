@@ -1,10 +1,14 @@
-FROM registry.access.redhat.com/hi/core-runtime:latest
+FROM registry.access.redhat.com/hi/core-runtime:latest-builder AS builder
 
-RUN dnf -y install --setopt=install_weak_deps=False squid \
+RUN mkdir -p /rootfs \
+    && dnf -y --installroot=/rootfs --releasever=9 --setopt=install_weak_deps=False --setopt=tsflags=nodocs install squid \
     && dnf clean all
 
+FROM registry.access.redhat.com/hi/core-runtime:latest
+
+COPY --from=builder /rootfs/ /
 COPY squid.conf /etc/squid/squid.conf
 
 EXPOSE 3128
 
-CMD ["squid", "-N", "-f", "/etc/squid/squid.conf", "-d", "1"]
+CMD ["/usr/sbin/squid", "-N", "-f", "/etc/squid/squid.conf", "-d", "1"]

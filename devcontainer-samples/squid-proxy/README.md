@@ -9,7 +9,7 @@ Open this folder in Dev Containers. The workspace container ships with `curl`, p
 - `.devcontainer/devcontainer.json`: devcontainer entry point.
 - `docker-compose.yml`: workspace, proxy, and target services.
 - `workspace/Containerfile`: workspace image build that adds `curl`.
-- `squid/Containerfile`: squid image build.
+- `squid/Containerfile`: multi-stage squid image build for distroless runtime.
 - `squid/squid.conf`: squid access rules for the sample.
 - `web/Containerfile`: nginx target image build.
 - `web/index.html`: target page served by nginx.
@@ -23,7 +23,7 @@ Open this folder in Dev Containers. The workspace container ships with `curl`, p
 ## Notes
 
 - Workspace image: `registry.access.redhat.com/hi/core-runtime:latest-builder`
-- Proxy image: `registry.access.redhat.com/hi/core-runtime:latest`
+- Proxy image: `registry.access.redhat.com/hi/core-runtime:latest` copied from a `latest-builder` installroot stage
 - Target image: built from `nginx:alpine`
 - Proxy port published on the host: `3128`
 - Workspace and target services stay on the internal app network.
