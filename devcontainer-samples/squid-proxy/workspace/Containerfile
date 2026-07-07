@@ -1,0 +1,4 @@
+FROM registry.access.redhat.com/hi/core-runtime:latest-builder
+
+RUN dnf -y install --setopt=install_weak_deps=False ca-certificates curl \
+    && dnf clean all

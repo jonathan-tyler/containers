@@ -13,6 +13,7 @@ Container images, automation, templates, and samples
 - 🔷 [dotnet-dev](./images/dotnet-dev): .NET devcontainer image.
 - 🗄️ [devcontainer-samples/mssql-dev](./devcontainer-samples/mssql-dev): compose-backed SQL Server devcontainer sample.
 - 🧰 [devcontainer-samples/podman-in-podman](./devcontainer-samples/podman-in-podman): single-container sample with the nested Podman feature and required runtime arguments.
+- 🦑 [devcontainer-samples/squid-proxy](./devcontainer-samples/squid-proxy): compose-backed squid proxy devcontainer sample.
 - 📨 [devcontainer-samples/smtp4dev](./devcontainer-samples/smtp4dev): compose-backed smtp4dev devcontainer sample.
 
 ## Usage
@@ -49,7 +50,7 @@ Container images, automation, templates, and samples
 - Keep image-specific policy in the image `Containerfile`; keep toolchain installation details in the shared scripts.
 - Keep shared images generic: install tools and shell capability there, but apply personal dotfiles and prompt config at devcontainer runtime instead of baking host-specific files into image builds.
 
-`mssql-dev` and `smtp4dev` are compose-backed devcontainer samples. `podman-in-podman` is a single-container sample that applies the feature with the required nested-container run arguments. See [devcontainer-samples/mssql-dev/README.md](./devcontainer-samples/mssql-dev/README.md), [devcontainer-samples/podman-in-podman/README.md](./devcontainer-samples/podman-in-podman/README.md), and [devcontainer-samples/smtp4dev/README.md](./devcontainer-samples/smtp4dev/README.md).
+`mssql-dev`, `squid-proxy`, and `smtp4dev` are compose-backed devcontainer samples. `podman-in-podman` is a single-container sample that applies the feature with the required nested-container run arguments. See [devcontainer-samples/mssql-dev/README.md](./devcontainer-samples/mssql-dev/README.md), [devcontainer-samples/podman-in-podman/README.md](./devcontainer-samples/podman-in-podman/README.md), [devcontainer-samples/squid-proxy/README.md](./devcontainer-samples/squid-proxy/README.md), and [devcontainer-samples/smtp4dev/README.md](./devcontainer-samples/smtp4dev/README.md).
 
 ## Notes
 

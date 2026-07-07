@@ -1,0 +1,23 @@
+services:
+  workspace:
+    build:
+      context: ./workspace
+    command: sleep infinity
+    depends_on:
+      - squid
+      - web
+
+  squid:
+    build:
+      context: ./squid
+    ports:
+      - "3128:3128"
+
+  web:
+    image: nginx:alpine
+    command:
+      - /bin/sh
+      - -lc
+      - cp /sample/index.html /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'
+    volumes:
+      - ./web:/sample:ro,Z
