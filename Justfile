@@ -1,7 +1,7 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 project_root := justfile_directory()
-scratch_root := project_root + "/.scratch/feature-ci"
+scratch_root := env_var_or_default("FEATURE_CI_SCRATCH_ROOT", project_root + "/.scratch/feature-ci")
 feature_project_root := scratch_root + "/project"
 package_output_root := scratch_root + "/package"
 shim_dir := scratch_root + "/bin"
@@ -67,7 +67,14 @@ job job_name: check-act-tools prepare-runtime
     fi; \
     {{act_env}} act workflow_dispatch --bind --env TMPDIR="{{act_tmp_dir}}" --env TMP="{{act_tmp_dir}}" --env TEMP="{{act_tmp_dir}}" --workflows "{{workflow_file}}" --job "{{job_name}}" -P ubuntu-latest="{{act_runner_image}}"
 
-feature +features: prepare
+feature +features:
+    @mkdir -p "{{project_root}}/.scratch"; \
+    scratch_root="$(mktemp -d -p "{{project_root}}/.scratch" feature-ci.XXXXXX)"; \
+    scratch_suffix="${scratch_root##*/}"; \
+    trap 'rm -rf "$scratch_root"' EXIT; \
+    FEATURE_CI_SCRATCH_ROOT="$scratch_root" HOME_BREW_CI_BASE_IMAGE="feature-ci/homebrew-packages-base:${scratch_suffix}" just feature-run {{features}}
+
+feature-run +features: prepare
     @base_image="{{workflow_base_image}}"; \
     if [[ " {{features}} " == *" homebrew-packages "* || " {{features}} " == *" homebrew-packages-additional "* ]]; then \
         {{feature_ci_env}} docker build -f "{{homebrew_ci_base_containerfile}}" -t "{{homebrew_ci_base_image}}" "{{project_root}}"; \
