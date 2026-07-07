@@ -6,18 +6,25 @@ services:
     depends_on:
       - squid
       - web
+    networks:
+      - app-net
 
   squid:
     build:
       context: ./squid
     ports:
       - "3128:3128"
+    networks:
+      - app-net
+      - proxy-egress
 
   web:
-    image: nginx:alpine
-    command:
-      - /bin/sh
-      - -lc
-      - cp /sample/index.html /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'
-    volumes:
-      - ./web:/sample:ro,Z
+    build:
+      context: ./web
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    internal: true
+  proxy-egress:
