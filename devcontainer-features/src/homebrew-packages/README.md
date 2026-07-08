@@ -32,7 +32,7 @@ Install user-specific Homebrew formulae as an overlay on top of a shared base im
 - Automatic user detection prefers existing named non-root users such as `vscode`, `node`, `codespace`, `devcontainer`, `nonroot`, `podman`, and `ubuntu`.
 - If your image does not already define a suitable user, create one in the image itself or add the repo's `nonroot-user` feature before `homebrew-packages`.
 - The same installer is also published as `ghcr.io/jonathan-tyler/containers/homebrew-packages-additional:0` if you want an overlay-friendly package name for user-specific formulae. It is generated from this feature during packaging; edit this feature only.
-- The release workflow also builds `ghcr.io/jonathan-tyler/containers/homebrew:latest-builder` from this feature with `cleanupHomebrew` disabled so other images can reuse the Homebrew tree.
+- The release workflow also builds `ghcr.io/jonathan-tyler/containers/core-runtime:latest-homebrew` from this feature with `cleanupHomebrew` disabled so other images can reuse the Homebrew tree.
 - Alpine images fail fast with a clear error because upstream Homebrew currently depends on glibc-backed portable Ruby or a system Ruby 4.0, which plain musl Alpine images do not provide.
 - This feature uses the official Homebrew installer and does not depend on external devcontainer features or `ghcr` feature chaining.
 

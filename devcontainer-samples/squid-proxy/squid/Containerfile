@@ -1,4 +1,4 @@
-FROM homebrew:latest-builder AS builder
+FROM ghcr.io/jonathan-tyler/containers/core-runtime:latest-homebrew AS builder
 
 USER root
 
