@@ -21,4 +21,10 @@ for feature_test_dir in "${source_project_dir}"/test/*; do
     staged_feature_test_dir="${staged_project_dir}/src/${feature_name}/test"
     mkdir -p "${staged_feature_test_dir}"
     cp -a "${feature_test_dir}/." "${staged_feature_test_dir}"
+
+    # Scenario scripts run from .devcontainer/<feature>/test, but the CLI writes
+    # its shared test library at the workspace root.
+    cat <<'EOF' > "${staged_feature_test_dir}/dev-container-features-test-lib"
+. ../../../dev-container-features-test-lib
+EOF
 done

@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-. dev-container-features-test-lib
+. ./dev-container-features-test-lib
 
 check "podman installed on fedora fallback path" podman --version
 check "init script executable on fedora fallback path" test -x /usr/local/share/podman-in-podman-init.sh

@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-. dev-container-features-test-lib
+. ./dev-container-features-test-lib
 
 check "aspire" aspire --version
 check "mise selected" sh -lc 'test "$(readlink -f "$(command -v aspire)")" = "/tmp/mock-mise/installs/aspire/1.0.0/bin/aspire"'

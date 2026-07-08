@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-. dev-container-features-test-lib
+. ./dev-container-features-test-lib
 
 check "aspire" aspire --version
 check "npm package installed" sh -lc 'test -d "$(npm root -g)/@microsoft/aspire-cli"'

@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-. dev-container-features-test-lib
+. ./dev-container-features-test-lib
 
 check "podman" podman --version
 check "podman user exists" getent passwd podman

@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-. dev-container-features-test-lib
+. ./dev-container-features-test-lib
 
 runtime_uid="$(id -u)"
 expected_home="$(grep -m1 "^[^:]*:[^:]*:${runtime_uid}:" /etc/passwd 2>/dev/null | cut -d: -f6 || true)"

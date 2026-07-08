@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-. dev-container-features-test-lib
+. ./dev-container-features-test-lib
 
 check "nonroot passwd entry exists" sh -lc 'getent passwd nonroot >/dev/null'
 check "nonroot uid is 1000" sh -lc 'test "$(id -u nonroot)" = "1000"'

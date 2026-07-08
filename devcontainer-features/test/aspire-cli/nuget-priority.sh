@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-. dev-container-features-test-lib
+. ./dev-container-features-test-lib
 
 check "aspire" aspire --version
 check "nuget selected" sh -lc 'case "$(readlink -f "$(command -v aspire)")" in /usr/local/share/aspire-cli/dotnet-tools/*) exit 0 ;; *) exit 1 ;; esac'

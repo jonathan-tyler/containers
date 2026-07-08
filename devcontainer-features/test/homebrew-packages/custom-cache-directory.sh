@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-. dev-container-features-test-lib
+. ./dev-container-features-test-lib
 
 check "hello" hello --version
 check "custom cache directory kept" sh -lc 'set -- /var/cache/homebrew/*; test "$1" != "/var/cache/homebrew/*"'
