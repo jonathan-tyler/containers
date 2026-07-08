@@ -18,3 +18,4 @@ Open this folder in Dev Containers. The builder stage starts from `homebrew:late
 - Builder image: `homebrew:latest-builder`
 - Runtime image: `registry.access.redhat.com/hi/core-runtime:latest`
 - Installed package: `hello`
+- Runtime user: UID `65532`

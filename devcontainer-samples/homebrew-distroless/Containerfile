@@ -7,8 +7,10 @@ RUN /home/linuxbrew/.linuxbrew/bin/brew install hello \
 
 FROM registry.access.redhat.com/hi/core-runtime:latest
 
-COPY --from=builder --chown=root:root /home/linuxbrew/.linuxbrew /home/linuxbrew/.linuxbrew
+COPY --from=builder --chown=65532:65532 /home/linuxbrew/.linuxbrew /home/linuxbrew/.linuxbrew
 
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH
+
+USER 65532
 
 CMD ["sleep", "infinity"]
