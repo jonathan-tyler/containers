@@ -1,4 +1,4 @@
-# homebrew-distroless
+# homebrew-into-distroless
 
 Containerfile-only devcontainer sample that installs a Homebrew package in a builder stage and copies the resulting tree into a distroless `core-runtime` image.
 

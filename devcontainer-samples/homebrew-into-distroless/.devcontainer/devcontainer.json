@@ -1,5 +1,5 @@
 {
-  "name": "homebrew-distroless",
+  "name": "homebrew-into-distroless",
   "build": {
     "dockerfile": "Containerfile",
     "context": ".."
