@@ -46,7 +46,7 @@ jobs:
     needs: feature-version-bumps
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-      HOME_BREW_CI_BASE_IMAGE: feature-ci/homebrew-packages-base:latest
+      HOME_BREW_CI_BASE_IMAGE: feature-ci/homebrew:latest-builder
     strategy:
       max-parallel: 1
       matrix:

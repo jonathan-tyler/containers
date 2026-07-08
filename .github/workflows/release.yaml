@@ -27,10 +27,10 @@ jobs:
       - name: "Log in to GHCR"
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: "Build and publish homebrew-packages base image"
+      - name: "Build and publish homebrew base image"
         run: |
-          docker build --file .scratch/publish/devcontainer-features/test/homebrew-packages/feature-ci-base/Containerfile --tag ghcr.io/jonathan-tyler/containers/homebrew-packages-base:latest .scratch/publish
-          docker push ghcr.io/jonathan-tyler/containers/homebrew-packages-base:latest
+          docker build --file .scratch/publish/devcontainer-features/test/homebrew-packages/feature-ci-base/Containerfile --tag ghcr.io/jonathan-tyler/containers/homebrew:latest-builder .scratch/publish
+          docker push ghcr.io/jonathan-tyler/containers/homebrew:latest-builder
 
       - name: "Publish"
         # devcontainers/action@v1
