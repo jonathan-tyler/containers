@@ -1,0 +1,10 @@
+FROM registry.access.redhat.com/hi/core-runtime:latest-builder
+
+RUN dnf -y install --setopt=install_weak_deps=False ca-certificates curl \
+    && dnf clean all
+
+COPY test.sh /usr/local/bin/test.sh
+
+RUN chmod 0755 /usr/local/bin/test.sh
+
+CMD ["sleep", "infinity"]
