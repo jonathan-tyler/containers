@@ -32,6 +32,11 @@
       "type": "string",
       "default": "/tmp/homebrew-cache",
       "description": "Directory used for Homebrew bottle downloads during install. Point this at a persistent path if you want to reuse bottles between runs."
+    },
+    "cleanupHomebrew": {
+      "type": "boolean",
+      "default": true,
+      "description": "Remove the Homebrew manager and default cleanup artifacts after packages are installed. Set to false when you want to preserve the Homebrew tree for a reusable base image."
     }
   }
 }

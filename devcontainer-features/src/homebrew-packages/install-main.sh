@@ -6,6 +6,7 @@ packages="${PACKAGES:-}"
 username="${USERNAME:-automatic}"
 BREW_PREFIX="${BREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
 homebrew_cache_directory="${CACHE_DIRECTORY:-${HOMEBREW_CACHE_DIR:-/tmp/homebrew-cache}}"
+cleanup_homebrew="${CLEANUP_HOMEBREW:-true}"
 HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 FEATURE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -131,6 +132,17 @@ cleanupHomebrewManager() {
     find "${BREW_PREFIX}" -type d -empty -delete 2>/dev/null || true
 }
 
+shouldCleanupHomebrew() {
+    case "$1" in
+        false|False|FALSE|0|no|No|NO|off|Off|OFF)
+            return 1
+            ;;
+        *)
+            return 0
+            ;;
+    esac
+}
+
 requireRoot
 
 if [ -z "${packages//[[:space:]]/}" ]; then
@@ -153,7 +165,9 @@ chown -R "${target_user}:${target_group}" "${BREW_PREFIX}"
 installFormulae "${target_user}" "${homebrew_cache_directory}" "${requested_packages[@]}"
 linkExecutables "${BREW_PREFIX}/bin" /usr/local/bin
 linkExecutables "${BREW_PREFIX}/sbin" /usr/local/sbin
-cleanupHomebrewManager "${target_home}" "${homebrew_cache_directory}"
+if shouldCleanupHomebrew "${cleanup_homebrew}"; then
+    cleanupHomebrewManager "${target_home}" "${homebrew_cache_directory}"
+fi
 chown -R root:root "${BREW_PREFIX}"
 
 echo "Done!"

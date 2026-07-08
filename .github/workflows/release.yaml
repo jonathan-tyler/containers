@@ -24,6 +24,14 @@ jobs:
           cp -a devcontainer-features .scratch/publish/
           ./scripts/sync-homebrew-packages-additional.sh .scratch/publish/devcontainer-features/homebrew-packages .scratch/publish/devcontainer-features/homebrew-packages-additional
 
+      - name: "Log in to GHCR"
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: "Build and publish homebrew-packages base image"
+        run: |
+          docker build --file .scratch/publish/devcontainer-features/test/homebrew-packages/feature-ci-base/Containerfile --tag ghcr.io/jonathan-tyler/containers/homebrew-packages-base:latest .scratch/publish
+          docker push ghcr.io/jonathan-tyler/containers/homebrew-packages-base:latest
+
       - name: "Publish"
         # devcontainers/action@v1
         uses: devcontainers/action@1082abd5d2bf3a11abccba70eef98df068277772

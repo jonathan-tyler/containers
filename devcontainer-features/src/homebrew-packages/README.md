@@ -19,17 +19,20 @@ Install user-specific Homebrew formulae as an overlay on top of a shared base im
 | packages | Space-delimited Homebrew formula names to install. | string |  |
 | username | User that should own the temporary Homebrew tree while formulae are installed. | string | automatic |
 | cache_directory | Directory used for Homebrew bottle downloads during install. Point this at a persistent path if you want to reuse bottles between runs. | string | /tmp/homebrew-cache |
+| cleanupHomebrew | Remove the Homebrew manager and default cleanup artifacts after install. Set this to `false` when building a reusable base image that should keep Homebrew around. | boolean | true |
 
 ## Notes
 
 - The feature bootstraps Homebrew under `/home/linuxbrew/.linuxbrew`, installs the requested formulae, links any linked executables into `/usr/local/bin` and `/usr/local/sbin`, then removes the Homebrew manager checkout and the default temporary cache.
 - Set `cache_directory` to a stable path if you want to keep bottle downloads around for later runs; that path is left in place during cleanup.
+- Set `cleanupHomebrew` to `false` when you want to keep the Homebrew manager and build a reusable base image from the same feature install path.
 - If Homebrew is already present in the image, the feature reuses that installation instead of bootstrapping a second copy.
 - Formula payloads remain under `/home/linuxbrew/.linuxbrew` because that is where Homebrew installs Cellar and `opt` content on Linux.
 - The feature requires a real named non-root passwd user. Numeric-only runtime users such as `65532` are rejected because upstream Homebrew postinstall behavior depends on a stable passwd-backed account.
 - Automatic user detection prefers existing named non-root users such as `vscode`, `node`, `codespace`, `devcontainer`, `nonroot`, `podman`, and `ubuntu`.
 - If your image does not already define a suitable user, create one in the image itself or add the repo's `nonroot-user` feature before `homebrew-packages`.
 - The same installer is also published as `ghcr.io/jonathan-tyler/containers/homebrew-packages-additional:0` if you want an overlay-friendly package name for user-specific formulae. It is generated from this feature during packaging; edit this feature only.
+- The release workflow also builds `ghcr.io/jonathan-tyler/containers/homebrew-packages-base:latest` from this feature with `cleanupHomebrew` disabled so other images can reuse the Homebrew tree.
 - Alpine images fail fast with a clear error because upstream Homebrew currently depends on glibc-backed portable Ruby or a system Ruby 4.0, which plain musl Alpine images do not provide.
 - This feature uses the official Homebrew installer and does not depend on external devcontainer features or `ghcr` feature chaining.
 

@@ -68,6 +68,10 @@ jobs:
         if: matrix.features == 'homebrew-packages'
         run: docker build --load --file devcontainer-features/test/homebrew-packages/feature-ci-base/Containerfile --tag "${HOME_BREW_CI_BASE_IMAGE}" .
 
+      - name: "Verify homebrew-packages CI base image keeps Homebrew"
+        if: matrix.features == 'homebrew-packages'
+        run: docker run --rm "${HOME_BREW_CI_BASE_IMAGE}" sh -lc 'command -v brew >/dev/null && test -e /home/linuxbrew/.linuxbrew/Homebrew'
+
       - name: "Generating tests for '${{ matrix.features }}' scenarios"
         run: |
           project_folder="devcontainer-features"
