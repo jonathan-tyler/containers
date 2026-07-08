@@ -7,12 +7,13 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
   "shutdownAction": "stopCompose",
+  "postStartCommand": "bash /workspaces/${localWorkspaceFolderBasename}/workspace/test.sh",
   "containerEnv": {
     "http_proxy": "http://squid:3128",
     "https_proxy": "http://squid:3128",
     "HTTP_PROXY": "http://squid:3128",
     "HTTPS_PROXY": "http://squid:3128",
-    "no_proxy": "localhost,127.0.0.1,squid,web",
-    "NO_PROXY": "localhost,127.0.0.1,squid,web"
+    "no_proxy": "localhost,127.0.0.1,squid",
+    "NO_PROXY": "localhost,127.0.0.1,squid"
   }
 }
