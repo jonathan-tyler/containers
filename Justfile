@@ -1,34 +1,37 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 project_root := justfile_directory()
-scratch_root := env_var_or_default("FEATURE_CI_SCRATCH_ROOT", project_root + "/.scratch/feature-ci")
 feature_root := project_root + "/devcontainer-features"
-publish_project_root := scratch_root + "/publish/devcontainer-features"
-package_output_root := scratch_root + "/package"
-shim_dir := scratch_root + "/bin"
+workspace_root := env_var_or_default("FEATURE_CI_WORKSPACE", env_var_or_default("TMPDIR", "/tmp") + "/feature-ci")
+feature_project_root := workspace_root
+package_output_root := workspace_root + "/package"
+shim_dir := workspace_root + "/bin"
 workflow_file := project_root + "/.github/workflows/test.yaml"
 workflow_base_image := env_var_or_default("BASE_IMAGE", "registry.access.redhat.com/hi/core-runtime:latest-builder")
 workflow_remote_user := env_var_or_default("REMOTE_USER", "root")
 homebrew_ci_base_image := env_var_or_default("HOME_BREW_CI_BASE_IMAGE", "feature-ci/homebrew-packages-base:latest")
 homebrew_ci_base_containerfile := feature_root + "/test/homebrew-packages/feature-ci-base/Containerfile"
-homebrew_additional_source := publish_project_root + "/src/homebrew-packages"
-homebrew_additional_target := publish_project_root + "/src/homebrew-packages-additional"
-homebrew_additional_sync := project_root + "/scripts/sync-homebrew-packages-additional.sh"
-xdg_runtime_dir := env_var_or_default("XDG_RUNTIME_DIR", scratch_root + "/xdg")
+xdg_runtime_dir := env_var_or_default("XDG_RUNTIME_DIR", workspace_root + "/xdg")
 podman_socket_path := xdg_runtime_dir + "/podman/podman.sock"
-podman_service_log_file := scratch_root + "/podman-system-service.log"
+podman_service_log_file := workspace_root + "/podman-system-service.log"
 act_runner_image := env_var_or_default("ACT_RUNNER_IMAGE", "ghcr.io/catthehacker/ubuntu:act-latest")
-act_tmp_dir := scratch_root + "/tmp"
+act_tmp_dir := workspace_root + "/tmp"
 feature_ci_env := "PATH=\"" + shim_dir + ":$PATH\" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR=\"" + xdg_runtime_dir + "\""
 act_env := "DOCKER_HOST=\"unix://" + podman_socket_path + "\" " + feature_ci_env + " TMPDIR=\"" + act_tmp_dir + "\" TMP=\"" + act_tmp_dir + "\" TEMP=\"" + act_tmp_dir + "\""
 
 default:
     @just --list
 
-prepare: check-feature-tools prepare-runtime
-    @printf 'feature-ci scratch workspace ready at %s\n' "{{scratch_root}}"
+prepare:
+    @"{{project_root}}/scripts/feature-ci-workspace.sh" --copy-feature-tree just prepare-run
 
-ci: check-act-tools prepare-runtime
+prepare-run: check-feature-tools prepare-runtime
+    @printf 'feature-ci workspace prepared at %s\n' "{{workspace_root}}"
+
+ci:
+    @"{{project_root}}/scripts/feature-ci-workspace.sh" just ci-run
+
+ci-run: check-act-tools prepare-runtime
     @podman_service_pid=''; \
     if [ ! -S "{{podman_socket_path}}" ] || ! podman --url "unix://{{podman_socket_path}}" info >/dev/null 2>&1; then \
         rm -f "{{podman_socket_path}}"; \
@@ -48,7 +51,10 @@ ci: check-act-tools prepare-runtime
     fi; \
     {{act_env}} act workflow_dispatch --bind --env TMPDIR="{{act_tmp_dir}}" --env TMP="{{act_tmp_dir}}" --env TEMP="{{act_tmp_dir}}" --workflows "{{workflow_file}}" -P ubuntu-latest="{{act_runner_image}}"
 
-job job_name: check-act-tools prepare-runtime
+job job_name:
+    @"{{project_root}}/scripts/feature-ci-workspace.sh" just job-run "{{job_name}}"
+
+job-run job_name: check-act-tools prepare-runtime
     @podman_service_pid=''; \
     if [ ! -S "{{podman_socket_path}}" ] || ! podman --url "unix://{{podman_socket_path}}" info >/dev/null 2>&1; then \
         rm -f "{{podman_socket_path}}"; \
@@ -69,13 +75,9 @@ job job_name: check-act-tools prepare-runtime
     {{act_env}} act workflow_dispatch --bind --env TMPDIR="{{act_tmp_dir}}" --env TMP="{{act_tmp_dir}}" --env TEMP="{{act_tmp_dir}}" --workflows "{{workflow_file}}" --job "{{job_name}}" -P ubuntu-latest="{{act_runner_image}}"
 
 feature +features:
-    @mkdir -p "{{project_root}}/.scratch"; \
-    scratch_root="$(mktemp -d -p "{{project_root}}/.scratch" feature-ci.XXXXXX)"; \
-    scratch_suffix="${scratch_root##*/}"; \
-    trap 'rm -rf "$scratch_root"' EXIT; \
-    FEATURE_CI_SCRATCH_ROOT="$scratch_root" HOME_BREW_CI_BASE_IMAGE="feature-ci/homebrew-packages-base:${scratch_suffix}" just feature-run {{features}}
+    @"{{project_root}}/scripts/feature-ci-workspace.sh" --copy-feature-tree --stamp-homebrew-base-image just feature-run {{features}}
 
-feature-run +features: prepare
+feature-run +features: check-feature-tools prepare-runtime
     @base_image="{{workflow_base_image}}"; \
     if [[ " {{features}} " == *" homebrew-packages "* || " {{features}} " == *" homebrew-packages-additional "* ]]; then \
         {{feature_ci_env}} docker build -f "{{homebrew_ci_base_containerfile}}" -t "{{homebrew_ci_base_image}}" "{{project_root}}"; \
@@ -83,12 +85,15 @@ feature-run +features: prepare
     fi; \
     {{feature_ci_env}} devcontainer features test --project-folder "{{feature_root}}" --skip-autogenerated --skip-duplicated --base-image "$base_image" --remote-user "{{workflow_remote_user}}" -f {{features}}
 
-podman-in-podman-smoke: prepare
+podman-in-podman-smoke: check-feature-tools prepare-runtime
     {{feature_ci_env}} "{{feature_root}}/test/podman-in-podman/devcontainer-cli-smoke.sh"
 
-publish-check: check-feature-tools prepare-publish-project
+publish-check:
+    @"{{project_root}}/scripts/feature-ci-workspace.sh" --copy-feature-tree just publish-run
+
+publish-run: check-feature-tools prepare-runtime
     @rm -rf "{{package_output_root}}"
-    {{feature_ci_env}} devcontainer features package "{{publish_project_root}}/src" --output-folder "{{package_output_root}}" --force-clean-output-folder
+    {{feature_ci_env}} devcontainer features package "{{feature_project_root}}/src" --output-folder "{{package_output_root}}" --force-clean-output-folder
     test -f "{{package_output_root}}/devcontainer-collection.json"
 
 all:
@@ -106,13 +111,6 @@ check-act-tools:
     @for tool in bash act podman; do \
         command -v "$tool" >/dev/null 2>&1 || { printf 'feature-ci: missing required tool: %s\n' "$tool" >&2; exit 1; }; \
     done
-
-[private]
-prepare-publish-project:
-    @rm -rf "{{publish_project_root}}"
-    @mkdir -p "{{publish_project_root}}"
-    @cp -a "{{feature_root}}/." "{{publish_project_root}}"
-    @"{{homebrew_additional_sync}}" "{{homebrew_additional_source}}" "{{homebrew_additional_target}}"
 
 [private]
 prepare-runtime:
