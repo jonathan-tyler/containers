@@ -3,7 +3,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-feature_dir="${repo_root}/devcontainer-features/homebrew-packages"
+feature_dir="${repo_root}/src/homebrew-packages"
 numeric_user_log_file="$(mktemp)"
 automatic_user_log_file="$(mktemp)"
 trap 'rm -f "${numeric_user_log_file}" "${automatic_user_log_file}"' EXIT

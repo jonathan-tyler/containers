@@ -22,7 +22,7 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "${feature_mount_dir}"
-ln -s "${repo_root}/devcontainer-features" "${feature_mount}"
+ln -s "${repo_root}/src" "${feature_mount}"
 
 cat >"${config_file}" <<'EOF'
 {

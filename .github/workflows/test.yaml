@@ -5,15 +5,11 @@ on:
     branches:
       - main
     paths:
-      - .devcontainer/**
       - devcontainer-features/**
-      - test/**
       - .github/workflows/test.yaml
   pull_request:
     paths:
-      - .devcontainer/**
       - devcontainer-features/**
-      - test/**
       - .github/workflows/test.yaml
   workflow_dispatch:
 
@@ -39,15 +35,11 @@ jobs:
 
       - name: "Build homebrew-packages CI base image"
         if: matrix.features == 'homebrew-packages'
-        run: docker build --load --file test/homebrew-packages/feature-ci-base/Containerfile --tag "${HOME_BREW_CI_BASE_IMAGE}" .
+        run: docker build --load --file devcontainer-features/test/homebrew-packages/feature-ci-base/Containerfile --tag "${HOME_BREW_CI_BASE_IMAGE}" .
 
       - name: "Generating tests for '${{ matrix.features }}' scenarios"
         run: |
-          project_folder=".scratch/feature-ci/project-${{ matrix.features }}"
-          mkdir -p "${project_folder}"
-          rm -rf "${project_folder}/src" "${project_folder}/test"
-          cp -a devcontainer-features "${project_folder}/src"
-          cp -a test "${project_folder}/test"
+          project_folder="devcontainer-features"
           base_image="registry.access.redhat.com/hi/core-runtime:latest-builder"
           if [ "${{ matrix.features }}" = "homebrew-packages" ]; then
             base_image="${HOME_BREW_CI_BASE_IMAGE}"
@@ -56,8 +48,8 @@ jobs:
 
       - name: "Smoke test podman-in-podman with devcontainer CLI"
         if: matrix.features == 'podman-in-podman'
-        run: test/podman-in-podman/devcontainer-cli-smoke.sh
+        run: devcontainer-features/test/podman-in-podman/devcontainer-cli-smoke.sh
 
       - name: "Verify homebrew-packages rejects numeric-only users"
         if: matrix.features == 'homebrew-packages'
-        run: test/homebrew-packages/requires-named-user.sh
+        run: devcontainer-features/test/homebrew-packages/requires-named-user.sh
