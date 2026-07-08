@@ -1,0 +1,14 @@
+FROM homebrew:latest-builder AS builder
+
+USER nonroot
+
+RUN /home/linuxbrew/.linuxbrew/bin/brew install hello \
+    && /home/linuxbrew/.linuxbrew/bin/brew cleanup --prune=all --scrub
+
+FROM registry.access.redhat.com/hi/core-runtime:latest
+
+COPY --from=builder --chown=root:root /home/linuxbrew/.linuxbrew /home/linuxbrew/.linuxbrew
+
+ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH
+
+CMD ["sleep", "infinity"]
