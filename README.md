@@ -25,7 +25,10 @@ Container images, automation, templates, and samples
 - Use `.devcontainer/feature-ci/devcontainer.json` when you want a workspace that can run the feature test and pre-publish checks before pushing.
 - Start it with `dev up --overlay none --config .devcontainer/feature-ci/devcontainer.json`, or open that config directly in VS Code.
 - Install `just`, `act`, `podman`, `devcontainer`, and `jq` in that environment before running the local commands.
+- Run `just hooks` once in each checkout so git uses the repo-managed `.githooks/` directory.
 - Run `just prepare` if you want to stage a throwaway feature-ci workspace and verify the toolchain.
+- Run `just bump-feature-version <feature> <patch|minor|major|set X.Y.Z>` after you decide the semver bump for a feature source change.
+- Run `just check-feature-version-bumps` to validate staged feature-source changes before committing.
 - Run `just ci` to execute `.github/workflows/test.yaml` locally through `act`.
 - Run `just feature homebrew-packages` to test one edited feature locally, including its scenarios. This now targets `devcontainer-features/` directly, so there is no source-tree scratch mirror in the feature validation path.
 - `homebrew-packages` uses a prewarmed CI base image and a shared bottle cache so the Homebrew bootstrap and bottle fetches happen once, then get reused across scenarios and local reruns.

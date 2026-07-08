@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+unset GIT_DIR GIT_WORK_TREE
+
+repo_root="$(git rev-parse --show-toplevel)"
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+    [ -n "$local_ref" ] || continue
+    [ "$local_sha" = "0000000000000000000000000000000000000000" ] && continue
+
+    if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+        compare_to="$(git merge-base "$local_sha" main)"
+    else
+        compare_to="$remote_sha"
+    fi
+
+    if ! "${repo_root}/scripts/check-feature-version-bumps.sh" --compare-to "$compare_to" --head "$local_sha"; then
+        printf 'pre-push: run %s/scripts/bump-feature-version.sh before pushing feature source changes.\n' "$repo_root" >&2
+        exit 1
+    fi
+done

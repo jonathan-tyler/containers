@@ -14,8 +14,36 @@ on:
   workflow_dispatch:
 
 jobs:
+  feature-version-bumps:
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+        with:
+          fetch-depth: 0
+
+      - name: "Check feature version bumps"
+        run: |
+          unset GIT_DIR GIT_WORK_TREE
+          compare_to="${GITHUB_EVENT_BEFORE:-}"
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              compare_to="$(git merge-base "origin/${GITHUB_BASE_REF}" HEAD)"
+              ;;
+            push)
+              if [ -z "${compare_to}" ] || [ "${compare_to}" = "0000000000000000000000000000000000000000" ]; then
+                compare_to="$(git rev-parse HEAD^)"
+              fi
+              ;;
+            workflow_dispatch)
+              compare_to="$(git rev-parse HEAD^)"
+              ;;
+          esac
+          ./scripts/check-feature-version-bumps.sh --compare-to "${compare_to}"
+
   test-scenarios:
     runs-on: ubuntu-latest
+    needs: feature-version-bumps
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       HOME_BREW_CI_BASE_IMAGE: feature-ci/homebrew-packages-base:latest
@@ -30,6 +58,8 @@ jobs:
     steps:
       # actions/checkout@v5
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+        with:
+          fetch-depth: 0
 
       - name: "Install latest devcontainer CLI"
         run: npm install -g @devcontainers/cli

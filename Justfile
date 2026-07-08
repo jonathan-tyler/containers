@@ -22,6 +22,16 @@ act_env := "DOCKER_HOST=\"unix://" + podman_socket_path + "\" " + feature_ci_env
 default:
     @just --list
 
+hooks:
+    @git -C "{{project_root}}" config --local core.hooksPath ".githooks"
+    @printf 'git hooks path set to %s\n' "{{project_root}}/.githooks"
+
+bump-feature-version +args:
+    @"{{project_root}}/scripts/bump-feature-version.sh" {{args}}
+
+check-feature-version-bumps:
+    @"{{project_root}}/scripts/check-feature-version-bumps.sh" --staged
+
 prepare:
     @"{{project_root}}/scripts/feature-ci-workspace.sh" --copy-feature-tree just prepare-run
 

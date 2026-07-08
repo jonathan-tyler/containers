@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+unset GIT_DIR GIT_WORK_TREE
+
+repo_root="$(git rev-parse --show-toplevel)"
+
+if ! "${repo_root}/scripts/check-feature-version-bumps.sh" --staged; then
+    printf 'pre-commit: run %s/scripts/bump-feature-version.sh with an explicit semver decision.\n' "$repo_root" >&2
+    exit 1
+fi
