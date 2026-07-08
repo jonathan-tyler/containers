@@ -1,6 +1,6 @@
 {
   "id": "nonroot-user",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Non-Root User",
   "documentationURL": "https://github.com/devcontainers/spec/blob/main/docs/specs/devcontainer-features.md",
   "description": "Create a named non-root passwd user for images that only provide root or a numeric runtime UID.",
