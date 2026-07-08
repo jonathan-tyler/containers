@@ -53,18 +53,15 @@ trap cleanup EXIT
 mkdir -p \
     "${workspace_root}/bin" \
     "${workspace_root}/package" \
-    "${workspace_root}/tmp" \
-    "${workspace_root}/xdg/podman"
+    "${workspace_root}/tmp"
 
 if [ "${copy_feature_tree}" = true ]; then
-    mkdir -p "${workspace_root}/src" "${workspace_root}/test"
-    cp -a "${project_root}/devcontainer-features/src/." "${workspace_root}/src"
-    cp -a "${project_root}/devcontainer-features/test/." "${workspace_root}/test"
+    "${project_root}/scripts/stage-feature-test-project.sh" "${project_root}/devcontainer-features" "${workspace_root}"
     "${project_root}/scripts/sync-homebrew-packages-additional.sh" "${workspace_root}/src/homebrew-packages" "${workspace_root}/src/homebrew-packages-additional"
+    export FEATURE_PROJECT_DIR="${workspace_root}"
 fi
 
 export FEATURE_CI_WORKSPACE="${workspace_root}"
-export XDG_RUNTIME_DIR="${workspace_root}/xdg"
 export TMPDIR="${workspace_root}/tmp"
 export TMP="${workspace_root}/tmp"
 export TEMP="${workspace_root}/tmp"

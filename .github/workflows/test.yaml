@@ -74,7 +74,11 @@ jobs:
 
       - name: "Generating tests for '${{ matrix.features }}' scenarios"
         run: |
-          project_folder="devcontainer-features"
+          staged_project_folder="$(mktemp -d)"
+          trap 'rm -rf "${staged_project_folder}"' EXIT
+          ./scripts/stage-feature-test-project.sh devcontainer-features "${staged_project_folder}"
+
+          project_folder="${staged_project_folder}"
           base_image="registry.access.redhat.com/hi/core-runtime:latest-builder"
           if [ "${{ matrix.features }}" = "homebrew-packages" ]; then
             base_image="${HOME_BREW_CI_BASE_IMAGE}"

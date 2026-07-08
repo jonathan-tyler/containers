@@ -14,6 +14,7 @@ RUN PACKAGES="hello jq bat difftastic eza fd fzf git-delta lazygit neovim openco
         CACHE_DIRECTORY=/var/cache/homebrew-shared \
         CLEANUP_HOMEBREW=false \
         /bin/sh /tmp/homebrew-packages/install.sh \
+    && ln -sf /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/brew \
     && rm -rf /tmp/homebrew-packages \
     && chown -R root:root /home/linuxbrew/.linuxbrew /var/cache/homebrew-shared \
     && dnf clean all \

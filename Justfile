@@ -1,22 +1,24 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 project_root := justfile_directory()
-feature_root := project_root + "/devcontainer-features"
+feature_root := env_var_or_default("FEATURE_PROJECT_DIR", project_root + "/devcontainer-features")
 workspace_root := env_var_or_default("FEATURE_CI_WORKSPACE", env_var_or_default("TMPDIR", "/tmp") + "/feature-ci")
+runtime_root := env_var_or_default("FEATURE_CI_RUNTIME_ROOT", "/tmp/feature-ci-runtime")
 feature_project_root := workspace_root
 package_output_root := workspace_root + "/package"
 shim_dir := workspace_root + "/bin"
+docker_config_dir := runtime_root + "/docker-config"
 workflow_file := project_root + "/.github/workflows/test.yaml"
 workflow_base_image := env_var_or_default("BASE_IMAGE", "registry.access.redhat.com/hi/core-runtime:latest-builder")
 workflow_remote_user := env_var_or_default("REMOTE_USER", "root")
 homebrew_ci_base_image := env_var_or_default("HOME_BREW_CI_BASE_IMAGE", "feature-ci/core-runtime:latest-homebrew")
 homebrew_ci_base_containerfile := feature_root + "/test/homebrew-packages/feature-ci-base/Containerfile"
-xdg_runtime_dir := env_var_or_default("XDG_RUNTIME_DIR", workspace_root + "/xdg")
+xdg_runtime_dir := env_var_or_default("XDG_RUNTIME_DIR", runtime_root + "/xdg")
 podman_socket_path := xdg_runtime_dir + "/podman/podman.sock"
 podman_service_log_file := workspace_root + "/podman-system-service.log"
 act_runner_image := env_var_or_default("ACT_RUNNER_IMAGE", "ghcr.io/catthehacker/ubuntu:act-latest")
 act_tmp_dir := workspace_root + "/tmp"
-feature_ci_env := "PATH=\"" + shim_dir + ":$PATH\" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR=\"" + xdg_runtime_dir + "\""
+feature_ci_env := "PATH=\"" + shim_dir + ":$PATH\" DOCKER_CONFIG=\"" + docker_config_dir + "\" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR=\"" + xdg_runtime_dir + "\""
 act_env := "DOCKER_HOST=\"unix://" + podman_socket_path + "\" " + feature_ci_env + " TMPDIR=\"" + act_tmp_dir + "\" TMP=\"" + act_tmp_dir + "\" TEMP=\"" + act_tmp_dir + "\""
 
 default:
@@ -124,7 +126,7 @@ check-act-tools:
 
 [private]
 prepare-runtime:
-    @mkdir -p "{{shim_dir}}" "{{xdg_runtime_dir}}/podman" "{{act_tmp_dir}}"
+    @mkdir -p "{{shim_dir}}" "{{docker_config_dir}}" "{{xdg_runtime_dir}}/podman" "{{act_tmp_dir}}"
     @ln -sf "$(command -v podman)" "{{shim_dir}}/docker"
     @if [ ! -S "{{podman_socket_path}}" ]; then \
         rm -f "{{podman_socket_path}}"; \

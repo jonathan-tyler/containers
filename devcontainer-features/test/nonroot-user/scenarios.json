@@ -1,8 +1,9 @@
 {
   "red-hat-hardened-images": {
     "build": {
-      "dockerfile": "Containerfile"
+      "dockerfile": "nonroot-user/test/red-hat-hardened-images/Containerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/nonroot-user/test",
     "features": {
       "nonroot-user": {
         "username": "nonroot",

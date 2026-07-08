@@ -1,6 +1,6 @@
 {
   "id": "homebrew-packages",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "name": "Homebrew Packages",
   "documentationURL": "https://brew.sh/",
   "description": "Install user-specific Homebrew formulae as an overlay on top of a shared base feature, then remove the Homebrew manager files and default cache to keep the image smaller.",

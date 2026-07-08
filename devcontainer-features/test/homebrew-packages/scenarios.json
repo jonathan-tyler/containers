@@ -1,8 +1,9 @@
 {
   "red-hat-hardened-images": {
     "build": {
-      "dockerfile": "Containerfile"
+      "dockerfile": "homebrew-packages/test/red-hat-hardened-images/Containerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/homebrew-packages/test",
     "updateRemoteUserUID": false,
     "features": {
       "homebrew-packages": {
@@ -14,8 +15,9 @@
   },
   "existing-brew": {
     "build": {
-      "dockerfile": "Containerfile"
+      "dockerfile": "homebrew-packages/test/existing-brew/Containerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/homebrew-packages/test",
     "updateRemoteUserUID": false,
     "features": {
       "homebrew-packages": {
@@ -27,8 +29,9 @@
   },
   "custom-cache-directory": {
     "build": {
-      "dockerfile": "Containerfile"
+      "dockerfile": "homebrew-packages/test/custom-cache-directory/Containerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/homebrew-packages/test",
     "updateRemoteUserUID": false,
     "features": {
       "homebrew-packages": {
@@ -40,8 +43,9 @@
   },
   "ubuntu": {
     "build": {
-      "dockerfile": "Containerfile"
+      "dockerfile": "homebrew-packages/test/ubuntu/Containerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/homebrew-packages/test",
     "updateRemoteUserUID": false,
     "features": {
       "homebrew-packages": {

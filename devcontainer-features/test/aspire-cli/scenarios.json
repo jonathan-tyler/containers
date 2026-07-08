@@ -3,6 +3,7 @@
     "build": {
       "dockerfile": "aspire-cli/test/npm-install.Dockerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/aspire-cli/test",
     "updateRemoteUserUID": false,
     "features": {
       "aspire-cli": {}
@@ -12,6 +13,7 @@
     "build": {
       "dockerfile": "aspire-cli/test/nuget-priority.Dockerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/aspire-cli/test",
     "updateRemoteUserUID": false,
     "features": {
       "aspire-cli": {}
@@ -21,6 +23,7 @@
     "build": {
       "dockerfile": "aspire-cli/test/mise-priority.Dockerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/aspire-cli/test",
     "updateRemoteUserUID": false,
     "features": {
       "aspire-cli": {}
@@ -30,6 +33,7 @@
     "build": {
       "dockerfile": "aspire-cli/test/already-installed.Dockerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/aspire-cli/test",
     "updateRemoteUserUID": false,
     "features": {
       "aspire-cli": {}

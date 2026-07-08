@@ -1,8 +1,9 @@
 {
   "red-hat-hardened-images": {
     "build": {
-      "dockerfile": "Containerfile"
+      "dockerfile": "podman-in-podman/test/red-hat-hardened-images/Containerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/podman-in-podman/test",
     "updateRemoteUserUID": false,
     "features": {
       "podman-in-podman": {
@@ -12,8 +13,9 @@
   },
   "existing-podman": {
     "build": {
-      "dockerfile": "Containerfile"
+      "dockerfile": "podman-in-podman/test/existing-podman/Containerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/podman-in-podman/test",
     "updateRemoteUserUID": false,
     "features": {
       "podman-in-podman": {
@@ -23,8 +25,9 @@
   },
   "fedora": {
     "build": {
-      "dockerfile": "Containerfile"
+      "dockerfile": "podman-in-podman/test/fedora/Containerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/podman-in-podman/test",
     "updateRemoteUserUID": false,
     "features": {
       "podman-in-podman": {}
@@ -32,8 +35,9 @@
   },
   "no-socket-mount": {
     "build": {
-      "dockerfile": "Containerfile"
+      "dockerfile": "podman-in-podman/test/no-socket-mount/Containerfile"
     },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/podman-in-podman/test",
     "updateRemoteUserUID": false,
     "features": {
       "podman-in-podman": {
