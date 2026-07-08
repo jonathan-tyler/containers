@@ -169,7 +169,14 @@ writeInitScript() {
 set -e
 
 if [ "$(id -u)" -ne 0 ] && [ -z "${XDG_RUNTIME_DIR:-}" ]; then
-    export XDG_RUNTIME_DIR="/tmp/podman-run-$(id -u)"
+    runtime_home="$(awk -F: -v target_uid="$(id -u)" '$3 == target_uid { print $6; exit }' /etc/passwd)"
+    if [ -n "${runtime_home}" ] && [ -w "${runtime_home}" ]; then
+        export XDG_RUNTIME_DIR="${runtime_home}/.podman-run-$(id -u)"
+    elif [ -n "${HOME:-}" ] && [ -w "${HOME}" ]; then
+        export XDG_RUNTIME_DIR="${HOME}/.podman-run-$(id -u)"
+    else
+        export XDG_RUNTIME_DIR="/tmp/podman-run-$(id -u)"
+    fi
 fi
 
 if [ -n "${XDG_RUNTIME_DIR:-}" ]; then

@@ -28,7 +28,7 @@ installFedoraRhelPackages() {
         fi
 
         if hasEnabledDnfRepoBesides "${HUMMINGBIRD_REPO_ID}"; then
-            dnf -y install --setopt=install_weak_deps=False "$@"
+            dnf -y --disablerepo="${HUMMINGBIRD_REPO_ID}" --setopt=install_weak_deps=False install "$@"
             USED_DNF=1
             return
         fi
@@ -129,5 +129,5 @@ installWithTemporaryFedoraFallback() {
     writeTemporaryFedoraRepos 0
     dnf -y --setopt=install_weak_deps=False install fedora-gpg-keys
     writeTemporaryFedoraRepos 1
-    dnf -y install --setopt=install_weak_deps=False "$@"
+    dnf -y --disablerepo="${HUMMINGBIRD_REPO_ID}" --setopt=install_weak_deps=False install "$@"
 }

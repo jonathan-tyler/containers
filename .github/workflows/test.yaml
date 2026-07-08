@@ -20,6 +20,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       HOME_BREW_CI_BASE_IMAGE: feature-ci/homebrew-packages-base:latest
     strategy:
+      max-parallel: 1
       matrix:
         features:
           - aspire-cli
