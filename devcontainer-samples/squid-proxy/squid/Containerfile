@@ -1,14 +1,23 @@
-FROM registry.access.redhat.com/hi/core-runtime:latest-builder AS builder
+FROM homebrew:latest-builder AS builder
 
-RUN mkdir -p /rootfs \
-    && dnf -y --installroot=/rootfs --releasever=9 --setopt=install_weak_deps=False --setopt=tsflags=nodocs install squid \
-    && dnf clean all
+USER root
+
+RUN chown -R nonroot:nonroot /home/linuxbrew/.linuxbrew
+
+USER nonroot
+
+RUN /home/linuxbrew/.linuxbrew/bin/brew install squid \
+    && /home/linuxbrew/.linuxbrew/bin/brew cleanup --prune=all --scrub
 
 FROM registry.access.redhat.com/hi/core-runtime:latest
 
-COPY --from=builder /rootfs/ /
+COPY --from=builder --chown=65532:65532 /home/linuxbrew/.linuxbrew /home/linuxbrew/.linuxbrew
 COPY squid.conf /etc/squid/squid.conf
+
+ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH
+
+USER 65532
 
 EXPOSE 3128
 
-CMD ["/usr/sbin/squid", "-N", "-f", "/etc/squid/squid.conf", "-d", "1"]
+CMD ["/home/linuxbrew/.linuxbrew/opt/squid/sbin/squid", "-N", "-f", "/etc/squid/squid.conf", "-d", "1"]
