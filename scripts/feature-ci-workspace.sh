@@ -67,7 +67,7 @@ export TMP="${workspace_root}/tmp"
 export TEMP="${workspace_root}/tmp"
 
 if [ "${stamp_homebrew_base_image}" = true ] && [ -z "${HOME_BREW_CI_BASE_IMAGE:-}" ]; then
-    export HOME_BREW_CI_BASE_IMAGE="feature-ci/core-runtime:$(basename "${workspace_root}")"
+    export HOME_BREW_CI_BASE_IMAGE="localhost/feature-ci/core-runtime:$(basename "${workspace_root}")"
 fi
 
 "$@"

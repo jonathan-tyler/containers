@@ -1,0 +1,29 @@
+FROM registry.access.redhat.com/hi/core-runtime:latest-builder
+
+USER root
+
+RUN dnf -y install --setopt=install_weak_deps=False \
+        bash \
+        ca-certificates \
+        curl \
+        file \
+        gawk \
+        gcc \
+        gcc-c++ \
+        git \
+        gzip \
+        make \
+        patch \
+        procps-ng \
+        shadow-utils \
+        tar \
+        util-linux \
+        xz \
+    && dnf clean all \
+    && useradd --create-home --home-dir /home/nonroot --shell /bin/bash nonroot
+
+COPY devcontainer-features/test/homebrew-packages/feature-ci-base/seed-cache.sh /usr/local/bin/seed-homebrew-test-cache
+
+RUN chmod 0755 /usr/local/bin/seed-homebrew-test-cache \
+    && /usr/local/bin/seed-homebrew-test-cache nonroot \
+    && rm -rf /var/cache/dnf

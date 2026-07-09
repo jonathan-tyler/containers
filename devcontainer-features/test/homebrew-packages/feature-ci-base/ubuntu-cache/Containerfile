@@ -1,0 +1,27 @@
+FROM docker.io/library/ubuntu:24.04
+
+USER root
+
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        bash \
+        build-essential \
+        ca-certificates \
+        curl \
+        file \
+        git \
+        gawk \
+        gzip \
+        patch \
+        procps \
+        tar \
+        util-linux \
+        xz-utils \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --home-dir /home/nonroot --shell /bin/bash nonroot
+
+COPY devcontainer-features/test/homebrew-packages/feature-ci-base/seed-cache.sh /usr/local/bin/seed-homebrew-test-cache
+
+RUN chmod 0755 /usr/local/bin/seed-homebrew-test-cache \
+    && /usr/local/bin/seed-homebrew-test-cache nonroot
