@@ -4,7 +4,7 @@ USER root
 
 RUN dnf -y install --setopt=install_weak_deps=False shadow-utils \
     && dnf clean all \
-    && useradd --create-home --home-dir /home/nonroot --shell /bin/bash nonroot \
+    && useradd --create-home --home-dir /home/nonroot --shell /bin/sh nonroot \
     && install -d -o nonroot -g nonroot /var/cache/homebrew-shared
 
 COPY devcontainer-features/src/homebrew-install /tmp/homebrew-install

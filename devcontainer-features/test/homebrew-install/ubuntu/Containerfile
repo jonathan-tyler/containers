@@ -1,0 +1,6 @@
+FROM docker.io/library/ubuntu:24.04
+
+USER root
+
+RUN useradd --create-home --home-dir /home/nonroot --shell /bin/sh nonroot \
+    && install -d -o nonroot -g nonroot /var/cache/homebrew-shared

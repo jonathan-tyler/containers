@@ -1,0 +1,41 @@
+{
+  "red-hat-hardened-images": {
+    "build": {
+      "dockerfile": "homebrew-install/test/red-hat-hardened-images/Containerfile"
+    },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/homebrew-install/test",
+    "updateRemoteUserUID": false,
+    "features": {
+      "homebrew-install": {
+        "username": "nonroot",
+        "cache_directory": "/var/cache/homebrew-shared"
+      }
+    }
+  },
+  "ubuntu": {
+    "build": {
+      "dockerfile": "homebrew-install/test/ubuntu/Containerfile"
+    },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/homebrew-install/test",
+    "updateRemoteUserUID": false,
+    "features": {
+      "homebrew-install": {
+        "username": "nonroot",
+        "cache_directory": "/var/cache/homebrew-shared"
+      }
+    }
+  },
+  "cleanup-homebrew": {
+    "build": {
+      "dockerfile": "homebrew-install/test/red-hat-hardened-images/Containerfile"
+    },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/homebrew-install/test",
+    "updateRemoteUserUID": false,
+    "features": {
+      "homebrew-install": {
+        "username": "nonroot",
+        "cleanupHomebrew": true
+      }
+    }
+  }
+}

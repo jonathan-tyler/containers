@@ -130,12 +130,14 @@ for feature_name in "${changed_features[@]}"; do
         die "feature manifest missing for ${feature_dir}"
     fi
 
-    if ! base_version="$(read_manifest_version "$base_refspec" "$manifest_relpath")"; then
-        die "unable to read version from ${base_refspec}:${manifest_relpath}"
-    fi
-
     if ! current_version="$(read_manifest_version "$current_refspec" "$manifest_relpath")"; then
         die "unable to read version from ${current_refspec_label}:${manifest_relpath}"
+    fi
+
+    if ! base_version="$(read_manifest_version "$base_refspec" "$manifest_relpath")"; then
+        # Added features have no manifest in the base ref yet; the manifest in the
+        # current tree is the explicit semver decision for that new feature.
+        continue
     fi
 
     if [ "$base_version" = "$current_version" ]; then

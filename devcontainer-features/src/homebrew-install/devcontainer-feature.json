@@ -1,0 +1,37 @@
+{
+  "id": "homebrew-install",
+  "version": "0.1.0",
+  "name": "Homebrew Install",
+  "documentationURL": "https://brew.sh/",
+  "description": "Install Homebrew and the distro prerequisites it needs for a named non-root user, then optionally remove the manager checkout and default cache artifacts.",
+  "installsAfter": [
+    "ghcr.io/jonathan-tyler/containers/nonroot-user"
+  ],
+  "options": {
+    "username": {
+      "type": "string",
+      "proposals": [
+        "automatic",
+        "nonroot",
+        "devcontainer",
+        "vscode",
+        "node",
+        "codespace",
+        "podman",
+        "ubuntu"
+      ],
+      "default": "automatic",
+      "description": "Named non-root passwd user that should own the temporary Homebrew tree while Homebrew is installed."
+    },
+    "cache_directory": {
+      "type": "string",
+      "default": "/tmp/homebrew-cache",
+      "description": "Directory used for Homebrew bottle downloads during bootstrap. Point this at a persistent path if you want to reuse bottles between runs."
+    },
+    "cleanupHomebrew": {
+      "type": "boolean",
+      "default": false,
+      "description": "Remove the Homebrew manager and default cleanup artifacts after bootstrap. Leave this false when you want the feature to keep a working Homebrew install."
+    }
+  }
+}

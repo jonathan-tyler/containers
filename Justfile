@@ -12,7 +12,7 @@ workflow_file := project_root + "/.github/workflows/test.yaml"
 workflow_base_image := env_var_or_default("BASE_IMAGE", "registry.access.redhat.com/hi/core-runtime:latest-builder")
 workflow_remote_user := env_var_or_default("REMOTE_USER", "root")
 homebrew_ci_base_image := env_var_or_default("HOME_BREW_CI_BASE_IMAGE", "localhost/feature-ci/core-runtime:latest-homebrew")
-homebrew_ci_base_containerfile := feature_root + "/test/homebrew-packages/feature-ci-base/Containerfile"
+homebrew_ci_base_containerfile := feature_root + "/test/homebrew-install/feature-ci-base/Containerfile"
 homebrew_ci_redhat_cache_image := env_var_or_default("HOME_BREW_CI_REDHAT_CACHE_IMAGE", "localhost/feature-ci/homebrew-scenario-cache:redhat")
 homebrew_ci_redhat_cache_containerfile := feature_root + "/test/homebrew-packages/feature-ci-base/redhat-cache/Containerfile"
 homebrew_ci_ubuntu_cache_image := env_var_or_default("HOME_BREW_CI_UBUNTU_CACHE_IMAGE", "localhost/feature-ci/homebrew-scenario-cache:ubuntu")
@@ -95,7 +95,11 @@ feature +features:
 
 feature-run +features: check-feature-tools prepare-runtime
     @base_image="{{workflow_base_image}}"; \
+    if [[ " {{features}} " == *" homebrew-install "* || " {{features}} " == *" homebrew-packages "* || " {{features}} " == *" homebrew-packages-additional "* ]]; then \
+        {{feature_ci_env}} docker build -f "{{homebrew_ci_base_containerfile}}" -t "{{homebrew_ci_base_image}}" "{{project_root}}"; \
+    fi; \
     if [[ " {{features}} " == *" homebrew-packages "* || " {{features}} " == *" homebrew-packages-additional "* ]]; then \
+        base_image="{{homebrew_ci_base_image}}"; \
         {{feature_ci_env}} docker build -f "{{homebrew_ci_redhat_cache_containerfile}}" -t "{{homebrew_ci_redhat_cache_image}}" "{{project_root}}"; \
         {{feature_ci_env}} docker build -f "{{homebrew_ci_ubuntu_cache_containerfile}}" -t "{{homebrew_ci_ubuntu_cache_image}}" "{{project_root}}"; \
     fi; \
