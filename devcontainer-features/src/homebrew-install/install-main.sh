@@ -5,12 +5,15 @@ set -euo pipefail
 username="${USERNAME:-automatic}"
 BREW_PREFIX="${BREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
 homebrew_cache_directory="${CACHE_DIRECTORY:-${HOMEBREW_CACHE_DIR:-/tmp/homebrew-cache}}"
+homebrew_installer_cache_mode="${HOMEBREW_INSTALLER_CACHE_MODE:-auto}"
 cleanup_homebrew="${CLEANUP_HOMEBREW:-${CLEANUPHOMEBREW:-false}}"
 HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 FEATURE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # shellcheck source=./lib.sh
 source "${FEATURE_DIR}/lib.sh"
+# shellcheck source=./installer-cache.sh
+source "${FEATURE_DIR}/installer-cache.sh"
 # shellcheck source=/dev/null
 source "${FEATURE_DIR}/lib-$(imageSupportFamily).sh"
 
@@ -31,12 +34,15 @@ prepareHomebrewPrefix() {
 
 installHomebrew() {
     local username="$1"
+    local installer_script
 
     if [ -x "${BREW_PREFIX}/bin/brew" ]; then
         return
     fi
 
-    runAsUser "${username}" env HOMEBREW_NO_ASK=1 NONINTERACTIVE=1 CI=1 /bin/bash -c "$(curl -fsSL "${HOMEBREW_INSTALL_URL}")"
+    installer_script="$(downloadHomebrewInstaller "${HOMEBREW_INSTALL_URL}" "${homebrew_cache_directory}/installer" "${homebrew_installer_cache_mode}")"
+
+    runAsUser "${username}" env HOMEBREW_CACHE="${homebrew_cache_directory}" HOMEBREW_NO_ASK=1 NONINTERACTIVE=1 CI=1 /bin/bash "${installer_script}"
 }
 
 linkHomebrewCheckout() {

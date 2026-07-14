@@ -9,6 +9,8 @@ check "gcc available" gcc --version
 check "g++ available" g++ --version
 check "make available" make --version
 check "patch available" patch --version
+check "shared cache initialized" sh -lc 'test -e /var/cache/homebrew-shared/.cleaned'
+check "installer cache kept" sh -lc 'test -e /var/cache/homebrew-shared/installer/install.sh'
 check "nonroot user exists" sh -lc 'id -u nonroot >/dev/null 2>&1'
 check "homebrew parent owned by nonroot" sh -lc 'test "$(stat -c %U /home/linuxbrew)" = "nonroot"'
 check "brew symlink available" sh -lc 'test -x /usr/local/bin/brew'

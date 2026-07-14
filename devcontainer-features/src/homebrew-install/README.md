@@ -17,14 +17,15 @@ Install Homebrew and the distro prerequisites it needs under `/home/linuxbrew/.l
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | username | User that should own the temporary Homebrew tree while Homebrew is installed. | string | automatic |
-| cache_directory | Directory used for Homebrew bottle downloads during bootstrap. Point this at a persistent path if you want to reuse bottles between runs. | string | /tmp/homebrew-cache |
+| cache_directory | Directory used for Homebrew bootstrap downloads and bottle caches. Point this at a persistent path if you want to reuse the cached installer and bottles between runs. | string | /tmp/homebrew-cache |
 | cleanupHomebrew | Remove the Homebrew manager and default cleanup artifacts after bootstrap. Leave this `false` when you want the feature to keep a working Homebrew install. | boolean | false |
 
 ## Notes
 
 - The feature bootstraps Homebrew under `/home/linuxbrew/.linuxbrew`, links `brew` into `/usr/local/bin/brew`, and leaves the checkout in place by default.
 - The feature installs only Homebrew and its distro prerequisites. It does not install formulae.
-- Set `cache_directory` to a stable path if you want to keep bottle downloads around for later runs; that path is left in place during cleanup.
+- Set `cache_directory` to a stable path if you want to keep the cached Homebrew installer and bottle downloads around for later runs; that path is left in place during cleanup.
+- Set `HOMEBREW_INSTALLER_CACHE_MODE=refresh` to force a re-check and re-download of the cached installer script, or `offline` to reuse an existing cache without hitting the network.
 - Set `cleanupHomebrew` to `true` only when you explicitly want to remove the Homebrew manager checkout and default temporary cache after bootstrap.
 - If Homebrew is already present in the image, the feature reuses that installation instead of bootstrapping a second copy.
 - The feature requires a real named non-root passwd user. Numeric-only runtime users such as `65532` are rejected because upstream Homebrew postinstall behavior depends on a stable passwd-backed account.
