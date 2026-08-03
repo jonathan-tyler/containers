@@ -1,8 +1,0 @@
-# name|context|containerfile|dependencies|devcontainer
-dev-base|.|images/dev-base/Containerfile||.devcontainer/devcontainer.json
-python-dev|.|images/python-dev/Containerfile|dev-base:DEV_BASE_TAG|images/python-dev/devcontainer.json
-golang-dev|.|images/golang-dev/Containerfile|dev-base:DEV_BASE_TAG|images/golang-dev/devcontainer.json
-dotnet-dev|.|images/dotnet-dev/Containerfile|dev-base:DEV_BASE_TAG|
-javascript-dev|.|images/javascript-dev/Containerfile|dev-base:DEV_BASE_TAG|images/javascript-dev/devcontainer.json
-typescript-dev|.|images/typescript-dev/Containerfile|javascript-dev:JAVASCRIPT_DEV_TAG|images/typescript-dev/devcontainer.json
-monolith-dev|.|images/monolith-dev/Containerfile||images/monolith-dev/devcontainer.json
