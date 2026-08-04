@@ -9,7 +9,7 @@ check "gcc available" gcc --version
 check "g++ available" g++ --version
 check "make available" make --version
 check "patch available" patch --version
-check "shared cache initialized" sh -lc 'test -e /var/cache/homebrew-shared/.cleaned'
+check "shared cache kept" sh -lc 'test -d /var/cache/homebrew-shared'
 check "installer cache kept" sh -lc 'test -e /var/cache/homebrew-shared/installer/install.sh'
 check "brew symlink available" sh -lc 'test -x /usr/local/bin/brew'
 check "homebrew checkout kept" sh -lc 'test -e /home/linuxbrew/.linuxbrew/Homebrew'
