@@ -55,7 +55,8 @@ When you execute `yt-dlp` with options or URLs, the function passes them to the 
 
 ## Building Locally
 
+Build the image and run the lightweight `--version` check without downloading media:
+
 ```console
-podman build --file images/yt-dlp/Containerfile --tag yt-dlp:local .
-podman run --rm yt-dlp:local --version
+just test-yt-dlp
 ```

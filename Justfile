@@ -22,6 +22,8 @@ podman_socket_path := xdg_runtime_dir + "/podman/podman.sock"
 podman_service_log_file := workspace_root + "/podman-system-service.log"
 act_runner_image := env_var_or_default("ACT_RUNNER_IMAGE", "ghcr.io/catthehacker/ubuntu:act-latest")
 act_tmp_dir := workspace_root + "/tmp"
+yt_dlp_test_image := env_var_or_default("YT_DLP_TEST_IMAGE", "localhost/yt-dlp:test")
+yt_dlp_containerfile := project_root + "/images/yt-dlp/Containerfile"
 feature_ci_env := "PATH=\"" + shim_dir + ":$PATH\" DOCKER_CONFIG=\"" + docker_config_dir + "\" FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true XDG_RUNTIME_DIR=\"" + xdg_runtime_dir + "\""
 act_env := "DOCKER_HOST=\"unix://" + podman_socket_path + "\" " + feature_ci_env + " TMPDIR=\"" + act_tmp_dir + "\" TMP=\"" + act_tmp_dir + "\" TEMP=\"" + act_tmp_dir + "\""
 
@@ -37,6 +39,11 @@ bump-feature-version +args:
 
 check-feature-version-bumps:
     @"{{project_root}}/scripts/check-feature-version-bumps.sh" --staged
+
+test-yt-dlp:
+    @command -v podman >/dev/null 2>&1 || { printf 'missing required tool: podman\n' >&2; exit 1; }
+    @podman build --file "{{yt_dlp_containerfile}}" --tag "{{yt_dlp_test_image}}" "{{project_root}}"
+    @podman run --rm "{{yt_dlp_test_image}}" --version
 
 prepare:
     @"{{project_root}}/scripts/feature-ci-workspace.sh" --copy-feature-tree just prepare-run
