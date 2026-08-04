@@ -1,0 +1,50 @@
+name: CI/CD - yt-dlp image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - images/yt-dlp/**
+      - .github/workflows/yt-dlp.yaml
+  pull_request:
+    paths:
+      - images/yt-dlp/**
+      - .github/workflows/yt-dlp.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      IMAGE: ghcr.io/jonathan-tyler/containers/yt-dlp
+      TEST_IMAGE: localhost/yt-dlp:test
+    steps:
+      # actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Build image
+        run: docker build --file images/yt-dlp/Containerfile --tag "${TEST_IMAGE}" .
+
+      - name: Test image
+        run: |
+          test "$(docker run --rm "${TEST_IMAGE}" --version)" = "2026.07.04"
+          docker run --rm "${TEST_IMAGE}" --help >/dev/null
+
+      - name: Log in to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io --username "${{ github.actor }}" --password-stdin
+
+      - name: Publish image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          docker tag "${TEST_IMAGE}" "${IMAGE}:latest"
+          docker tag "${TEST_IMAGE}" "${IMAGE}:${GITHUB_SHA}"
+          docker push "${IMAGE}:latest"
+          docker push "${IMAGE}:${GITHUB_SHA}"

@@ -3,6 +3,8 @@
 Container images, automation, templates, and samples
 
 ## Resources
+
+- 🎬 [yt-dlp](./images/yt-dlp): Hummingbird-based yt-dlp utility image published to GHCR.
 - 📦 [local-registry](./local-registry): local registry install and systemd bootstrap.
 - 🧱 [dev-base](./images/dev-base): base image and local registry bootstrap.
 - 🛠️ [monolith-dev](./images/monolith-dev): polyglot devcontainer image for mixed workspace development.

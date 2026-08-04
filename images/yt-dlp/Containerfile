@@ -1,0 +1,23 @@
+FROM registry.access.redhat.com/hi/python:3.14.6-builder@sha256:1d6a4d9713bec63df9dde7685c7a2fdba250ce9978d1ab0bce7b0c05208c82be AS builder
+
+ARG YT_DLP_VERSION=2026.7.4
+
+RUN /usr/bin/python3 -m pip install \
+    --no-cache-dir \
+    --target=/tmp/yt-dlp \
+    "yt-dlp==${YT_DLP_VERSION}"
+
+FROM registry.access.redhat.com/hi/python:3.14.6@sha256:7e9e8a130e8f2ec231c8b68cfa9a4ca25f0581f373057589a2604f10e2e358af
+
+COPY --from=builder /tmp/yt-dlp /opt/yt-dlp
+
+ENV PYTHONPATH=/opt/yt-dlp
+
+LABEL org.opencontainers.image.description="yt-dlp on the Red Hat Hummingbird Python runtime" \
+    org.opencontainers.image.licenses="Unlicense" \
+    org.opencontainers.image.source="https://github.com/jonathan-tyler/containers" \
+    org.opencontainers.image.title="yt-dlp"
+
+WORKDIR /downloads
+
+ENTRYPOINT ["/usr/bin/python3", "-m", "yt_dlp"]
