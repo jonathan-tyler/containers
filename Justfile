@@ -142,7 +142,7 @@ check-act-tools:
 [private]
 prepare-runtime:
     @mkdir -p "{{shim_dir}}" "{{docker_config_dir}}" "{{xdg_runtime_dir}}/podman" "{{act_tmp_dir}}"
-    @ln -sf "$(command -v podman)" "{{shim_dir}}/docker"
+    @ln -sf "{{project_root}}/scripts/docker-podman-compat.sh" "{{shim_dir}}/docker"
     @if [ ! -S "{{podman_socket_path}}" ]; then \
         rm -f "{{podman_socket_path}}"; \
         : > "{{podman_socket_path}}"; \
