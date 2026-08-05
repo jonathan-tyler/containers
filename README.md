@@ -24,7 +24,7 @@ Containerized applications, Dev Container resources, and supporting automation.
 
 - 🍻 [homebrew-into-distroless](./devcontainer-samples/homebrew-into-distroless): copies a Homebrew-installed package from a builder into a distroless runtime image.
 - 🗄️ [mssql-sidecar](./devcontainer-samples/mssql-sidecar): runs SQL Server beside a minimal workspace container.
-- 📦 [rootless-podman-in-rootless-podman](./devcontainer-samples/podman-in-podman/rootless-podman-in-rootless-podman): compares static and host-UID-independent nested rootless Podman configurations.
+- 📦 [podman-in-podman](./devcontainer-samples/podman-in-podman): Podman-in-Podman Dev Container samples.
 - 📨 [smtp4dev](./devcontainer-samples/smtp4dev): runs smtp4dev beside a minimal workspace container.
 - 🦑 [squid-proxy](./devcontainer-samples/squid-proxy): runs a Squid proxy beside a workspace container and tests its allowlist.
 
