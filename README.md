@@ -1,68 +1,37 @@
 # Containers
 
-Container images, automation, templates, and samples
+Containerized applications, Dev Container resources, and supporting automation.
 
-## Resources
+## Containerized Applications
 
 - 🎬 [yt-dlp](./images/yt-dlp): Hummingbird-based yt-dlp utility image published to GHCR.
-- 📦 [local-registry](./local-registry): local registry install and systemd bootstrap.
-- 🧱 [dev-base](./images/dev-base): base image and local registry bootstrap.
-- 🛠️ [monolith-dev](./images/monolith-dev): polyglot devcontainer image for mixed workspace development.
-- 🐹 [golang-dev](./images/golang-dev): Go devcontainer image.
-- 🟢 [javascript-dev](./images/javascript-dev): JavaScript devcontainer image.
-- 🐍 [python-dev](./images/python-dev): Python devcontainer image.
-- 🔷 [typescript-dev](./images/typescript-dev): TypeScript devcontainer image layered on the JavaScript dev image.
-- 🔷 [dotnet-dev](./images/dotnet-dev): .NET devcontainer image.
-- 🍻 [devcontainer-samples/homebrew-into-distroless](./devcontainer-samples/homebrew-into-distroless): Containerfile-only Homebrew builder-stage sample that copies `hello` into a distroless `core-runtime` image.
-- 🗄️ [devcontainer-samples/mssql-dev](./devcontainer-samples/mssql-dev): compose-backed SQL Server devcontainer sample.
-- 🧰 [devcontainer-samples/podman-in-podman](./devcontainer-samples/podman-in-podman): single-container sample with the nested Podman feature and required runtime arguments.
-- 🦑 [devcontainer-samples/squid-proxy](./devcontainer-samples/squid-proxy): compose-backed squid proxy devcontainer sample.
-- 📨 [devcontainer-samples/smtp4dev](./devcontainer-samples/smtp4dev): compose-backed smtp4dev devcontainer sample.
 
-## Usage
+## Dev Containers
 
-- To set up the local registry, run `./local-registry/install.sh`. It creates or starts the registry container and enables a lingering systemd user service so it comes back automatically.
-- To build and publish images, run `./local-registry/build-images.sh --version X.Y.Z`.
+### Dev Container Features
 
-## Local Feature Validation
+- ✨ [aspire-cli](./devcontainer-features/src/aspire-cli): installs the Aspire CLI with an available supported package manager.
+- 🍺 [homebrew-install](./devcontainer-features/src/homebrew-install): installs Homebrew and its Linux prerequisites.
+- 📦 [homebrew-packages](./devcontainer-features/src/homebrew-packages): installs selected Homebrew formulae for a non-root user.
+- 👤 [nonroot-user](./devcontainer-features/src/nonroot-user): creates a named non-root user in minimal images.
+- 📦 [podman-in-podman](./devcontainer-features/src/podman-in-podman): runs Podman inside a Dev Container with isolated storage.
 
-- Use `.devcontainer/feature-ci/devcontainer.json` when you want a workspace that can run the feature test and pre-publish checks before pushing.
-- Start it with `dev up --overlay none --config .devcontainer/feature-ci/devcontainer.json`, or open that config directly in VS Code.
-- Install `just`, `act`, `podman`, `devcontainer`, and `jq` in that environment before running the local commands.
-- Run `just hooks` once in each checkout so git uses the repo-managed `.githooks/` directory.
-- Run `just prepare` if you want to stage a throwaway feature-ci workspace and verify the toolchain.
-- Run `just bump-feature-version <feature> <patch|minor|major|set X.Y.Z>` after you decide the semver bump for a feature source change.
-- Run `just check-feature-version-bumps` to validate staged feature-source changes before committing.
-- Run `just ci` to execute `.github/workflows/test.yaml` locally through `act`.
-- Run `just feature homebrew-packages` to test one edited feature locally, including its scenarios. This now targets `devcontainer-features/` directly, so there is no source-tree scratch mirror in the feature validation path.
-- `homebrew-packages` uses a prewarmed CI base image and a shared bottle cache so the Homebrew bootstrap and bottle fetches happen once, then get reused across scenarios and local reruns.
-- Run `just podman-in-podman-smoke` to exercise the host-side `devcontainer up` / `devcontainer exec` smoke path for the `podman-in-podman` feature through the local Docker-to-Podman shim.
-- Run `just publish-check` to package a throwaway copy of `devcontainer-features/` locally without publishing anything. That copy still generates `homebrew-packages-additional` from `homebrew-packages` so there is still one source feature to maintain. This is the local equivalent of the release workflow's packaging step.
-- Run `just all` to execute both the local workflow simulation and the publish packaging check.
-- `just ci` and `just job ...` keep `.github/workflows/test.yaml` as the source of truth. They point `act` at that workflow file directly instead of wrapping the workflow logic in another shell runner.
-- `just feature ...` and `just publish-check` are local-only developer conveniences. They keep the existing `devcontainer features test` and `devcontainer features package` behavior; the release workflow uses the same generated scratch layout for publish.
-- The local commands stage their temporary workspace in a `mktemp` directory and clean it up automatically.
-- `act` defaults to `ghcr.io/catthehacker/ubuntu:act-latest` for the `ubuntu-latest` runner image. Override it with `ACT_RUNNER_IMAGE` if you need a different local image.
-- The local `act` flow expects a Podman-backed Docker API socket at `${XDG_RUNTIME_DIR}/podman/podman.sock`. If that socket is missing, `just` starts `podman system service` there and reuses the same path for repeated runs.
-- The local `devcontainer` flow uses a Docker compatibility shim under the throwaway workspace's `bin/docker` path so `devcontainer features test` can keep talking to Podman without changing the workflow commands.
-- Inside the `feature-ci` devcontainer you are still doing nested container work through the mounted host Podman stack, with the repo's existing `--userns=keep-id`, FUSE, and TUN settings. That is convenient for local validation, but it keeps the same reduced isolation trade-off as before.
+### Dev Container Base Images
 
-## Shared Toolchains
+- 🍺 [`core-runtime:latest-homebrew`](./devcontainer-features/test/homebrew-install/feature-ci-base/Containerfile): Hummingbird `core-runtime` builder image with Homebrew preinstalled, published to GHCR.
 
-- Focused images and `monolith-dev` both consume these scripts so version pins and install behavior stay aligned.
-- Keep image-specific policy in the image `Containerfile`; keep toolchain installation details in the shared scripts.
-- Keep shared images generic: install tools and shell capability there, but apply personal dotfiles and prompt config at devcontainer runtime instead of baking host-specific files into image builds.
+### Dev Container Samples
 
-`homebrew-into-distroless` is a Containerfile-only sample that installs a Homebrew package in a builder stage and copies it into a distroless runtime image. `mssql-dev`, `squid-proxy`, and `smtp4dev` are compose-backed devcontainer samples. `podman-in-podman` is a single-container sample that applies the feature with the required nested-container run arguments. See [devcontainer-samples/homebrew-into-distroless/README.md](./devcontainer-samples/homebrew-into-distroless/README.md), [devcontainer-samples/mssql-dev/README.md](./devcontainer-samples/mssql-dev/README.md), [devcontainer-samples/podman-in-podman/README.md](./devcontainer-samples/podman-in-podman/README.md), [devcontainer-samples/squid-proxy/README.md](./devcontainer-samples/squid-proxy/README.md), and [devcontainer-samples/smtp4dev/README.md](./devcontainer-samples/smtp4dev/README.md).
+- 🍻 [homebrew-into-distroless](./devcontainer-samples/homebrew-into-distroless): copies a Homebrew-installed package from a builder into a distroless runtime image.
+- 🗄️ [mssql-dev](./devcontainer-samples/mssql-dev): runs SQL Server beside a minimal workspace container.
+- 📦 [rootless-podman-in-rootless-podman](./devcontainer-samples/rootless-podman-in-rootless-podman): compares static and host-UID-independent nested rootless Podman configurations.
+- 📨 [smtp4dev](./devcontainer-samples/smtp4dev): runs smtp4dev beside a minimal workspace container.
+- 🦑 [squid-proxy](./devcontainer-samples/squid-proxy): runs a Squid proxy beside a workspace container and tests its allowlist.
 
-## Notes
+## Development
 
-- The workspace dev container mounts the host Podman socket so image build and container registry tasks can run inside a more isolated tooling environment, with the understanding that this weakens the isolation a devcontainer would normally provide. This is a repo-specific convenience, not a recommended general pattern.
+See [Development](./docs/development.md) for local feature validation.
 
 ## Troubleshooting
 
-### VS Code rewrites `localhost:5000` image references
-
-If a `devcontainer.json` uses `localhost:5000/...` with `updateRemoteUserUID` enabled, Dev Containers can rewrite that image name to `localhost/localhost:5000/...` during the temporary UID-adjustment build. Podman then rejects the rewritten reference.
-
-Use `127.0.0.1:5000/...` instead.
+See [Troubleshooting](./docs/troubleshooting.md) for known issues and fixes.
