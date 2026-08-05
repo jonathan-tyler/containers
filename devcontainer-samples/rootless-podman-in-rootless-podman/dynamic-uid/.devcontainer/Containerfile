@@ -1,0 +1,60 @@
+# The digest is the linux/amd64 child manifest, not the multi-platform index.
+# Re-resolve it from the Hummingbird catalog before adopting this example.
+# Source: Hummingbird core-runtime 2.43-builder linux/amd64.
+FROM registry.access.redhat.com/hi/core-runtime@sha256:32bfa924b015b66d61ba5450dc12f5a8693e32e8c38be8eb7c440395806f9ee7
+
+# Hummingbird builder images default HOME to /tmp. Rootless Podman needs stable,
+# user-owned configuration, runtime, and storage paths. Podman 6.0.2 did not
+# automatically honor the user storage file in the tested nested environment,
+# so CONTAINERS_STORAGE_CONF deliberately selects it.
+ENV CONTAINERS_STORAGE_CONF=/home/nonroot/.config/containers/storage.conf \
+    HOME=/home/nonroot \
+    XDG_CONFIG_HOME=/home/nonroot/.config \
+    XDG_DATA_HOME=/home/nonroot/.local/share \
+    XDG_RUNTIME_DIR=/run/user/1000
+
+# Package installation and account creation happen as image root. The final
+# development user is non-root, and the outer container remains unprivileged.
+USER 0
+
+COPY .devcontainer/install-nested-podman.sh /usr/local/bin/install-nested-podman
+COPY .devcontainer/test-nested-podman.sh /usr/local/bin/test-nested-podman
+
+# UID 1000 and GID 1001 are fixed container-side IDs. Explicit keep-id maps the
+# invoking non-root host identity into them, so the host IDs need not match.
+#
+# The subordinate ranges use IDs visible inside the outer keep-id namespace and
+# split around the fixed development-user IDs. Runtime checks derive the usable
+# ranges from /proc/self/{uid,gid}_map and reject a composition mismatch. These
+# are not physical host subordinate-ID numbers.
+#
+# Do not add no-new-privileges here: newuidmap and newgidmap require their
+# set-user-ID behavior. This exception does not require privileged mode, added
+# capabilities, an engine socket, or a host device.
+RUN chmod 0755 \
+      /usr/local/bin/install-nested-podman \
+      /usr/local/bin/test-nested-podman && \
+    /usr/local/bin/install-nested-podman && \
+    groupadd --gid 1001 nonroot && \
+    useradd --uid 1000 --gid 1001 --create-home \
+      --home-dir /home/nonroot --shell /bin/bash nonroot && \
+    printf '%s\n' 'nonroot:1:999' 'nonroot:1001:64536' > /etc/subuid && \
+    printf '%s\n' 'nonroot:1:1000' 'nonroot:1002:64535' > /etc/subgid && \
+    install -d -m 0700 -o nonroot -g nonroot \
+      /home/nonroot/.config/containers \
+      /home/nonroot/.local/share/containers/storage \
+      /run/user/1000 && \
+    install -d -m 0755 -o nonroot -g nonroot \
+      /home/nonroot/.local/share/nested-podman
+
+# Install configuration after the RPM transaction because containers-common
+# owns system configuration files. User copies make rootless selection explicit.
+COPY .devcontainer/storage.conf /etc/containers/storage.conf
+COPY .devcontainer/containers.conf /etc/containers/containers.conf
+COPY --chown=1000:1001 .devcontainer/storage.conf /home/nonroot/.config/containers/storage.conf
+COPY --chown=1000:1001 .devcontainer/containers.conf /home/nonroot/.config/containers/containers.conf
+
+# The Dev Container CLI selects the mounted workspace as the working directory.
+# Avoid embedding a repository or host-specific workspace path in this image.
+USER nonroot
+CMD ["/bin/bash"]
