@@ -4,15 +4,19 @@ set -euo pipefail
 readonly workspace="${PWD}"
 readonly evidence_relative="${1:?evidence directory is required}"
 readonly evidence="${workspace}/${evidence_relative}"
+readonly inner_workspace="${workspace}/inner-devcontainer"
+readonly inner_config="${inner_workspace}/.devcontainer/devcontainer.json"
 # This is the linux/amd64 child manifest for Hummingbird core-runtime 2.43.
 readonly payload='registry.access.redhat.com/hi/core-runtime@sha256:43ef8f951915c7cc58c5c45ceeed318ab5206139d10153099a097a8c0a14f16e'
-readonly container_name="nested-podman-smoke-${$}"
 readonly outer_uid=1000
 readonly outer_gid=1001
 readonly subordinate_limit=65536
+inner_container_id=''
 
 cleanup() {
-  podman rm --force "${container_name}" >/dev/null 2>&1 || true
+  if [[ -n "${inner_container_id}" ]]; then
+    podman rm --force "${inner_container_id}" >/dev/null 2>&1 || true
+  fi
 }
 trap cleanup EXIT
 
@@ -145,6 +149,9 @@ if [[ "$(id -u)" == 0 || "$(id -u)" != "${outer_uid}" || \
       "$(id -g)" != "${outer_gid}" ]]; then
   fail 'The outer remote user must have fixed container UID 1000 and GID 1001.'
 fi
+if [[ "$(devcontainer --version)" != '0.88.0' ]]; then
+  fail 'The outer container must provide Dev Container CLI 0.88.0.'
+fi
 
 if [[ ! -d "${workspace}" || ! -w "${workspace}" ]]; then
   printf 'The mounted workspace is not writable: %s\n' "${workspace}" >&2
@@ -197,6 +204,8 @@ cp /usr/local/share/nested-podman/package-provenance.txt \
   "${evidence}/package-provenance.txt"
 cp /usr/local/share/nested-podman/all-package-provenance.txt \
   "${evidence}/all-package-provenance.txt"
+cp /usr/local/share/nested-podman/devcontainer-cli-provenance.txt \
+  "${evidence}/devcontainer-cli-provenance.txt"
 {
   for repository in /etc/yum.repos.d/*.repo; do
     printf '%s\n' "--- ${repository}"
@@ -208,28 +217,53 @@ podman pull "${payload}" > "${evidence}/payload-pull.log" 2>&1
 podman image inspect "${payload}" > "${evidence}/payload-image-inspect.json"
 podman ps --all --format '{{.ID}}\t{{.Names}}\t{{.Status}}' \
   > "${evidence}/inner-containers-before.txt"
-
-# Rootless-in-rootless crun could not set a hostname in a third UTS namespace.
-# Sharing the outer container's private UTS namespace avoids adding a capability.
-podman create \
-  --name "${container_name}" \
-  --network=none \
-  --cgroups=disabled \
-  --uts=host \
-  --pull=never \
-  "${payload}" \
-  /bin/bash -c "printf 'nested podman ok\\n'" \
-  > "${evidence}/inner-container-create.txt"
-podman inspect "${container_name}" > "${evidence}/inner-container-inspect.json"
+{
+  printf '%s\n' \
+    'devcontainer --version' \
+    "podman pull ${payload}" \
+    "devcontainer up --workspace-folder ${inner_workspace} --config ${inner_config} --docker-path podman --mount-workspace-git-root=false" \
+    "podman inspect <reported-inner-container-id>" \
+    "devcontainer exec --workspace-folder ${inner_workspace} --config ${inner_config} --docker-path podman --mount-workspace-git-root=false /bin/bash -c cat /tmp/runtime-echo.stdout" \
+    'podman rm --force <reported-inner-container-id>'
+} > "${evidence}/inner-commands.txt"
 
 set +e
-smoke_output="$(podman start --attach "${container_name}")"
+inner_up_output="$(devcontainer up \
+  --workspace-folder "${inner_workspace}" \
+  --config "${inner_config}" \
+  --docker-path podman \
+  --mount-workspace-git-root=false 2>&1)"
+inner_up_status=$?
+set -e
+printf '%s\n' "${inner_up_output}" > "${evidence}/inner-devcontainer-up.log"
+printf '%s\n' "${inner_up_status}" > "${evidence}/inner-devcontainer-up.status"
+
+if [[ ${inner_up_status} -ne 0 ]]; then
+  printf '%s\n' "${inner_up_output}" >&2
+  fail 'The Dev Container CLI could not build and start the inner container.'
+fi
+if [[ ! "${inner_up_output}" =~ \"containerId\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+  fail 'The nested Dev Container CLI did not report the inner container identity.'
+fi
+inner_container_id="${BASH_REMATCH[1]}"
+readonly inner_container_id
+
+podman inspect "${inner_container_id}" > "${evidence}/inner-container-inspect.json"
+
+set +e
+smoke_output="$(devcontainer exec \
+  --workspace-folder "${inner_workspace}" \
+  --config "${inner_config}" \
+  --docker-path podman \
+  --mount-workspace-git-root=false \
+  /bin/bash -c 'cat /tmp/runtime-echo.stdout')"
 smoke_status=$?
 set -e
 printf '%s\n' "${smoke_output}" > "${evidence}/smoke.stdout"
 printf '%s\n' "${smoke_status}" > "${evidence}/smoke.status"
 
-podman rm "${container_name}" > "${evidence}/inner-container-remove.txt"
+podman rm --force "${inner_container_id}" \
+  > "${evidence}/inner-container-remove.txt"
 podman ps --all --format '{{.ID}}\t{{.Names}}\t{{.Status}}' \
   > "${evidence}/inner-containers-after.txt"
 trap - EXIT

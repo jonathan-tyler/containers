@@ -38,20 +38,31 @@ enabled=1
 gpgcheck=0
 EOF
 
-# Pin direct Hummingbird inputs. The solver chooses Hummingbird dependencies
-# where available and the confirmed Fedora gaps above for the remaining closure.
+# Pin direct Hummingbird Podman inputs. Node.js and npm provide the runtime and
+# installer for the pinned Dev Container CLI used inside the outer container.
+# The solver chooses Hummingbird dependencies where available and the confirmed
+# Fedora gaps above for the remaining closure.
 dnf -y --no-best --setopt=install_weak_deps=False install \
+  nodejs \
+  npm \
   podman-5:6.0.2-2.1.hum1 \
   shadow-utils-subid-2:4.19.3-4.hum1
+
+npm install --global '@devcontainers/cli@0.88.0'
+npm cache clean --force
+[[ "$(devcontainer --version)" == '0.88.0' ]]
 
 # Preserve package identities in the image so a run can record provenance even
 # after the temporary Fedora repository and package-manager metadata are gone.
 install -d -m 0755 /usr/local/share/nested-podman
 rpm -q --qf '%{NAME}\t%{EVR}\t%{ARCH}\t%{VENDOR}\n' \
-  podman containers-common conmon crun shadow-utils shadow-utils-subid \
+  nodejs npm podman containers-common conmon crun shadow-utils \
+  shadow-utils-subid \
   > /usr/local/share/nested-podman/package-provenance.txt
 rpm -qa --qf '%{NAME}\t%{EVR}\t%{ARCH}\t%{VENDOR}\n' \
   | sort > /usr/local/share/nested-podman/all-package-provenance.txt
+printf '@devcontainers/cli\t%s\n' "$(devcontainer --version)" \
+  > /usr/local/share/nested-podman/devcontainer-cli-provenance.txt
 
 rm -f /etc/yum.repos.d/fedora-43-temporary.repo
 dnf clean all

@@ -1,0 +1,17 @@
+{
+  "name": "nested-podman-runtime-echo",
+  "build": {
+    "dockerfile": "Containerfile",
+    "context": ".."
+  },
+  "remoteUser": "root",
+  "containerUser": "root",
+  "postCreateCommand": "/usr/local/bin/runtime-echo > /tmp/runtime-echo.stdout",
+  "runArgs": [
+    "--network=none",
+    "--cgroups=disabled",
+    "--uts=host"
+  ],
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind"
+}

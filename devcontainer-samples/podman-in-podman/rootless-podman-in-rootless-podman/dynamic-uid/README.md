@@ -1,6 +1,8 @@
 # Nested Rootless Podman Dev Container Example
 
-This example maps a variable non-root host identity to a fixed development user and runs rootless Podman inside that unprivileged Dev Container.
+This example maps a variable non-root host identity to a fixed development user,
+installs the Dev Container CLI in that unprivileged outer container, and uses
+its rootless Podman engine to build and run an inner Dev Container.
 
 ## What this example proves
 
@@ -12,10 +14,12 @@ Host-side `just test-podman` performs the complete test:
 2. It launches the outer development container with the Dev Container CLI and
    explicitly selects Podman as the CLI-compatible container runtime.
 3. It enters the outer container through `devcontainer exec`.
-4. The nested rootless engine pulls and starts a pinned Hummingbird
-   `core-runtime` payload.
-5. The inner container prints exactly `nested podman ok`, has networking and
-   cgroup management disabled, and is removed after execution.
+4. The outer container's pinned Dev Container CLI uses nested rootless Podman
+   to build `inner-devcontainer/.devcontainer/Containerfile` and start it from
+   `inner-devcontainer/.devcontainer/devcontainer.json`.
+5. The inner configuration runs its runtime echo command, which prints exactly
+   `nested podman ok`; networking and cgroup management are disabled, and the
+   exact inner container is removed after verification.
 6. The run stores ignored diagnostic evidence under `.devcontainer/evidence/`.
 
 It does **not** mount a host Podman or Docker socket, use privileged mode, add
@@ -31,11 +35,12 @@ It retains these tested software constraints:
 
 - Linux `x86_64` on a WSL2 kernel;
 - rootless Podman `5.8.2`;
-- Dev Container CLI `0.88.0`; and
+- host and outer Dev Container CLI `0.88.0`; and
 - Just `1.58.0`.
 
-The image installs Hummingbird Podman `6.0.2` and uses Fedora 43 only for the
-dependency closure unavailable from Hummingbird at verification time.
+The image installs Hummingbird Podman `6.0.2`, Node.js, npm, and Dev Container
+CLI `0.88.0`. It uses Fedora 43 only for the RPM dependency closure unavailable
+from Hummingbird at verification time.
 
 Container UID `1000` and GID `1001` remain fixed image identities. Explicit
 `keep-id` maps the invoking host user and primary group into those IDs. The
@@ -111,7 +116,7 @@ The nested engine uses `vfs`. This was the least-privilege working option and
 avoids passing `/dev/fuse` into the outer container. VFS is slower and consumes
 more space than overlay storage.
 
-The inner smoke-test container uses:
+The inner `devcontainer.json` passes these arguments to nested Podman:
 
 ```text
 --network=none
@@ -121,7 +126,7 @@ The inner smoke-test container uses:
 
 Here, `--uts=host` means the inner container shares the **outer container's
 private UTS namespace**, not the host machine's UTS namespace. Without this
-setting, the nested `crun` failed at startup with:
+setting, nested `crun` failed at startup with:
 
 ```text
 sethostname: Operation not permitted
@@ -132,7 +137,8 @@ adding a hostname-related capability.
 
 ### Images and package sources
 
-Both Hummingbird images are pinned to `linux/amd64` child-manifest digests.
+The outer and inner Hummingbird images are pinned to `linux/amd64`
+child-manifest digests.
 Multi-platform index digests are not architecture-specific, so do not choose a
 child digest by list order. Re-query the live Hummingbird catalog and verify the
 registry manifest's platform mapping before updating either digest.
@@ -206,9 +212,10 @@ use `--skip-broken`.
 
 Dev Container CLI `0.88.0` added its own `--userns=keep-id` and
 `--security-opt label=disable` arguments when invoking Podman. The explicit
-fixed-ID `keep-id` argument remained necessary for the tested mapping. This is
-CLI-version-specific behavior; inspect the resolved launch whenever upgrading
-the CLI.
+fixed-ID `keep-id` argument remained necessary for the outer mapping. The CLI
+installed in the outer image also invokes Podman through `--docker-path podman`
+when it creates the inner container. This is CLI-version-specific behavior;
+inspect both resolved launches whenever upgrading the CLI.
 
 ### Evidence contains local information
 

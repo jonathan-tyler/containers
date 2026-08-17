@@ -1,0 +1,11 @@
+# The digest is the linux/amd64 child manifest for Hummingbird core-runtime 2.43.
+FROM registry.access.redhat.com/hi/core-runtime@sha256:43ef8f951915c7cc58c5c45ceeed318ab5206139d10153099a097a8c0a14f16e
+
+# Container root is mapped through both rootless user namespaces and does not
+# grant host or outer-container root privileges.
+USER 0
+
+COPY .devcontainer/runtime-echo.sh /usr/local/bin/runtime-echo
+RUN chmod 0755 /usr/local/bin/runtime-echo
+
+CMD ["/bin/bash"]
