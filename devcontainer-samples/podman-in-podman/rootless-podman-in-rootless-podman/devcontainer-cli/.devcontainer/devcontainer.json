@@ -1,0 +1,22 @@
+{
+  "name": "nested-devcontainer-cli-example",
+  "build": {
+    "dockerfile": "Containerfile",
+    "context": "../.."
+  },
+  "remoteUser": "nonroot",
+  "containerUser": "nonroot",
+  "updateRemoteUserUID": false,
+  "containerEnv": {
+    "CONTAINERS_STORAGE_CONF": "/home/nonroot/.config/containers/storage.conf",
+    "HOME": "/home/nonroot",
+    "XDG_CONFIG_HOME": "/home/nonroot/.config",
+    "XDG_DATA_HOME": "/home/nonroot/.local/share",
+    "XDG_RUNTIME_DIR": "/run/user/1000"
+  },
+  "runArgs": [
+    "--userns=keep-id:uid=1000,gid=1001"
+  ],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}

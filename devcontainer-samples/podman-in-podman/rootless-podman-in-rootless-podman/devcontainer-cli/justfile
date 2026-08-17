@@ -1,0 +1,4 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+test-podman:
+    @bash .devcontainer/test-podman-host.sh

@@ -1,0 +1,44 @@
+# The digest is the linux/amd64 child manifest for Hummingbird core-runtime 2.43.
+FROM registry.access.redhat.com/hi/core-runtime@sha256:32bfa924b015b66d61ba5450dc12f5a8693e32e8c38be8eb7c440395806f9ee7
+
+ENV CONTAINERS_STORAGE_CONF=/home/nonroot/.config/containers/storage.conf \
+    HOME=/home/nonroot \
+    XDG_CONFIG_HOME=/home/nonroot/.config \
+    XDG_DATA_HOME=/home/nonroot/.local/share \
+    XDG_RUNTIME_DIR=/run/user/1000
+
+USER 0
+
+# Reuse the unchanged dynamic-UID implementation as the accepted namespace and
+# nested-Podman baseline, then add only the Dev Container CLI layer here.
+COPY dynamic-uid/.devcontainer/install-nested-podman.sh /usr/local/bin/install-nested-podman
+COPY dynamic-uid/.devcontainer/test-nested-podman.sh /usr/local/bin/test-dynamic-podman
+COPY devcontainer-cli/.devcontainer/install-devcontainer-cli.sh /usr/local/bin/install-devcontainer-cli
+COPY devcontainer-cli/.devcontainer/test-nested-podman.sh /usr/local/bin/test-nested-podman
+
+RUN chmod 0755 \
+      /usr/local/bin/install-nested-podman \
+      /usr/local/bin/test-dynamic-podman \
+      /usr/local/bin/install-devcontainer-cli \
+      /usr/local/bin/test-nested-podman && \
+    /usr/local/bin/install-nested-podman && \
+    /usr/local/bin/install-devcontainer-cli && \
+    groupadd --gid 1001 nonroot && \
+    useradd --uid 1000 --gid 1001 --create-home \
+      --home-dir /home/nonroot --shell /bin/bash nonroot && \
+    printf '%s\n' 'nonroot:1:999' 'nonroot:1001:64536' > /etc/subuid && \
+    printf '%s\n' 'nonroot:1:1000' 'nonroot:1002:64535' > /etc/subgid && \
+    install -d -m 0700 -o nonroot -g nonroot \
+      /home/nonroot/.config/containers \
+      /home/nonroot/.local/share/containers/storage \
+      /run/user/1000 && \
+    install -d -m 0755 -o nonroot -g nonroot \
+      /home/nonroot/.local/share/nested-podman
+
+COPY dynamic-uid/.devcontainer/storage.conf /etc/containers/storage.conf
+COPY dynamic-uid/.devcontainer/containers.conf /etc/containers/containers.conf
+COPY --chown=1000:1001 dynamic-uid/.devcontainer/storage.conf /home/nonroot/.config/containers/storage.conf
+COPY --chown=1000:1001 dynamic-uid/.devcontainer/containers.conf /home/nonroot/.config/containers/containers.conf
+
+USER nonroot
+CMD ["/bin/bash"]
