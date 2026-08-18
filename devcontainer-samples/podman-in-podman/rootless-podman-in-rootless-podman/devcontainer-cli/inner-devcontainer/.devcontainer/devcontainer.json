@@ -2,7 +2,11 @@
   "name": "nested-podman-runtime-echo",
   "build": {
     "dockerfile": "Containerfile",
-    "context": ".."
+    "context": "..",
+    "options": [
+      "--network=host",
+      "--uts=host"
+    ]
   },
   "remoteUser": "root",
   "containerUser": "root",

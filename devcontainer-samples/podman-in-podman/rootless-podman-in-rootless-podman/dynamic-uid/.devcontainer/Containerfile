@@ -41,6 +41,7 @@ RUN chmod 0755 \
     printf '%s\n' 'nonroot:1:999' 'nonroot:1001:64536' > /etc/subuid && \
     printf '%s\n' 'nonroot:1:1000' 'nonroot:1002:64535' > /etc/subgid && \
     install -d -m 0700 -o nonroot -g nonroot \
+      /home/nonroot/.cache \
       /home/nonroot/.config/containers \
       /home/nonroot/.local/share/containers/storage \
       /run/user/1000 && \

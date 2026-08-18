@@ -140,6 +140,7 @@ validate_nested_map() {
 }
 
 mkdir -p "${evidence}"
+install -d -m 0700 /dev/shm/nested-podman-build
 
 if [[ "$(id -u)" == 0 || "$(id -u)" != "${outer_uid}" || \
       "$(id -g)" != "${outer_gid}" ]]; then

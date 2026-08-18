@@ -14,6 +14,7 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "${evidence}"
+install -d -m 0700 /dev/shm/nested-podman-build
 
 if [[ "$(id -u)" == 0 || "$(id -u)" != 1000 || "$(id -g)" != 1001 ]]; then
   printf 'The outer remote user must be the verified UID 1000 and GID 1001.\n' >&2

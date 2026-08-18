@@ -16,8 +16,14 @@ npm install --global '@devcontainers/cli@0.88.0'
 npm cache clean --force
 [[ "$(devcontainer --version)" == '0.88.0' ]]
 
-rpm -q --qf '%{NAME}\t%{EVR}\t%{ARCH}\t%{VENDOR}\n' nodejs npm \
-  >> /usr/local/share/nested-podman/package-provenance.txt
+rpm -qa --qf '%{NAME}\t%{EVR}\t%{ARCH}\t%{VENDOR}\n' |
+  while IFS=$'\t' read -r name evr arch vendor; do
+    case "${name}" in
+      nodejs*|npm)
+        printf '%s\t%s\t%s\t%s\n' "${name}" "${evr}" "${arch}" "${vendor}"
+        ;;
+    esac
+  done >> /usr/local/share/nested-podman/package-provenance.txt
 rpm -qa --qf '%{NAME}\t%{EVR}\t%{ARCH}\t%{VENDOR}\n' \
   | sort > /usr/local/share/nested-podman/all-package-provenance.txt
 printf '@devcontainers/cli\t%s\n' "$(devcontainer --version)" \

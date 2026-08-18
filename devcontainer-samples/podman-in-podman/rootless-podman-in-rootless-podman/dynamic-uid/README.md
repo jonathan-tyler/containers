@@ -34,8 +34,8 @@ It retains these tested software constraints:
 - Dev Container CLI `0.88.0`; and
 - Just `1.58.0`.
 
-The image installs Hummingbird Podman `6.0.2` and uses Fedora 43 only for the
-dependency closure unavailable from Hummingbird at verification time.
+The image installs Hummingbird Podman `6.0.2`. At the current live-repository
+verification, Fedora 43 supplies only the remaining `yajl` dependency gap.
 
 Container UID `1000` and GID `1001` remain fixed image identities. Explicit
 `keep-id` maps the invoking host user and primary group into those IDs. The

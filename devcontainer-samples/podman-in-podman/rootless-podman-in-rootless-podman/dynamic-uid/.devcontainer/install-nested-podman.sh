@@ -9,15 +9,6 @@ fi
 # Hummingbird supplies Podman, its configuration, and the mapping helpers.
 # Fedora 43 closes only dependencies absent from the Hummingbird repository.
 fedora_gaps=(
-  conmon
-  crun
-  iptables-libs
-  libnetfilter_conntrack
-  libnfnetlink
-  libnftnl
-  nftables
-  nftables-services
-  passt
   yajl
 )
 for package in "${fedora_gaps[@]}"; do

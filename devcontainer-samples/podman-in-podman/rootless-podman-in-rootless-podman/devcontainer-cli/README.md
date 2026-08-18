@@ -16,8 +16,8 @@ Host-side `just test-podman`:
 1. Runs the dynamic-UID host and subordinate-ID preflight.
 2. Builds and launches this outer Dev Container through host rootless Podman.
 3. Verifies the dynamic-UID nested Podman mapping and baseline runtime.
-4. Uses the Dev Container CLI installed in the outer container with
-   `--docker-path podman`.
+4. Uses the Dev Container CLI installed in the outer container with a
+   Podman-compatible local-image wrapper.
 5. Builds and starts `inner-devcontainer/.devcontainer/devcontainer.json`.
 6. Reads the inner configuration's runtime-echo result, verifies the exact
    output `nested podman ok`, and removes the exact inner container.
@@ -65,7 +65,14 @@ The inner `devcontainer.json` passes these arguments to nested Podman:
 --uts=host
 ```
 
+Its build options also use `--network=host` and `--uts=host`. These apply only
+to the image build inside the outer container; `--network=host` is the outer
+container's private network namespace, while the runtime container remains
+network-isolated.
+
 The UTS setting shares the outer container's private UTS namespace, not the
 host UTS namespace. It avoids the nested `sethostname: Operation not permitted`
 failure without adding a capability. Nested storage remains on the baseline's
-slower but narrower `vfs` driver.
+slower but narrower `vfs` driver. Buildah's temporary context-overlay
+scaffolding is placed on the outer container's `/dev/shm` tmpfs because nested
+overlay mounts are not supported on its overlay root filesystem.

@@ -5,8 +5,10 @@ readonly workspace="${PWD}"
 readonly evidence_relative="${1:?evidence directory is required}"
 readonly evidence="${workspace}/${evidence_relative}"
 readonly baseline_evidence="${evidence_relative}/dynamic-uid-baseline"
-readonly inner_workspace="${workspace}/inner-devcontainer"
+readonly inner_source="${workspace}/inner-devcontainer"
+readonly inner_workspace="/home/nonroot/.local/share/nested-podman/inner-devcontainer"
 readonly inner_config="${inner_workspace}/.devcontainer/devcontainer.json"
+readonly docker_path='/usr/local/bin/devcontainer-podman'
 inner_container_id=''
 
 cleanup() {
@@ -21,11 +23,16 @@ fail() {
   exit 1
 }
 
+install -d -m 0700 /dev/shm/nested-podman-build
+
 baseline_output="$(/usr/local/bin/test-dynamic-podman "${baseline_evidence}")"
 [[ "${baseline_output}" == 'nested podman ok' ]] || \
   fail 'The unchanged dynamic-UID nested Podman baseline failed.'
 [[ "$(devcontainer --version)" == '0.88.0' ]] || \
   fail 'The outer container must provide Dev Container CLI 0.88.0.'
+
+rm -rf "${inner_workspace}"
+cp -a "${inner_source}" "${inner_workspace}"
 
 cp /usr/local/share/nested-podman/devcontainer-cli-provenance.txt \
   "${evidence}/devcontainer-cli-provenance.txt"
@@ -36,7 +43,7 @@ set +e
 inner_up_output="$(devcontainer up \
   --workspace-folder "${inner_workspace}" \
   --config "${inner_config}" \
-  --docker-path podman \
+  --docker-path "${docker_path}" \
   --mount-workspace-git-root=false 2>&1)"
 inner_up_status=$?
 set -e
@@ -60,7 +67,7 @@ set +e
 smoke_output="$(devcontainer exec \
   --workspace-folder "${inner_workspace}" \
   --config "${inner_config}" \
-  --docker-path podman \
+  --docker-path "${docker_path}" \
   --mount-workspace-git-root=false \
   /bin/bash -c 'cat /tmp/runtime-echo.stdout')"
 smoke_status=$?

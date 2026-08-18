@@ -14,12 +14,14 @@ USER 0
 COPY dynamic-uid/.devcontainer/install-nested-podman.sh /usr/local/bin/install-nested-podman
 COPY dynamic-uid/.devcontainer/test-nested-podman.sh /usr/local/bin/test-dynamic-podman
 COPY devcontainer-cli/.devcontainer/install-devcontainer-cli.sh /usr/local/bin/install-devcontainer-cli
+COPY devcontainer-cli/.devcontainer/devcontainer-podman.sh /usr/local/bin/devcontainer-podman
 COPY devcontainer-cli/.devcontainer/test-nested-podman.sh /usr/local/bin/test-nested-podman
 
 RUN chmod 0755 \
       /usr/local/bin/install-nested-podman \
       /usr/local/bin/test-dynamic-podman \
       /usr/local/bin/install-devcontainer-cli \
+      /usr/local/bin/devcontainer-podman \
       /usr/local/bin/test-nested-podman && \
     /usr/local/bin/install-nested-podman && \
     /usr/local/bin/install-devcontainer-cli && \
@@ -29,6 +31,7 @@ RUN chmod 0755 \
     printf '%s\n' 'nonroot:1:999' 'nonroot:1001:64536' > /etc/subuid && \
     printf '%s\n' 'nonroot:1:1000' 'nonroot:1002:64535' > /etc/subgid && \
     install -d -m 0700 -o nonroot -g nonroot \
+      /home/nonroot/.cache \
       /home/nonroot/.config/containers \
       /home/nonroot/.local/share/containers/storage \
       /run/user/1000 && \
